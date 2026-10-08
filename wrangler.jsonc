@@ -1,0 +1,14 @@
+{
+  // Static-assets-only Worker. The app is built with ssr:false, so there is no
+  // Worker script: Cloudflare serves the pre-rendered HTML in build/client directly.
+  // Having this file also stops `wrangler deploy` from auto-configuring an SSR setup.
+  "name": "iot",
+  "compatibility_date": "2026-10-06",
+  "assets": {
+    "directory": "./build/client",
+    // Serve /learn/mqtt/index.html at /learn/mqtt, matching the app's links.
+    "html_handling": "drop-trailing-slash",
+    // Unknown URLs get build/client/404.html (the SPA fallback) with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}

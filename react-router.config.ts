@@ -1,3 +1,5 @@
+import { copyFile } from "node:fs/promises";
+import { join } from "node:path";
 import type { Config } from "@react-router/dev/config";
 import { prerenderPaths } from "./app/content/registry";
 
@@ -8,5 +10,11 @@ export default {
   prerender: {
     paths: prerenderPaths(),
     concurrency: 4,
+  },
+  // Static hosts (Cloudflare Workers assets, Pages) serve 404.html for unknown
+  // URLs. Using the SPA fallback there boots the app so the not-found route renders.
+  async buildEnd({ reactRouterConfig }) {
+    const client = join(reactRouterConfig.buildDirectory, "client");
+    await copyFile(join(client, "__spa-fallback.html"), join(client, "404.html"));
   },
 } satisfies Config;
