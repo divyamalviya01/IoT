@@ -1,0 +1,492 @@
+@import "tailwindcss";
+
+/* Dark mode follows the data-theme attribute set by the theme script in root.tsx
+   (it resolves "system" to light or dark before first paint). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------
+   Design tokens
+   Palette idea: a datasheet on a lab bench. Cool paper, slate ink,
+   PCB solder-mask green for actions, copper for highlights.
+   Unit accents: Unit 1 copper (hardware), Unit 2 radio blue
+   (wireless), Unit 3 violet (cloud, security, applications).
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+
+  --bg: #f5f7f8;
+  --surface: #ffffff;
+  --surface-2: #edf1f3;
+  --line: #d9e0e4;
+  --line-strong: #b9c4cb;
+
+  --ink: #15232d;
+  --ink-2: #3f515d;
+  --ink-3: #5e6f78;
+
+  --brand: #0b6b4f;
+  --brand-hover: #085a42;
+  --brand-ink: #ffffff;
+  --brand-soft: #e0f0ea;
+
+  --copper: #b0622a;
+
+  --u1: #a65a1f;
+  --u1-soft: #f6eadf;
+  --u2: #2b5fc7;
+  --u2-soft: #e3ebfa;
+  --u3: #7444b8;
+  --u3-soft: #eee6f8;
+
+  --ok: #177245;
+  --ok-soft: #e1f2e8;
+  --warn: #8a5f00;
+  --warn-soft: #fbf1d6;
+  --bad: #be3127;
+  --bad-soft: #fbe5e2;
+
+  --focus: #2b5fc7;
+
+  /* Chart series, fixed order (validated for colour-blind separation on
+     these surfaces). Light slots 3–5 are under 3:1 contrast, so every chart
+     offers a data-table view. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --series-7: #4a3aa7;
+  --series-8: #e34948;
+
+  /* Circuit-board hero */
+  --pcb: #0e4a3a;
+  --pcb-2: #135c48;
+  --pcb-trace: #c98a4b;
+  --silk: #f1f4ee;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0f171c;
+  --surface: #16222a;
+  --surface-2: #1c2b35;
+  --line: #263843;
+  --line-strong: #36505e;
+
+  --ink: #e6edf0;
+  --ink-2: #b3c2ca;
+  --ink-3: #8a9ca6;
+
+  --brand: #3fbf8f;
+  --brand-hover: #5fd0a5;
+  --brand-ink: #062419;
+  --brand-soft: #123a2e;
+
+  --copper: #e0955a;
+
+  --u1: #e39a5e;
+  --u1-soft: #3a2716;
+  --u2: #7fa6f5;
+  --u2-soft: #1a2b4d;
+  --u3: #b794ee;
+  --u3-soft: #2e2147;
+
+  --ok: #4cc488;
+  --ok-soft: #12382a;
+  --warn: #e8b931;
+  --warn-soft: #3a2e0e;
+  --bad: #f2776b;
+  --bad-soft: #401a17;
+
+  --focus: #7fa6f5;
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+
+  --pcb: #0b3a2e;
+  --pcb-2: #0f4a3b;
+  --pcb-trace: #d99a5c;
+  --silk: #e8ede4;
+}
+
+@theme inline {
+  --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code",
+    Consolas, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-copper: var(--copper);
+  --color-u1: var(--u1);
+  --color-u1-soft: var(--u1-soft);
+  --color-u2: var(--u2);
+  --color-u2-soft: var(--u2-soft);
+  --color-u3: var(--u3);
+  --color-u3-soft: var(--u3-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-focus: var(--focus);
+  --color-pcb: var(--pcb);
+  --color-pcb-2: var(--pcb-2);
+  --color-pcb-trace: var(--pcb-trace);
+  --color-silk: var(--silk);
+}
+
+/* Type scale: 1.25 ratio on a 17px reading size */
+@theme {
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.35;
+  --text-h2: 1.5625rem;
+  --text-h2--line-height: 1.25;
+  --text-h1: 2.125rem;
+  --text-h1--line-height: 1.15;
+  --text-display: 3rem;
+  --text-display--line-height: 1.05;
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--bg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-feature-settings: "kern";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Packets travelling along <FlowDiagram> arrows */
+@keyframes packet-x {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  12%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 10px);
+    opacity: 0;
+  }
+}
+
+@keyframes packet-y {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  12%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: calc(100% - 10px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Theory prose (MDX output). Components bring their own styles;
+   these cover plain Markdown elements.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Text keeps a ~70 character measure; figures and diagrams may run wider. */
+  .prose-lab {
+    max-width: 58rem;
+    color: var(--ink);
+  }
+
+  .prose-lab > :where(p, ul, ol, h2, h3, h4, blockquote, pre, hr) {
+    max-width: 70ch;
+  }
+
+  .prose-lab > * + * {
+    margin-top: 1rem;
+  }
+
+  /* Element styles target direct children only, so they never leak into
+     components (KeyPoints, LayerStack…) that bring their own list styles. */
+  .prose-lab > h2 {
+    margin-top: 2.75rem;
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    scroll-margin-top: 5rem;
+  }
+
+  .prose-lab > h3 {
+    margin-top: 2rem;
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    font-weight: 700;
+    scroll-margin-top: 5rem;
+  }
+
+  .prose-lab > h2 + *,
+  .prose-lab > h3 + * {
+    margin-top: 0.625rem;
+  }
+
+  .prose-lab > p {
+    color: var(--ink);
+  }
+
+  .prose-lab > :where(p, ul, ol) a {
+    color: var(--brand);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .prose-lab > :where(p, ul, ol) a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .prose-lab strong {
+    font-weight: 700;
+  }
+
+  .prose-lab > ul,
+  .prose-lab > ol {
+    padding-left: 1.4rem;
+  }
+
+  .prose-lab > ul {
+    list-style: disc;
+  }
+
+  .prose-lab > ol {
+    list-style: decimal;
+  }
+
+  .prose-lab > :where(ul, ol) > li + li {
+    margin-top: 0.35rem;
+  }
+
+  .prose-lab > :where(ul, ol) > li::marker {
+    color: var(--ink-3);
+  }
+
+  .prose-lab :not(pre) > code {
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+
+  .prose-lab > pre {
+    overflow-x: auto;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-2);
+    line-height: 1.5;
+  }
+
+  .prose-lab > hr {
+    margin: 2.5rem 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Plain Markdown tables get the same look as <CompareTable>. */
+  .prose-lab > table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .prose-lab > table th,
+  .prose-lab > table td {
+    padding: 0.55rem 0.8rem;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .prose-lab > table thead th {
+    border-bottom: 2px solid var(--line-strong);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .prose-lab > table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  /* Range input used by <Slider>; --fill is set inline to the current percent. */
+  .lab-range {
+    appearance: none;
+    background: transparent;
+  }
+
+  .lab-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--brand) var(--fill, 0%),
+      var(--line-strong) var(--fill, 0%)
+    );
+  }
+
+  .lab-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -6px;
+    border: 2px solid var(--brand);
+    border-radius: 50%;
+    background: var(--surface);
+  }
+
+  .lab-range::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--line-strong);
+  }
+
+  .lab-range::-moz-range-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--brand);
+  }
+
+  .lab-range::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--brand);
+    border-radius: 50%;
+    background: var(--surface);
+  }
+
+  .lab-range:focus-visible {
+    outline: none;
+  }
+
+  .lab-range:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .lab-range:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Print: lab records print on A4 without app chrome.
+   ------------------------------------------------------------------ */
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}
+
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f2f2f2;
+    --line: #9a9a9a;
+    --line-strong: #444444;
+    --ink: #000000;
+    --ink-2: #222222;
+    --ink-3: #444444;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    font-size: 11pt;
+  }
+
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+  }
+}

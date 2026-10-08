@@ -1,0 +1,137 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, LayerStack, SequenceDiagram, Term } from "~/components/theory";
+import { Cloud, Globe, Router, Smartphone, Thermometer } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+This lab teaches the Internet of Things by letting you read, watch and experiment, all inside your web browser.
+</Callout>
+
+## What is this lab?
+
+The IoT Simulator Lab is a <Term id="simulation">simulation</Term>. It behaves like real IoT devices and networks, but it runs on your computer.
+
+You do not need sensors, boards or wires. You can repeat an experiment as often as you like. The same settings always give the same result, so your observations will match your classmates' observations.
+
+Real hardware still matters. Use this lab to understand the ideas first. Your hardware practicals will then make much more sense.
+
+## The journey of one reading
+
+Most IoT systems move data in the same way. A <Term id="sensor">sensor</Term> measures something, such as room temperature. The reading then passes through a few stops until it reaches an app on your phone.
+
+<FlowDiagram
+  nodes={[
+    { label: "Sensor", sub: "Measures temperature", icon: Thermometer, tone: "u1" },
+    { label: "Gateway", sub: "Connects local devices", icon: Router, tone: "u2" },
+    { label: "Internet", sub: "Carries data far away", icon: Globe, tone: "neutral" },
+    { label: "Cloud", sub: "Stores and processes", icon: Cloud, tone: "u3" },
+    { label: "Phone app", sub: "Shows it to you", icon: Smartphone, tone: "brand" },
+  ]}
+  links={["Wi-Fi or Zigbee", "Broadband or 4G", "Internet", "Internet"]}
+  caption="A temperature reading travels from a sensor to a phone app. Each arrow is one network link."
+/>
+
+The reading does not travel as one long stream. It is split into small <Term id="packet">packets</Term>. Each packet carries the useful data, called the <Term id="payload">payload</Term>, plus a label saying where it is going.
+
+The <Term id="gateway">gateway</Term> is the bridge between the sensor and the internet. In a home, your Wi-Fi router often does this job.
+
+## Two words you will meet everywhere
+
+Every link on the journey has two important properties: how long it takes, and how reliable it is.
+
+<CompareTable
+  caption="Latency and packet loss"
+  columns={["Term", "Meaning", "Everyday example", "Measured in"]}
+  rows={[
+    ["Latency", "Time a packet takes to cross a link", "Time a courier takes to deliver a parcel", "Milliseconds (ms)"],
+    ["Packet loss", "Share of packets that never arrive", "Parcels lost on the way", "Percent (%)"],
+  ]}
+/>
+
+<Term id="latency">Latency</Term> adds up along the path. If each of three links takes 100 ms, the whole journey takes about 300 ms.
+
+<Term id="packet-loss">Packet loss</Term> adds up too, but less obviously. A packet must survive every link. With 10% loss on each of three links, only 0.9 × 0.9 × 0.9, about 73%, of packets arrive.
+
+<Callout kind="remember">
+More links mean more delay and more chances to lose a packet. That is why IoT designers try to keep the path from sensor to cloud short.
+</Callout>
+
+## A conversation between devices
+
+Devices often confirm that a message arrived. The receiver sends back a short reply called an acknowledgement, or "ack". If no ack arrives in time, the sender tries again.
+
+Press **Next step** to watch a sensor send two readings. The second reading is lost, so the sensor sends it again.
+
+<SequenceDiagram
+  caption="A sensor, a gateway and the cloud exchanging readings"
+  participants={["Sensor", "Gateway", "Cloud"]}
+  messages={[
+    { from: "Sensor", to: "Gateway", label: "Reading 1: 28.5 °C", note: "The sensor sends its first reading to the nearby gateway." },
+    { from: "Gateway", to: "Sensor", label: "Ack 1", reply: true, note: "The gateway confirms that reading 1 arrived." },
+    { from: "Gateway", to: "Cloud", label: "Forward reading 1", note: "The gateway forwards reading 1 to the cloud over the internet." },
+    { from: "Sensor", to: "Gateway", label: "Reading 2: 28.7 °C", lost: true, note: "Reading 2 is lost on the way, perhaps because of radio interference." },
+    { from: "Sensor", to: "Gateway", label: "Reading 2 (sent again)", note: "No ack arrived in time, so the sensor sends reading 2 again." },
+    { from: "Gateway", to: "Sensor", label: "Ack 2", reply: true, note: "This time the gateway confirms that reading 2 arrived." },
+    { from: "Gateway", to: "Cloud", label: "Forward reading 2", note: "Reading 2 reaches the cloud. Nothing was lost in the end, but it arrived later." },
+  ]}
+/>
+
+## A first look at IoT layers
+
+Engineers describe IoT systems in layers. Each layer has one job. You will study layers properly in topic 2.3. Here is the simplest version, the three-layer model.
+
+<LayerStack
+  caption="The three-layer IoT model. Select a layer to see what it does."
+  layers={[
+    { name: "Application layer", detail: "Delivers the service the user sees, such as a phone app, a dashboard or an alert.", items: ["Phone app", "Dashboard", "Alerts"] },
+    { name: "Network layer", detail: "Carries data from devices to servers and back, using gateways and the internet.", items: ["Wi-Fi", "4G", "Gateway", "Internet"] },
+    { name: "Perception layer", detail: "Senses the physical world and acts on it. Sensors and actuators live here.", items: ["Sensors", "Actuators", "RFID tags"] },
+  ]}
+/>
+
+## How every topic page works
+
+Every topic in the syllabus has the same tabs, so you always know where to look.
+
+<CompareTable
+  caption="The five tabs on a topic page"
+  columns={["Tab", "What you do", "Tip"]}
+  rows={[
+    ["Theory", "Read the explanation, tables and diagrams", "Point at an underlined word to see its meaning"],
+    ["Visualize", "Watch an animation or explore a 3D model", "Click the parts to learn what each one does"],
+    ["Lab", "Run a simulation and record observations", "Change only one setting at a time"],
+    ["Quiz", "Answer multiple-choice questions", "Read the explanation after every answer"],
+    ["Viva", "Practise common oral exam questions", "Answer out loud before opening the model answer"],
+  ]}
+/>
+
+## How to do a lab and print your record
+
+1. Read the aim and the steps at the top of the lab.
+2. Change the settings in the Setup panel.
+3. Press the play button and watch the simulation run.
+4. When a run ends, press **Record observation**. A new row appears in the observation table.
+5. Repeat with different settings, changing one thing at a time.
+6. Press **Open lab record**, add your name and your result, then print it or save it as a PDF.
+
+Try it now in the **Lab** tab. Lab L00 sends packets from a sensor to the cloud, and you control the delay and the loss.
+
+<KeyPoints
+  points={[
+    "This lab is a simulation: it behaves like real devices, needs no hardware and gives repeatable results.",
+    "Data travels as small packets: sensor, gateway, internet, cloud, then the app.",
+    "Latency is the time a packet takes. It adds up over every link.",
+    "Packet loss is the share of packets that never arrive. A packet must survive every link.",
+    "Every topic has the same five tabs: Theory, Visualize, Lab, Quiz and Viva.",
+  ]}
+/>
+
+<ExamTip
+  question="Differentiate between latency and packet loss."
+  short="Latency is the time a packet takes to travel from sender to receiver, measured in milliseconds. Packet loss is the percentage of packets that never reach the receiver."
+  long={[
+    "Define latency and give its unit (ms).",
+    "Define packet loss and give its unit (%).",
+    "Explain that latency adds up over each link of a path.",
+    "Explain that delivery chances multiply over links, with a worked example.",
+    "Give one cause of each: distance and processing for latency, interference and congestion for loss.",
+  ]}
+/>
