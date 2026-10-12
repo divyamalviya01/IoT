@@ -343,7 +343,9 @@ function Track({ journey, timeMs }: { journey: PacketJourney; timeMs: number }) 
           ? `${journey.stats.inFlight} packet${journey.stats.inFlight === 1 ? "" : "s"} on the way`
           : journey.done
             ? "Run complete. Record your observation."
-            : "Ready"}
+            : journey.packets.length > 0
+              ? "Waiting to send the next packet"
+              : "Ready. Press Start sending."}
       </p>
     </div>
   );

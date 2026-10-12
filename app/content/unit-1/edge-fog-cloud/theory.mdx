@@ -1,0 +1,118 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, LayerStack, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+IoT data can be processed on or next to the device (edge), on a nearby local server (fog) or in a distant data centre (cloud). Closer means faster; farther means more computing power.
+</Callout>
+
+## Why the place of processing matters
+
+Every reading must be processed somewhere before it becomes a decision. Where that happens affects four things:
+
+- **Speed:** how quickly a decision comes back. This delay is called <Term id="latency">latency</Term>.
+- **Bandwidth:** how much data must travel over the internet. Sending raw video from 100 cameras uses a lot of <Term id="bandwidth">bandwidth</Term>.
+- **Reliability:** whether the system still works when the internet connection fails.
+- **Privacy:** whether personal data has to leave the building.
+
+There are three main places to process data. You can picture them as floors of a building, with the devices on the ground floor.
+
+<LayerStack
+  caption="Where IoT data can be processed (top is farthest from the devices)"
+  layers={[
+    { name: "Cloud", detail: "Huge data centres far away. Almost unlimited storage and computing, but every round trip takes the longest.", items: ["AWS", "Microsoft Azure", "Data centre"] },
+    { name: "Fog", detail: "Local servers between the devices and the cloud, such as a factory server or a computer at a mobile tower. They combine data from many devices.", items: ["Local server", "Cloudlet", "Smart router"] },
+    { name: "Edge", detail: "Processing on the device itself or on a gateway right next to it. Answers come back in a few milliseconds.", items: ["Smart camera", "Gateway", "Raspberry Pi"] },
+    { name: "Devices", detail: "Sensors and actuators that produce data and carry out commands. They have very little computing power.", items: ["Sensors", "Actuators"] },
+  ]}
+/>
+
+## Cloud computing
+
+<Term id="cloud">Cloud computing</Term> means using large, shared data centres over the internet. You rent storage and computing power instead of buying your own servers.
+
+The cloud is very good at storing years of data, analysing it and training machine-learning models. It is also easy to reach from anywhere.
+
+Its weakness is distance. Data may travel hundreds of kilometres each way. Sending everything there also costs bandwidth, and the system stops when the internet fails.
+
+## Edge computing
+
+<Term id="edge-computing">Edge computing</Term> processes data on the device itself or on a computer right next to it, sometimes called an edge computer. Only results or summaries go further.
+
+A smart camera that recognises a person and sends only the alert, not the whole video, uses edge computing. So does a car that brakes by itself: it cannot wait for a reply from a distant server.
+
+Edge devices are fast and keep working offline, but they have limited computing power and storage.
+
+## Fog computing
+
+<Term id="fog-computing">Fog computing</Term> sits between the edge and the cloud. It uses local servers, routers or gateways that serve many devices in one area. Cisco introduced the term around 2012.
+
+A factory might send data from 500 machines to a fog server on site. The fog server spots problems in real time and sends only hourly summaries to the cloud.
+
+## The peripheral cloud and cloudlets
+
+The syllabus calls this the **peripheral cloud**: cloud resources placed at the periphery, or edge, of the network, close to the users.
+
+A <Term id="cloudlet">cloudlet</Term> is a small cloud data centre, sometimes called a "data centre in a box", placed near the users. It might sit in a shopping mall, a college campus or a mobile tower.
+
+Mobile operators now place servers at their towers so phones and IoT devices get cloud services with low delay. This is known as multi-access edge computing (MEC).
+
+<Callout kind="remember">
+Edge, fog and peripheral cloud all follow one idea: move computing closer to where data is produced. The cloud is still used for long-term storage and heavy analysis.
+</Callout>
+
+## Comparing the tiers
+
+<CompareTable
+  caption="Edge, fog and cloud compared"
+  columns={["Feature", "Edge", "Fog", "Cloud"]}
+  rows={[
+    ["Where", "On the device or a gateway beside it", "Local server in the same building or area", "Large data centre, often far away"],
+    ["Typical response time", "A few milliseconds", "About 5–20 ms", "About 50–150 ms or more"],
+    ["Computing power", "Low", "Medium", "Very high"],
+    ["Storage", "Very small", "Moderate", "Practically unlimited"],
+    ["Internet bandwidth used", "Lowest (sends results only)", "Low (sends summaries)", "Highest (receives raw data)"],
+    ["Works without internet?", "Yes", "Yes, within the local area", "No"],
+    ["Best for", "Instant decisions, privacy", "Combining data from many local devices", "History, big data, machine learning"],
+    ["Example", "Car braking, smart camera", "Factory monitoring server", "City-wide analytics dashboard"],
+  ]}
+  note="Response times are typical values for illustration. Real values depend on distance and network conditions."
+/>
+
+## Real-life example: smart traffic signals
+
+<Callout kind="example" title="A smart junction in a city">
+Cameras at a junction count vehicles on the spot (edge). A controller for the area adjusts signal timings for several nearby junctions together (fog). All traffic data goes to the city's command and control centre, where planners study weeks of data to redesign roads (cloud).
+</Callout>
+
+## Advantages and limitations
+
+<CompareTable
+  caption="Strengths and weaknesses of each tier"
+  columns={["Tier", "Advantages", "Limitations"]}
+  rows={[
+    ["Edge", "Fastest response; works offline; private data stays local; saves bandwidth", "Little computing power and storage; many devices to update and secure"],
+    ["Fog", "Fast enough for most control tasks; combines data from many devices; reduces cloud traffic", "Extra servers to buy and manage on site"],
+    ["Cloud", "Huge storage and computing; easy to scale; reachable from anywhere", "Slowest response; needs internet; bandwidth and running costs"],
+  ]}
+/>
+
+<KeyPoints
+  points={[
+    "Edge processes data on or next to the device; fog uses nearby local servers; the cloud uses distant data centres.",
+    "Closer processing is faster and saves bandwidth; farther processing has more computing power.",
+    "The peripheral cloud places cloud resources, such as cloudlets, at the edge of the network.",
+    "Time-critical decisions, such as braking, belong at the edge.",
+    "Real systems use all three tiers together.",
+  ]}
+/>
+
+<ExamTip
+  question="Differentiate between edge, fog and cloud computing in IoT."
+  short="Edge computing processes data on the device or a nearby gateway, giving the fastest response. Fog computing uses local servers between devices and the cloud. Cloud computing uses distant data centres with huge storage and computing power but higher latency."
+  long={[
+    "Explain why the place of processing matters: latency, bandwidth, reliability and privacy.",
+    "Define cloud, edge and fog computing, each with one example.",
+    "Explain the peripheral cloud and cloudlets.",
+    "Draw the tier diagram and give a comparison table.",
+    "Give one example that uses all three tiers, such as smart traffic signals.",
+  ]}
+/>

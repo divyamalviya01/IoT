@@ -1,0 +1,198 @@
+import { Callout, ChartCard, ChartTooltip, CompareTable, ExamTip, FlowDiagram, KeyPoints, LayerStack, Term, chartStyle, seriesColor } from "~/components/theory";
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { Binary, Cpu, Radio, Thermometer, Waves } from "lucide-react";
+
+export const adcDemo = Array.from({ length: 25 }, (_, i) => {
+  const volts = 2.5 + 2 * Math.sin((i / 24) * 2 * Math.PI);
+  const step = 5 / 8;
+  return {
+    t: i,
+    analog: Number(volts.toFixed(2)),
+    digital: Number((Math.floor(volts / step) * step).toFixed(2)),
+  };
+});
+
+<Callout kind="definition" title="In one line">
+A sensor node is a small, self-contained device that senses its surroundings, processes the reading and sends it over a wireless link, usually on battery power.
+</Callout>
+
+## What is a sensor node?
+
+A sensor node is the basic building block of a wireless sensor network (WSN). Many nodes are spread over an area, such as a farm, a forest or a factory floor.
+
+Each node measures something, such as temperature or soil moisture. It then sends the reading by radio to a gateway, which forwards it to the cloud.
+
+Sensor nodes are usually small, cheap and battery-powered. They must work for months or years without anyone touching them.
+
+## The four units of a sensor node
+
+Every sensor node has four units. Select a unit to see what it does.
+
+<LayerStack
+  caption="Architecture of a sensor node (top to bottom)"
+  layers={[
+    { name: "Communication unit", detail: "A radio transceiver sends readings and receives commands. It uses the most energy of all the units, so it sleeps whenever it can.", items: ["Zigbee radio", "BLE radio", "LoRa radio", "Antenna"] },
+    { name: "Processing unit", detail: "A microcontroller with memory reads the sensor, applies simple rules, stores data for a while and prepares packets.", items: ["Microcontroller", "Flash memory", "RAM"] },
+    { name: "Sensing unit", detail: "Sensors turn physical quantities into voltages. The ADC turns those voltages into numbers.", items: ["Sensors", "ADC", "Signal conditioning"] },
+    { name: "Power unit", detail: "Supplies energy to all the other units, from a battery, sometimes topped up by energy harvesting.", items: ["Battery", "Solar cell", "Voltage regulator"] },
+  ]}
+/>
+
+- **Sensing unit:** the <Term id="sensor">sensor</Term> measures a physical quantity and gives a voltage. The <Term id="adc">ADC</Term> converts that voltage into a number.
+- **Processing unit:** a <Term id="microcontroller">microcontroller</Term> handles the numbers. It can average readings, check limits and decide when to send.
+- **Communication unit:** a <Term id="transceiver">transceiver</Term> sends packets out and receives commands.
+- **Power unit:** usually a battery. Some nodes add <Term id="energy-harvesting">energy harvesting</Term>, such as a small solar panel.
+
+### How a reading travels through the node
+
+<FlowDiagram
+  nodes={[
+    { label: "Physical quantity", sub: "Heat, light, motion", icon: Waves, tone: "copper" },
+    { label: "Sensor", sub: "Gives a voltage", icon: Thermometer, tone: "u1" },
+    { label: "ADC", sub: "Voltage to number", icon: Binary, tone: "u2" },
+    { label: "Microcontroller", sub: "Processes it", icon: Cpu, tone: "u3" },
+    { label: "Transceiver", sub: "Sends a packet", icon: Radio, tone: "brand" },
+  ]}
+  caption="Inside a node, a physical quantity becomes a voltage, then a number, then a radio packet."
+/>
+
+## Sensors and actuators you will meet
+
+These parts appear in most IoT practicals and projects.
+
+<CompareTable
+  caption="Common sensors"
+  columns={["Sensor", "Measures", "Output", "Typical use"]}
+  rows={[
+    ["DHT11", "Temperature and humidity", "Digital (one wire)", "Room and greenhouse monitoring"],
+    ["LM35", "Temperature", "Analog: 10 mV per °C", "Accurate temperature readings"],
+    ["PIR (HC-SR501)", "Movement of warm bodies", "Digital: HIGH when motion is seen", "Automatic lights, intruder alarms"],
+    ["HC-SR04", "Distance, about 2–400 cm", "Digital pulse whose length gives the distance", "Parking sensors, water-tank level"],
+    ["LDR", "Light level", "Analog (resistance falls in bright light)", "Automatic street lights"],
+    ["MQ-2", "Smoke and gases such as LPG", "Analog", "Gas-leak and fire alarms"],
+    ["Soil moisture probe", "Water in the soil", "Analog", "Smart irrigation"],
+    ["MPU6050", "Acceleration and rotation", "Digital (I²C)", "Fall detection, drones, step counting"],
+  ]}
+/>
+
+<CompareTable
+  caption="Common actuators"
+  columns={["Actuator", "What it does", "Typical use"]}
+  rows={[
+    ["Relay", "A switch controlled by a small signal, for high-power devices", "Turning a pump, fan or light on and off"],
+    ["Servo motor", "Turns to an exact angle", "Valves, door locks, robot arms"],
+    ["DC motor", "Spins continuously", "Fans, wheels, conveyor belts"],
+    ["Buzzer", "Makes a sound", "Alarms and alerts"],
+    ["LED", "Gives light", "Status indicators, displays"],
+  ]}
+/>
+
+## Analog and digital signals
+
+Sensors give one of two kinds of signal.
+
+<CompareTable
+  caption="Analog and digital signals"
+  columns={["", "Analog signal", "Digital signal"]}
+  rows={[
+    ["Values", "Any value in a range, changing smoothly", "Only fixed values, usually HIGH (1) and LOW (0)"],
+    ["Example", "LM35 voltage rising as a room warms", "PIR output: motion or no motion"],
+    ["Needs an ADC?", "Yes, to become a number", "No, the microcontroller reads it directly"],
+    ["Effect of noise", "Noise changes the value", "Small noise is ignored"],
+  ]}
+/>
+
+An <Term id="analog-signal">analog signal</Term> can take any value. A <Term id="digital-signal">digital signal</Term> has only a few fixed values.
+
+## From voltage to number: sampling and quantisation
+
+A microcontroller cannot store a smooth curve. It measures the voltage at regular moments. This is called sampling, and how often it happens is the <Term id="sampling-rate">sampling rate</Term>.
+
+Each sample is rounded to the nearest step the ADC can show. This rounding is called <Term id="quantisation">quantisation</Term>.
+
+An ADC with **n bits** has **2ⁿ steps**. The size of one step is the reference voltage divided by 2ⁿ.
+
+<ChartCard
+  title="A smooth signal and its 3-bit version"
+  description="A 3-bit ADC has only 8 steps, so the digital value moves in jumps. More bits mean smaller steps."
+  data={adcDemo}
+  xKey="t"
+  xLabel="Sample"
+  series={[
+    { key: "analog", label: "Analog voltage", unit: "V" },
+    { key: "digital", label: "3-bit ADC value", unit: "V" },
+  ]}
+  height={240}
+>
+  <LineChart data={adcDemo} margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
+    <CartesianGrid {...chartStyle.grid} />
+    <XAxis dataKey="t" {...chartStyle.axis} />
+    <YAxis {...chartStyle.axis} domain={[0, 5]} unit=" V" width={56} />
+    <Tooltip cursor={chartStyle.cursor} content={<ChartTooltip labelPrefix="Sample " units={{ analog: "V", digital: "V" }} />} />
+    <Line type="monotone" dataKey="analog" name="Analog voltage" stroke={seriesColor(0)} strokeWidth={2} dot={false} isAnimationActive={false} />
+    <Line type="stepAfter" dataKey="digital" name="3-bit ADC value" stroke={seriesColor(1)} strokeWidth={2} dot={false} isAnimationActive={false} />
+  </LineChart>
+</ChartCard>
+
+<Callout kind="example" title="Worked example: Arduino Uno and LM35">
+The Arduino Uno has a 10-bit ADC with a 5 V reference. It has 2¹⁰ = 1024 steps, so one step is 5 V ÷ 1024 ≈ 4.9 mV. The LM35 gives 10 mV per °C, so one ADC step is about 0.49 °C. The Uno cannot tell apart two temperatures closer than about half a degree.
+</Callout>
+
+## Saving energy: duty cycling
+
+The radio uses far more power than anything else. So a node spends most of its time asleep. It wakes up, takes a reading, sends it and sleeps again.
+
+The share of time a node is awake is its <Term id="duty-cycle">duty cycle</Term>. The average current is:
+
+**average current = duty cycle × awake current + (1 − duty cycle) × sleep current**
+
+<Callout kind="example" title="Worked example: battery life">
+A node draws 20 mA when awake and 0.01 mA when asleep. It runs on a 2000 mAh battery. Always awake, it lasts 2000 ÷ 20 = 100 hours, about 4 days. With a 1% duty cycle, the average current is 0.01 × 20 + 0.99 × 0.01 ≈ 0.21 mA. It now lasts about 2000 ÷ 0.21 ≈ 9,500 hours, more than a year.
+</Callout>
+
+You will try this yourself in lab L02.
+
+## Real-life example: a farm sensor network
+
+<Callout kind="example" title="Soil sensors on a farm">
+Twenty soil-moisture nodes are placed across a sugarcane field. Each wakes every 15 minutes, reads the soil and sends a LoRa packet to a gateway at the farmhouse. A small solar cell keeps each battery charged. The farmer's app shows which parts of the field need water.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Small and cheap, so many nodes can cover a large area.
+- Wireless, so there is no cabling to install.
+- Battery-powered, so they work in remote places.
+- Can measure things continuously, day and night.
+
+**Limitations**
+
+- Limited battery life and processing power.
+- Short radio range, often needing gateways or relaying.
+- Readings drift over time, so sensors need calibration.
+- Exposed to weather, theft and tampering.
+
+<KeyPoints
+  points={[
+    "A sensor node senses, processes and sends data, usually on battery power.",
+    "Its four units are sensing (sensor + ADC), processing (microcontroller), communication (transceiver) and power.",
+    "An n-bit ADC has 2ⁿ steps; step size = reference voltage ÷ 2ⁿ.",
+    "The Arduino Uno's 10-bit ADC at 5 V has steps of about 4.9 mV.",
+    "Duty cycling, sleeping most of the time, can stretch battery life from days to years.",
+  ]}
+/>
+
+<ExamTip
+  question="Draw and explain the architecture of an IoT sensor node."
+  short="A sensor node has four units: a sensing unit (sensor and ADC), a processing unit (microcontroller and memory), a communication unit (radio transceiver) and a power unit (battery, possibly with energy harvesting). The sensor's voltage is converted to a number, processed and sent by radio."
+  long={[
+    "Define a sensor node and a wireless sensor network.",
+    "Draw the block diagram of the four units, with the power unit feeding all of them.",
+    "Explain each unit with an example component.",
+    "Explain the data path: physical quantity → sensor → ADC → microcontroller → transceiver.",
+    "Explain sampling, ADC resolution and duty cycling with a worked example.",
+    "List two advantages and two limitations.",
+  ]}
+/>

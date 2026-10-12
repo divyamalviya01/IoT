@@ -1,0 +1,137 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term, Timeline } from "~/components/theory";
+import { Cloud, Cpu, Radio, Smartphone } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+The Internet of Things connects everyday objects to the internet, so they can sense their surroundings, share data and act on it.
+</Callout>
+
+## What is the Internet of Things?
+
+The <Term id="iot">Internet of Things (IoT)</Term> is a network of physical objects, called "things". Each thing has a <Term id="sensor">sensor</Term>, a small processor and a network connection.
+
+The things collect data and send it over the internet. People and programs use that data to monitor and control the things, often from far away.
+
+A normal computer needs a person to type or click. An IoT device usually works on its own. A smart meter, for example, sends your electricity reading every 15 minutes without anyone pressing a button.
+
+<Callout kind="definition" title="Formal definition (ITU-T Y.2060)">
+IoT is "a global infrastructure for the information society, enabling advanced services by interconnecting (physical and virtual) things based on existing and evolving interoperable information and communication technologies."
+</Callout>
+
+In simple words: IoT links things together using standard communication technology, so that new services become possible.
+
+## A short history
+
+The idea is older than the name. People connected machines to networks long before anyone said "Internet of Things".
+
+<Timeline
+  caption="Milestones on the way to today's IoT"
+  items={[
+    { when: "1982", title: "A vending machine on the network", text: "Students at Carnegie Mellon University connected a Coke machine to the ARPANET. They could check from their desks whether it had cold drinks." },
+    { when: "1990", title: "The internet toaster", text: "John Romkey showed a toaster that could be switched on and off over the internet." },
+    { when: "1999", title: "The name is born", text: "Kevin Ashton used the phrase “Internet of Things” in a talk about linking RFID tags to the internet." },
+    { when: "2000", title: "The smart fridge", text: "LG announced a refrigerator that could connect to the internet." },
+    { when: "2008–09", title: "More things than people", text: "By one widely quoted estimate (Cisco), the number of connected things passed the number of people on Earth." },
+    { when: "2012", title: "Room for every device", text: "IPv6 was switched on worldwide. Its huge address space can give every device its own address." },
+    { when: "2015", title: "Smart Cities Mission", text: "India launched the Smart Cities Mission, bringing IoT to traffic, water, lighting and waste services." },
+    { when: "Today", title: "IoT is everywhere", text: "Smart meters, FASTag, fitness bands, smart TVs and connected farms are part of daily life." },
+  ]}
+/>
+
+## The four building blocks of IoT
+
+Every IoT system, small or large, is built from four blocks. Data moves through them in order, and commands can travel back the other way.
+
+<FlowDiagram
+  nodes={[
+    { label: "Things", sub: "Sensors and actuators", icon: Cpu, tone: "u1" },
+    { label: "Connectivity", sub: "Gateways and networks", icon: Radio, tone: "u2" },
+    { label: "Data processing", sub: "Cloud or edge", icon: Cloud, tone: "u3" },
+    { label: "User interface", sub: "Apps and dashboards", icon: Smartphone, tone: "brand" },
+  ]}
+  links={["Readings", "Internet", "Results"]}
+  caption="Data flows from things to the user. Commands, such as “switch on the fan”, flow back the other way."
+/>
+
+<CompareTable
+  caption="The four building blocks"
+  columns={["Block", "What it does", "Examples"]}
+  rows={[
+    ["Things (devices)", "Sense the physical world and act on it", "Temperature sensor, motion sensor, smart bulb, motor, relay"],
+    ["Connectivity", "Carries data between things and the internet", "Wi-Fi, Bluetooth, Zigbee, LoRa, 4G/5G, a gateway or router"],
+    ["Data processing", "Stores data, analyses it and makes decisions", "Cloud platforms, local servers, an edge computer"],
+    ["User interface", "Shows information and lets people give commands", "Mobile app, web dashboard, SMS alert, voice assistant"],
+  ]}
+/>
+
+### Things: sensors and actuators
+
+A **sensor** measures something, such as temperature, light or motion. It turns the measurement into an electrical signal.
+
+An <Term id="actuator">actuator</Term> does the opposite. It receives a command and does something physical, such as turning a motor, opening a valve or lighting an LED.
+
+Most things also contain a <Term id="microcontroller">microcontroller</Term>. It reads the sensor, runs simple rules and talks to the network.
+
+### Connectivity
+
+Things rarely connect straight to the internet. They usually talk to a nearby <Term id="gateway">gateway</Term> using a short-range radio such as Wi-Fi, Bluetooth or Zigbee.
+
+The gateway then forwards the data to the internet. Each step follows a <Term id="protocol">protocol</Term>, an agreed set of communication rules.
+
+### Data processing
+
+Raw readings are just numbers. Processing turns them into useful decisions, such as "the room is too hot, switch on the fan".
+
+Processing can happen in the <Term id="cloud">cloud</Term>, far away, or close to the devices at the edge. Topic 1.4 compares these choices.
+
+### User interface
+
+The user interface is where people meet the system. It shows live data and history, sends alerts and lets users give commands.
+
+## Real-life example: FASTag
+
+<Callout kind="example" title="FASTag at a toll plaza">
+A FASTag sticker on a car's windscreen holds an RFID tag (the thing). A reader at the toll plaza reads it by radio (connectivity). The bank's system checks the account and deducts the toll (data processing). You get an SMS or app notification within seconds (user interface).
+</Callout>
+
+All four blocks are present. Take any one away and the service stops working.
+
+## Advantages and limitations
+
+**Advantages**
+
+- **Automation:** devices act on their own, saving time and effort.
+- **Better decisions:** real data replaces guesswork, for example watering crops only when the soil is dry.
+- **Remote control:** you can monitor and control things from anywhere.
+- **Efficiency:** less wasted electricity, water and fuel.
+- **New services:** remote health monitoring, smart parking and cashless tolls.
+
+**Limitations**
+
+- **Security and privacy:** connected devices can be hacked, and they collect personal data.
+- **Interoperability:** devices from different makers may not work together.
+- **Dependence on the network:** many services stop when the connection fails.
+- **Power:** battery-powered devices need careful energy saving.
+- **Cost and complexity:** large systems are expensive to set up and maintain.
+
+<KeyPoints
+  points={[
+    "IoT connects physical things to the internet so they can sense, share data and act.",
+    "Kevin Ashton coined the term “Internet of Things” in 1999.",
+    "The four building blocks are things, connectivity, data processing and user interface.",
+    "Sensors measure the world; actuators act on it.",
+    "Data flows from things to users, and commands flow back to the things.",
+  ]}
+/>
+
+<ExamTip
+  question="What is the Internet of Things? Explain the components of an IoT system."
+  short="The Internet of Things is a network of physical objects with sensors, processors and network connections that collect and exchange data over the internet. An IoT system has four building blocks: things (sensors and actuators), connectivity, data processing and a user interface."
+  long={[
+    "Define IoT in simple words and quote the ITU-T Y.2060 definition.",
+    "Give a short history: 1982 Coke machine, 1999 Kevin Ashton names IoT.",
+    "Draw the block diagram: things → connectivity → data processing → user interface.",
+    "Explain each block with two examples.",
+    "Describe one complete example, such as FASTag or a smart home.",
+    "List three advantages and three limitations.",
+  ]}
+/>

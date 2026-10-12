@@ -12,6 +12,165 @@ export interface GlossaryTerm {
 
 export const glossary: GlossaryTerm[] = [
   {
+    id: "adc",
+    term: "ADC (analog-to-digital converter)",
+    definition:
+      "A circuit that turns a voltage into a number. A 10-bit ADC gives numbers from 0 to 1023.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "analog-signal",
+    term: "Analog signal",
+    definition:
+      "A signal that can take any value in a range, such as a voltage that rises smoothly as a room warms up.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "cloudlet",
+    term: "Cloudlet",
+    definition:
+      "A small cloud data centre placed at the edge of the network, close to users. Cloudlets form the peripheral cloud.",
+    topic: "edge-fog-cloud",
+  },
+  {
+    id: "digital-signal",
+    term: "Digital signal",
+    definition: "A signal with only a few fixed values, usually two: HIGH (1) and LOW (0).",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "duty-cycle",
+    term: "Duty cycle",
+    definition:
+      "The share of time a device is awake or a signal is on. A node awake 1 second in every 100 has a 1% duty cycle.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "energy-harvesting",
+    term: "Energy harvesting",
+    definition:
+      "Collecting small amounts of energy from the surroundings, such as light, heat or vibration, to power or recharge a device.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "firmware",
+    term: "Firmware",
+    definition:
+      "The program stored inside a device's chip that controls how the device works. Updating it can fix bugs or security holes.",
+    topic: "single-board-computers",
+  },
+  {
+    id: "fog-computing",
+    term: "Fog computing",
+    definition:
+      "Processing data on local servers between the devices and the cloud, such as in a factory or at a mobile tower.",
+    topic: "edge-fog-cloud",
+  },
+  {
+    id: "gpio",
+    term: "GPIO (general-purpose input/output)",
+    definition:
+      "Pins on a board that a program can set HIGH or LOW, or read, to connect sensors, buttons and LEDs.",
+    topic: "single-board-computers",
+  },
+  {
+    id: "interoperability",
+    term: "Interoperability",
+    definition:
+      "The ability of devices from different makers to work together because they follow the same standards and protocols.",
+    topic: "iot-characteristics",
+  },
+  {
+    id: "ipv6",
+    term: "IPv6",
+    definition:
+      "The newer version of the Internet Protocol. Its 128-bit addresses are enough to give every IoT device its own address.",
+    topic: "iot-characteristics",
+  },
+  {
+    id: "open-source-hardware",
+    term: "Open-source hardware",
+    definition:
+      "Hardware whose design files are published so anyone can study, change, make and sell it, as long as they follow the licence.",
+    topic: "single-board-computers",
+  },
+  {
+    id: "pwm",
+    term: "PWM (pulse-width modulation)",
+    definition:
+      "Switching a pin on and off very quickly. The share of on-time sets the average power, for example how bright an LED looks.",
+    topic: "single-board-computers",
+  },
+  {
+    id: "quantisation",
+    term: "Quantisation",
+    definition:
+      "Rounding a smooth value to the nearest step an ADC can represent. The small difference is called quantisation error.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "rfid",
+    term: "RFID",
+    definition:
+      "Radio-frequency identification: tags that a reader can identify by radio without touching them. FASTag uses RFID.",
+    topic: "iot-characteristics",
+  },
+  {
+    id: "sampling-rate",
+    term: "Sampling rate",
+    definition:
+      "How often a sensor value is measured, for example 10 times per second (10 Hz) or once a minute.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "scalability",
+    term: "Scalability",
+    definition:
+      "The ability of a system to keep working well as it grows from a few devices to thousands or millions.",
+    topic: "iot-characteristics",
+  },
+  {
+    id: "sbc",
+    term: "Single-board computer (SBC)",
+    definition:
+      "A complete computer on one circuit board, with processor, memory and ports, that can run an operating system. The Raspberry Pi is one.",
+    topic: "single-board-computers",
+  },
+  {
+    id: "smart-grid",
+    term: "Smart grid",
+    definition:
+      "An electricity network that uses sensors, smart meters and two-way communication to balance supply and demand.",
+    topic: "iot-infrastructure",
+  },
+  {
+    id: "telematics",
+    term: "Telematics",
+    definition:
+      "Collecting and sending data from vehicles, such as location, speed and engine health, over a mobile network.",
+    topic: "iot-infrastructure",
+  },
+  {
+    id: "transceiver",
+    term: "Transceiver",
+    definition: "A single part that can both transmit and receive radio signals.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "unique-identifier",
+    term: "Unique identifier",
+    definition:
+      "A name or number, such as an IP address, MAC address or RFID code, that belongs to exactly one device.",
+    topic: "iot-characteristics",
+  },
+  {
+    id: "wearable",
+    term: "Wearable",
+    definition:
+      "A small IoT device worn on the body, such as a fitness band or smartwatch, that tracks things like steps and heart rate.",
+    topic: "iot-infrastructure",
+  },
+  {
     id: "actuator",
     term: "Actuator",
     definition:

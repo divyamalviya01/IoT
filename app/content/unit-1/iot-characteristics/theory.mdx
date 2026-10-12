@@ -1,0 +1,122 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+The characteristics of IoT are the features that make an IoT system different from an ordinary computer network: it is huge, mixed, mostly automatic, and made of small devices with limited power.
+</Callout>
+
+## Why IoT needs its own list of features
+
+An office network connects a few hundred computers that people use directly. An IoT network may connect millions of small devices that work on their own, outdoors, on batteries.
+
+That difference changes how the network must behave. The devices must set themselves up, adapt to changes, speak common protocols and save energy.
+
+## The characteristics at a glance
+
+<CompareTable
+  caption="Characteristics of IoT"
+  columns={["Characteristic", "What it means", "Example"]}
+  rows={[
+    ["Dynamic and self-adapting", "Devices change their behaviour when conditions change", "A security camera switches to night mode when it gets dark"],
+    ["Self-configuring", "Devices set themselves up with little or no human help", "A new smart bulb joins the home network and appears in the app"],
+    ["Interoperable communication protocols", "Devices use standard protocols, so different makers' devices can talk", "A sensor from one company sends MQTT messages to another company's cloud"],
+    ["Unique identity", "Every device has its own address or ID", "An IP address, a MAC address or an RFID code"],
+    ["Integrated into the information network", "Devices are part of the wider internet and share data with other systems", "A weather station's data is used by a farm app and a flood-warning service"],
+    ["Connectivity", "Devices stay connected so data can flow at any time", "A smart meter reports every 15 minutes over a mobile network"],
+    ["Scalability", "The system keeps working as it grows from tens to millions of devices", "A city adds 10,000 new street-light controllers"],
+    ["Heterogeneity", "Devices differ in hardware, software and networks", "Zigbee bulbs, Wi-Fi cameras and LoRa water meters in one system"],
+    ["Intelligence", "The system turns data into decisions, sometimes automatically", "An irrigation system waters only when the soil is dry and no rain is forecast"],
+    ["Limited energy and resources", "Many devices run on batteries with little memory and processing power", "A soil sensor must work for two years on one battery"],
+    ["Security and privacy", "Devices and data must be protected from attackers", "Encrypted messages and password changes on first use"],
+  ]}
+/>
+
+## The five core characteristics in detail
+
+Many textbooks highlight five core characteristics. These often come up in exams.
+
+### Dynamic and self-adapting
+
+IoT devices react to changes around them. They can change how often they report, which mode they work in or which network they use.
+
+A surveillance camera is a good example. It uses normal colour images in daylight and switches to infrared at night. It may also send video only when it detects movement.
+
+### Self-configuring
+
+Setting up millions of devices by hand is impossible. So IoT devices configure themselves: they join a network, get an address and download updates on their own.
+
+When you add a new smart plug, the app finds it, connects it to Wi-Fi and installs the latest <Term id="firmware">firmware</Term> with only a few taps.
+
+### Interoperable communication protocols
+
+<Term id="interoperability">Interoperability</Term> means devices from different makers can work together. This is only possible when they follow the same standard <Term id="protocol">protocols</Term>, such as MQTT, CoAP or HTTP.
+
+Without common protocols, a light switch from one company could not control a bulb from another.
+
+### Unique identity
+
+Every IoT device needs a <Term id="unique-identifier">unique identifier</Term>, so that data comes from, and commands go to, the right device.
+
+Common identifiers are IP addresses, MAC addresses and <Term id="rfid">RFID</Term> codes. <Term id="ipv6">IPv6</Term> uses 128-bit addresses, which allows about 3.4 × 10³⁸ addresses. That is enough for every device on Earth many times over.
+
+### Integrated into the information network
+
+IoT devices do not work alone. They are part of the internet, so their data can be found, shared and combined with data from other systems.
+
+For example, a rain gauge on a farm can share its readings with a district flood-warning service and a crop-insurance app at the same time.
+
+## The other characteristics
+
+- **Connectivity:** data is only useful if it can travel. Devices must stay connected, even when they move or the signal is weak.
+- <Term id="scalability">**Scalability:**</Term> the design must handle growth in devices, data and users without slowing down.
+- **Heterogeneity:** a real system mixes devices, operating systems and radios. The platform must handle them all.
+- **Intelligence:** sensing is not enough. The system must turn raw data into decisions, using rules or machine learning.
+- **Limited energy and resources:** most devices have small batteries, little memory and slow processors. Software must be lightweight.
+- **Security and privacy:** devices often sit in public places and handle personal data, so they must be protected.
+
+<Callout kind="remember">
+The core five are easy to remember as the life of a device: it **adapts** to changes, **configures** itself, **speaks** a common language, **has** a unique name, and **joins** the wider network.
+</Callout>
+
+## Real-life example: smart street lights
+
+<Callout kind="example" title="Smart street lights in a smart city">
+Thousands of street lights (scalability) from different suppliers (heterogeneity) each have a unique ID. They dim automatically when the road is empty (self-adapting) and new poles join the network on their own (self-configuring). They report faults over standard protocols (interoperability) to the city's control centre, which also uses the data for traffic planning (integration).
+</Callout>
+
+## Challenges these characteristics create
+
+Each characteristic brings a challenge that engineers must solve.
+
+<CompareTable
+  caption="Characteristics and the challenges they bring"
+  columns={["Characteristic", "Challenge"]}
+  rows={[
+    ["Scalability", "Huge amounts of data to move, store and analyse"],
+    ["Heterogeneity", "Hard to make every kind of device work together"],
+    ["Limited energy and resources", "Little room for strong security or complex software"],
+    ["Self-configuring", "A device that joins automatically could be an attacker's device"],
+    ["Connectivity", "Services fail when the network is weak or down"],
+  ]}
+/>
+
+<KeyPoints
+  points={[
+    "IoT systems are large, mixed, mostly automatic and made of small, low-power devices.",
+    "The five core characteristics: dynamic and self-adapting, self-configuring, interoperable protocols, unique identity, and integrated into the information network.",
+    "Other characteristics include connectivity, scalability, heterogeneity, intelligence, limited energy and security.",
+    "IPv6 provides enough unique addresses for every IoT device.",
+    "Each characteristic brings a challenge, such as data volume, compatibility or security.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the characteristics of IoT."
+  short="The main characteristics of IoT are that its devices are dynamic and self-adapting, self-configuring, use interoperable communication protocols, have unique identities and are integrated into the information network. IoT systems are also scalable and heterogeneous, and their devices have limited energy."
+  long={[
+    "Explain why IoT needs special characteristics compared with an office network.",
+    "Explain the five core characteristics, each with one example.",
+    "Briefly add connectivity, scalability, heterogeneity, intelligence, limited energy and security.",
+    "Give one complete example, such as smart street lights, that shows several characteristics.",
+    "End with the challenges these characteristics create.",
+  ]}
+/>

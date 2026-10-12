@@ -49,14 +49,17 @@ export function useSimClock({
   tickRef.current = onTick;
   resetRef.current = onReset;
 
+  /** Advances simulated time. Returns false only once maxTimeMs is reached. */
   const advance = useCallback(
     (dtMs: number) => {
-      let dt = dtMs;
+      if (maxTimeMs !== undefined && time.current >= maxTimeMs) return false;
+      let dt = Math.max(0, dtMs);
       if (maxTimeMs !== undefined) dt = Math.min(dt, maxTimeMs - time.current);
-      if (dt <= 0) return false;
-      time.current += dt;
-      tickRef.current(dt, time.current);
-      setTimeMs(time.current);
+      if (dt > 0) {
+        time.current += dt;
+        tickRef.current(dt, time.current);
+        setTimeMs(time.current);
+      }
       return maxTimeMs === undefined || time.current < maxTimeMs;
     },
     [maxTimeMs],
@@ -67,7 +70,9 @@ export function useSimClock({
     let frame = 0;
     let last = performance.now();
     const loop = (now: number) => {
-      const real = Math.min(now - last, MAX_FRAME_MS);
+      // A frame's timestamp can be slightly earlier than the moment the loop
+      // started, so the first step may come out negative: treat it as zero.
+      const real = Math.min(Math.max(0, now - last), MAX_FRAME_MS);
       last = now;
       if (advance(real * speed)) {
         frame = requestAnimationFrame(loop);

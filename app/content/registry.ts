@@ -705,7 +705,7 @@ export const labs: Lab[] = [
     topic: "1.1",
     phase: 1,
     aim: "To assemble the components of an IoT system in the correct order and observe data flowing end to end.",
-    tech: ["React Flow", "Motion"],
+    tech: ["Motion"],
   },
   {
     id: "L02",
@@ -723,7 +723,7 @@ export const labs: Lab[] = [
     topic: "1.4",
     phase: 1,
     aim: "To compare latency, bandwidth and cost when IoT data is processed at the edge, in the fog and in the cloud.",
-    tech: ["three.js", "Recharts"],
+    tech: ["Motion", "Recharts"],
   },
   {
     id: "L04",
