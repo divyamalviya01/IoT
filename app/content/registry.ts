@@ -722,7 +722,7 @@ export const labs: Lab[] = [
     title: "Edge vs fog vs cloud",
     topic: "1.4",
     phase: 1,
-    aim: "To compare latency, bandwidth and cost when IoT data is processed at the edge, in the fog and in the cloud.",
+    aim: "To compare response time and internet bandwidth when IoT data is processed at the edge, in the fog and in the cloud.",
     tech: ["Motion", "Recharts"],
   },
   {

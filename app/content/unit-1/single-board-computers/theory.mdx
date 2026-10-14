@@ -1,0 +1,155 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Microcontroller boards such as Arduino run one program directly on a small chip; single-board computers such as the Raspberry Pi are complete computers that run an operating system. Open-source hardware publishes its designs so anyone can build on them.
+</Callout>
+
+## Two kinds of boards
+
+IoT projects use two kinds of development boards. They look similar, but they work very differently.
+
+A **microcontroller board** is built around a <Term id="microcontroller">microcontroller</Term>: a processor, memory and input/output pins on one chip. It has no operating system. It runs a single program, called a sketch on Arduino, from the moment it gets power.
+
+A <Term id="sbc">single-board computer (SBC)</Term> is a complete computer on one circuit board. It has a powerful processor, gigabytes of memory and ports for a screen, keyboard and network. It runs an operating system such as Linux, so it can run many programs at once.
+
+<CompareTable
+  caption="Microcontroller board vs single-board computer"
+  columns={["Feature", "Microcontroller board", "Single-board computer"]}
+  rows={[
+    ["Example", "Arduino Uno, ESP32", "Raspberry Pi, BeagleBone Black"],
+    ["Brain", "Microcontroller (processor, memory and I/O on one chip)", "System on a chip (SoC) with a fast processor, plus separate RAM"],
+    ["Operating system", "None: runs one program", "Yes: usually Linux"],
+    ["Memory", "Kilobytes", "Gigabytes"],
+    ["Start-up time", "Instant", "Tens of seconds to boot"],
+    ["Power use", "Milliwatts: can run on batteries for months", "Watts: usually needs a power adapter"],
+    ["Timing control", "Very precise, good for real-time control", "Less precise because the OS shares the processor"],
+    ["Analog inputs", "Usually built in (ADC)", "Often none: needs an external ADC"],
+    ["Programming", "C/C++ in the Arduino IDE, or MicroPython", "Python, C, Java, Node.js and more"],
+    ["Best for", "Reading sensors and simple control", "Gateways, cameras, AI, web servers and dashboards"],
+  ]}
+/>
+
+<Callout kind="remember">
+A microcontroller board is a **worker**: it does one job reliably on very little power. A single-board computer is a **manager**: it runs many programs, talks to the internet and handles heavy work.
+</Callout>
+
+## Popular boards
+
+<CompareTable
+  caption="Common boards used in IoT"
+  columns={["Board", "Type", "Processor", "Memory", "Wireless", "Pins", "Cost"]}
+  rows={[
+    ["Arduino Uno R3", "Microcontroller board", "ATmega328P, 8-bit, 16 MHz", "32 KB flash, 2 KB RAM", "None built in", "14 digital (6 PWM), 6 analog", "Low"],
+    ["NodeMCU (ESP8266)", "Microcontroller board", "Tensilica, 32-bit, 80–160 MHz", "Tens of KB RAM, 4 MB flash", "Wi-Fi", "About 11 digital, 1 analog", "Very low"],
+    ["ESP32", "Microcontroller board", "Dual-core, 32-bit, up to 240 MHz", "520 KB RAM", "Wi-Fi and Bluetooth/BLE", "About 30 GPIO, many analog", "Very low"],
+    ["Raspberry Pi 4", "Single-board computer", "Quad-core ARM Cortex-A72", "1–8 GB RAM", "Wi-Fi, Bluetooth, Ethernet", "40-pin GPIO, no analog", "Medium"],
+    ["BeagleBone Black", "Single-board computer", "ARM Cortex-A8, 1 GHz", "512 MB RAM, 4 GB storage", "Ethernet", "2 × 46-pin headers, 7 analog", "Medium"],
+    ["NVIDIA Jetson Nano", "Single-board computer for AI", "Quad-core ARM + 128-core GPU", "4 GB RAM", "Ethernet", "40-pin header", "High"],
+  ]}
+  note="Specifications are for common versions. Newer models exist, such as the Raspberry Pi 5 and the Jetson Orin Nano. Prices change often, so only relative cost is shown."
+/>
+
+### How to choose a board
+
+- **Reading a sensor and switching a relay?** Use a microcontroller board. It is cheap, low-power and instant.
+- **Need Wi-Fi or Bluetooth on a small budget?** Use an ESP32 or ESP8266 board.
+- **Need a camera, a database, a web dashboard or a gateway?** Use a Raspberry Pi or another SBC.
+- **Running AI models, such as recognising objects?** Use a board with a GPU, such as a Jetson.
+- **Many real projects use both:** microcontrollers read the sensors and a Raspberry Pi acts as the gateway.
+
+## Pins: how boards talk to sensors
+
+Both kinds of boards have <Term id="gpio">GPIO</Term> pins. A program can set a pin HIGH or LOW to switch an LED, or read it to check a button.
+
+Some pins have extra jobs:
+
+- **Analog input pins** read a voltage through the board's ADC. The Arduino Uno's six analog pins give numbers from 0 to 1023.
+- <Term id="pwm">**PWM**</Term> pins switch on and off very quickly to control LED brightness or motor speed. On the Uno these are pins 3, 5, 6, 9, 10 and 11, marked with a ~.
+- **Communication pins** support serial (UART), I²C and SPI, which are used by many sensors and displays.
+
+<Callout kind="note" title="Mind the voltage">
+Arduino Uno pins work at 5 V. Raspberry Pi and ESP32 pins work at 3.3 V. Connecting a 5 V signal to a 3.3 V pin can damage the board.
+</Callout>
+
+## What is open-source hardware?
+
+<Term id="open-source-hardware">Open-source hardware</Term> is hardware whose design files are published. Anyone can study, change, make and sell the design, as long as they follow its licence.
+
+The design files include circuit diagrams (schematics), circuit board layouts and the list of parts (bill of materials). The Open Source Hardware Association (OSHWA) maintains the definition and certifies open designs.
+
+Open hardware uses licences, just like open-source software:
+
+- **CERN Open Hardware Licence (CERN-OHL v2):** written for hardware, in strongly reciprocal, weakly reciprocal and permissive versions.
+- **Creative Commons (CC BY-SA):** used for Arduino's board designs.
+- **TAPR Open Hardware License:** an older hardware licence.
+
+<CompareTable
+  caption="Is it open hardware?"
+  columns={["Board", "Open hardware?", "Why"]}
+  rows={[
+    ["Arduino Uno", "Yes", "Its design files are published under CC BY-SA. The name “Arduino” is a trademark, so copies must use a different name."],
+    ["BeagleBone Black", "Yes", "Its full design files are published, so anyone can build the board."],
+    ["Raspberry Pi", "Not fully", "Some diagrams are published, but the full board design and the main chip are not open."],
+  ]}
+/>
+
+Even fully open boards usually use closed chips. The microcontroller itself is designed and sold by a chip company.
+
+### Benefits and limits of open hardware
+
+**Benefits**
+
+- Low cost, because many makers can produce compatible boards.
+- Easy to learn from, because every detail of the design is visible.
+- Easy to customise for a special project.
+- A large community shares code, examples and help.
+
+**Limits**
+
+- The chips on the board are usually still closed.
+- Quality varies between makers of compatible boards.
+- Trademarks still protect brand names.
+
+## Real-life example: tinkering labs
+
+<Callout kind="example" title="Atal Tinkering Labs">
+Atal Tinkering Labs in Indian schools give students kits with boards like Arduino and Raspberry Pi. A typical project uses an Arduino to read a soil sensor and a Raspberry Pi to show the readings on a web page.
+</Callout>
+
+## Advantages and limitations of development boards
+
+**Advantages**
+
+- Cheap and easy to start with.
+- Large libraries of ready-made code for sensors and displays.
+- Fast to build and test an idea (prototyping).
+- Huge online communities and tutorials.
+
+**Limitations**
+
+- Development boards are larger and costlier than a custom board made for one product.
+- Hobby boards are not always designed for harsh industrial conditions.
+- SBCs use more power and can corrupt their memory card if power is cut suddenly.
+
+<KeyPoints
+  points={[
+    "A microcontroller board runs one program with no operating system; an SBC is a full computer running an OS.",
+    "Arduino Uno: ATmega328P at 16 MHz, 32 KB flash, 2 KB RAM, 14 digital and 6 analog pins.",
+    "ESP32 adds Wi-Fi and Bluetooth; the Raspberry Pi runs Linux and has a 40-pin GPIO header.",
+    "Arduino pins work at 5 V; Raspberry Pi and ESP32 pins work at 3.3 V.",
+    "Open-source hardware publishes its design files under licences such as CERN-OHL and CC BY-SA.",
+  ]}
+/>
+
+<ExamTip
+  question="Differentiate between a microcontroller board and a single-board computer. What is open-source hardware?"
+  short="A microcontroller board, such as the Arduino Uno, runs one program directly on a microcontroller with no operating system and uses very little power. A single-board computer, such as the Raspberry Pi, is a full computer that runs an operating system. Open-source hardware publishes its design files so anyone can study, change and make it."
+  long={[
+    "Define a microcontroller board and a single-board computer.",
+    "Give a comparison table: OS, memory, power, timing, analog inputs, uses.",
+    "Describe two boards of each kind with their key specifications.",
+    "Explain how to choose a board for a project.",
+    "Define open-source hardware, name two licences and say which boards are open.",
+    "List the benefits and limits of open hardware.",
+  ]}
+/>

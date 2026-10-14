@@ -24,6 +24,8 @@ interface ChartCardProps<Row extends Record<string, unknown>> {
   children: ReactNode;
   emptyText?: string;
   className?: string;
+  /** Drop the card border and padding, for charts inside an existing panel */
+  bare?: boolean;
 }
 
 /** Series colour by fixed slot order. Never cycle: past 8 series, regroup. */
@@ -60,13 +62,20 @@ export function ChartCard<Row extends Record<string, unknown>>({
   children,
   emptyText = "No data yet.",
   className,
+  bare = false,
 }: ChartCardProps<Row>) {
   const hydrated = useHydrated();
   const [showTable, setShowTable] = useState(false);
   const tableId = useId();
 
   return (
-    <figure className={cn("print-avoid-break grid grid-cols-1 gap-3 rounded-lg border border-line bg-surface p-4", className)}>
+    <figure
+      className={cn(
+        "print-avoid-break grid grid-cols-1 gap-3",
+        !bare && "rounded-lg border border-line bg-surface p-4",
+        className,
+      )}
+    >
       <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
         <figcaption className="min-w-0 flex-1">
           <span className="block font-bold">{title}</span>

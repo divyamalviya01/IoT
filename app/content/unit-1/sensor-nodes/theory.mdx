@@ -127,7 +127,7 @@ An ADC with **n bits** has **2ⁿ steps**. The size of one step is the reference
   <LineChart data={adcDemo} margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
     <CartesianGrid {...chartStyle.grid} />
     <XAxis dataKey="t" {...chartStyle.axis} />
-    <YAxis {...chartStyle.axis} domain={[0, 5]} unit=" V" width={56} />
+    <YAxis {...chartStyle.axis} domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]} unit=" V" width={56} />
     <Tooltip cursor={chartStyle.cursor} content={<ChartTooltip labelPrefix="Sample " units={{ analog: "V", digital: "V" }} />} />
     <Line type="monotone" dataKey="analog" name="Analog voltage" stroke={seriesColor(0)} strokeWidth={2} dot={false} isAnimationActive={false} />
     <Line type="stepAfter" dataKey="digital" name="3-bit ADC value" stroke={seriesColor(1)} strokeWidth={2} dot={false} isAnimationActive={false} />

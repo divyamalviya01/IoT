@@ -1,0 +1,124 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { AppWindow, Cloud, Cpu, Globe, Router } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+An IoT infrastructure is the complete chain of devices, gateways, networks, cloud platforms and applications that makes an IoT service work.
+</Callout>
+
+## The reference infrastructure
+
+Smart homes, smart grids and connected cars look very different. Underneath, they share the same five-stage structure.
+
+<FlowDiagram
+  nodes={[
+    { label: "Devices", sub: "Sense and act", icon: Cpu, tone: "u1" },
+    { label: "Gateways", sub: "Collect and translate", icon: Router, tone: "u2" },
+    { label: "Network", sub: "Carry data far", icon: Globe, tone: "neutral" },
+    { label: "Cloud platform", sub: "Store and analyse", icon: Cloud, tone: "u3" },
+    { label: "Applications", sub: "Show and control", icon: AppWindow, tone: "brand" },
+  ]}
+  caption="The reference IoT infrastructure. Every example on this page fits these five stages."
+/>
+
+<CompareTable
+  caption="The five stages"
+  columns={["Stage", "Job", "Examples"]}
+  rows={[
+    ["Devices", "Sense the physical world and act on it", "Sensors, smart meters, wearables, actuators"],
+    ["Gateways", "Collect data from nearby devices and pass it on, often translating protocols", "Wi-Fi router, smart-home hub, data concentrator, phone"],
+    ["Network", "Carry data over long distances to the internet", "Broadband, 4G/5G, RF mesh, satellite"],
+    ["Cloud platform", "Store, process and analyse data; manage devices", "Utility data centre, carmaker's cloud, IoT platforms"],
+    ["Applications", "Give people information and control", "Mobile apps, dashboards, billing portals, alerts"],
+  ]}
+/>
+
+## Smart home
+
+A smart home connects lights, plugs, door locks, cameras and appliances. A Wi-Fi router or a smart-home hub acts as the gateway. Some hubs translate between Zigbee devices and Wi-Fi.
+
+You control everything from a phone app or by voice. Rules automate routines, such as switching off all lights when the door locks at night.
+
+## Smart grid
+
+A <Term id="smart-grid">smart grid</Term> adds sensors and two-way communication to the electricity network. Smart meters measure each home's use every few minutes.
+
+The meters send readings to a data concentrator, which forwards them to the electricity company. The company can read meters remotely, spot faults and outages quickly, and offer prepaid recharge through an app.
+
+<Callout kind="example" title="Smart meters in India">
+Indian electricity companies are replacing old meters with smart prepaid meters under national programmes. Consumers recharge like a mobile phone, and the company no longer needs a person to visit each home to read the meter.
+</Callout>
+
+## Connected cars
+
+A connected car has a telematics control unit with a mobile-network modem. This is called <Term id="telematics">telematics</Term>. It sends location, speed and engine health to the carmaker's cloud.
+
+Services include live navigation, automatic crash alerts, remote locking and software updates over the air. In India, the AIS-140 standard requires tracking devices and emergency buttons in public transport vehicles.
+
+## Wearables
+
+<Term id="wearable">Wearables</Term> are devices worn on the body, such as fitness bands and smartwatches. They measure steps, heart rate and sleep.
+
+A wearable usually has no internet connection of its own. It sends data by Bluetooth Low Energy to the user's phone, which acts as the gateway.
+
+## Supply chain and logistics
+
+Goods are tagged with RFID labels, GPS trackers and temperature loggers. Readers in warehouses and trucks record every movement.
+
+Companies can see where every shipment is and whether it was kept at the right temperature. India's eVIN network uses this idea to track vaccine stocks and cold-storage temperatures across the country.
+
+## All five examples side by side
+
+<CompareTable
+  caption="Examples mapped to the reference infrastructure"
+  columns={["Example", "Devices", "Gateway", "Network", "Cloud platform", "Application"]}
+  rows={[
+    ["Smart home", "Bulbs, plugs, door sensors", "Wi-Fi router or hub", "Home broadband", "Smart-home cloud", "Phone app, voice assistant"],
+    ["Smart grid", "Smart meters", "Data concentrator", "RF mesh or cellular", "Utility head-end and meter data system", "Billing portal, recharge app"],
+    ["Connected car", "GPS, engine and crash sensors", "Telematics unit in the car", "4G/5G", "Carmaker's cloud", "Driver app, emergency services"],
+    ["Wearable", "Heart-rate and motion sensors", "User's smartphone", "Mobile data or Wi-Fi", "Health cloud", "Fitness app, doctor's dashboard"],
+    ["Supply chain", "RFID tags, GPS, temperature loggers", "Readers and trackers", "Cellular or satellite", "Logistics platform", "Tracking dashboard, alerts"],
+  ]}
+/>
+
+<Callout kind="remember">
+To explain any IoT system in an exam, walk through the five stages: devices, gateway, network, cloud platform, application. This works for every example.
+</Callout>
+
+## Advantages and limitations of large IoT infrastructures
+
+**Advantages**
+
+- One reference structure fits many industries, so designs and skills can be reused.
+- Remote monitoring replaces manual visits, such as meter reading.
+- Data from many devices reveals patterns that single devices cannot show.
+- Services improve over time through software updates.
+
+**Limitations**
+
+- Many stages means many places where things can fail or be attacked.
+- Building and running the infrastructure is expensive.
+- Devices from different suppliers may not work together.
+- Services stop if the network or the cloud goes down.
+
+<KeyPoints
+  points={[
+    "Every IoT infrastructure has five stages: devices, gateways, network, cloud platform and applications.",
+    "In a smart grid, smart meters send readings through data concentrators to the utility.",
+    "Connected cars use a telematics unit with a mobile-network modem.",
+    "Wearables use the smartphone as their gateway over Bluetooth Low Energy.",
+    "Supply chains use RFID, GPS and temperature loggers to track goods.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain any two examples of IoT infrastructure with a neat diagram."
+  short="An IoT infrastructure has five stages: devices, gateways, network, cloud platform and applications. In a smart grid, smart meters send readings through data concentrators and an RF or cellular network to the utility's cloud, which drives billing apps. In a connected car, sensors feed a telematics unit that sends data over 4G to the carmaker's cloud and the driver's app."
+  long={[
+    "Define IoT infrastructure and draw the five-stage reference diagram.",
+    "Explain the job of each stage in one line.",
+    "Describe the first example, mapping its parts to the five stages.",
+    "Describe the second example in the same way.",
+    "Compare the two examples in a short table.",
+    "List two advantages and two limitations.",
+  ]}
+/>

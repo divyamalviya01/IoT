@@ -156,9 +156,9 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 
 | Lab | Title | Topic | Main tech |
 |---|---|---|---|
-| L01 | Build an IoT System | 1.1 | @xyflow/react, Motion |
+| L01 | Build an IoT System (slot-based chain builder) | 1.1 | Motion |
 | L02 | Sensor Node Simulator (ADC, thresholds, battery) | 1.3 | Motion, Recharts |
-| L03 | Edge vs Fog vs Cloud: Latency and Bandwidth | 1.4 | three.js, Recharts |
+| L03 | Edge vs Fog vs Cloud: Response Time and Bandwidth | 1.4 | Motion, Recharts |
 | L04 | Virtual Arduino and GPIO | 1.5 | SVG, Motion |
 | L05 | TCP vs UDP Packet Lab | 1.8 | Motion |
 | L06 | MQTT Broker Simulator (topics, wildcards, QoS, retained, LWT) | 1.9 | three.js, Motion |
@@ -247,38 +247,38 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 **Syllabus:** Introduction to IoT components, characteristics, IoT sensor nodes, edge computer, cloud and peripheral cloud, single board computers, open-source hardware, examples of IoT infrastructure.
 
 **1.1 Introduction to IoT and components**
-- [ ] Theory: definition, short history timeline (1982 CMU Coke machine → 1999 "Internet of Things" coined by Kevin Ashton → today), four building blocks (things/sensors, connectivity, data processing, user interface), table of component → role → example
-- [ ] Visualize (3D): smart home where clicking any component highlights it and explains its role, with packets flowing sensor → gateway → cloud → phone app
-- [ ] Lab **L01 Build an IoT System**: drag sensor, MCU, gateway, cloud and app blocks into a chain. The system comes alive only when the chain is valid, and hints explain mistakes.
+- [x] Theory: definition, short history timeline (1982 CMU Coke machine → 1999 "Internet of Things" coined by Kevin Ashton → today), four building blocks (things/sensors, connectivity, data processing, user interface), table of component → role → example
+- [x] Visualize (3D): smart home with a sensor, fan, Wi-Fi gateway, cloud and phone, colour-coded by building block; selecting a part explains it, readings flow up and a command flows back to spin the fan
+- [x] Lab **L01 Build an IoT System**: three scenarios (room cooling, irrigation, parking). Students tap or drag parts into six fixed slots (Sense → Process → Connect → Cloud → App → Act); the checker explains the first mistake and gives tips (for example LoRa instead of Wi-Fi for a field). A working system runs: the reading travels up and the command comes back to the actuator.
 
 **1.2 Characteristics of IoT**
-- [ ] Theory: dynamic and self-adapting, self-configuring, interoperable protocols, unique identity, integrated into the information network, scalability, heterogeneity, intelligence, energy limits, security (table with examples)
-- [ ] Visualize (2D): animated card per characteristic (for example, scalability shows nodes multiplying, unique identity shows IP/ID tags)
+- [x] Theory: dynamic and self-adapting, self-configuring, interoperable protocols, unique identity, integrated into the information network, scalability, heterogeneity, intelligence, energy limits, security (table with examples)
+- [x] Visualize (2D): animated card per characteristic (for example, scalability shows nodes multiplying, unique identity shows IP/ID tags)
 
 **1.3 IoT sensor nodes**
-- [ ] Theory: node anatomy (sensing unit + ADC, processing unit, transceiver, power unit/energy harvesting), sensor and actuator table (DHT11, LM35, PIR, HC-SR04, LDR, MQ-2, soil moisture, accelerometer), analog vs digital, sampling, duty cycling
-- [ ] Visualize (3D): exploded view of a sensor node. Layers separate on hover, and the data path animates from physical signal → ADC → MCU → radio.
-- [ ] Lab **L02 Sensor Node Simulator**: pick a sensor and change the environment, see the analog waveform become ADC samples (8/10/12-bit, sampling rate) that trigger an actuator at a threshold, plus a battery-life vs duty-cycle chart
+- [x] Theory: node anatomy (sensing unit + ADC, processing unit, transceiver, power unit/energy harvesting), sensor and actuator table (DHT11, LM35, PIR, HC-SR04, LDR, MQ-2, soil moisture, accelerometer), analog vs digital, sampling, duty cycling
+- [x] Visualize (3D): exploded sensor node (battery, sensor + ADC, microcontroller, radio) with a "Separate the layers" slider; a packet climbs from the heat signal through the ADC and MCU to the antenna
+- [x] Lab **L02 Sensor Node Simulator**: pick a sensor and change the environment, see the analog waveform become ADC samples (8/10/12-bit, sampling rate) that trigger an actuator at a threshold, plus a battery-life vs duty-cycle chart
 
 **1.4 Edge computer, cloud and peripheral cloud**
-- [ ] Theory: edge, fog, cloud and peripheral cloud (cloudlets at the network edge), comparison table (latency, bandwidth, compute, storage, examples), 3-tier diagram
-- [ ] Visualize (3D): stacked tiers (devices → edge → fog → cloud) with packets showing round-trip latency
-- [ ] Lab **L03 Edge vs Fog vs Cloud**: vary the number of devices, data rate and processing location, and watch live charts of latency, bandwidth use and cost. Scenario cards include "car braking must happen at the edge".
+- [x] Theory: edge, fog, cloud and peripheral cloud (cloudlets at the network edge), comparison table (latency, bandwidth, compute, storage, examples), 3-tier diagram
+- [x] Visualize (3D): stacked tiers (devices, edge gateway, fog rack, cloud); choosing where to process sends a packet up and back with its typical round-trip time
+- [x] Lab **L03 Edge vs Fog vs Cloud**: four scenario cards (car braking, factory vibration, CCTV people count, monthly energy report) with deadlines; vary devices, uplink and processing tier, and compare response time, deadline and internet data on live charts. Values are illustrative and labelled as such.
 
 **1.5 Single board computers and open-source hardware**
-- [ ] Theory: SBC vs microcontroller board, comparison table (Raspberry Pi, BeagleBone, Arduino Uno, ESP8266/ESP32, NodeMCU, Jetson Nano: CPU, RAM, GPIO, wireless, OS, power, price range), meaning and licences of open-source hardware (OSHW, CERN-OHL), benefits
-- [ ] Visualize (3D): interactive Raspberry Pi and Arduino Uno boards built from primitives. Hovering labels the parts (CPU, GPIO, USB, HDMI), alongside a GPIO pinout diagram.
-- [ ] Lab **L04 Virtual Arduino and GPIO**: virtual board with LED, push button and potentiometer, and ready-made sketches (Blink, Button→LED, analogRead) whose highlighted values (pin, delay, threshold) students can edit, plus a serial monitor. No free-form code execution.
+- [x] Theory: SBC vs microcontroller board, comparison table (Raspberry Pi, BeagleBone, Arduino Uno, ESP8266/ESP32, NodeMCU, Jetson Nano: CPU, RAM, GPIO, wireless, OS, power, price range), meaning and licences of open-source hardware (OSHW, CERN-OHL), benefits
+- [x] Visualize (3D): Raspberry Pi and Arduino Uno models built from primitives, with clickable, labelled parts, plus pin maps for the Pi 40-pin header and the Uno headers
+- [x] Lab **L04 Virtual Arduino and GPIO**: virtual Uno with LED, push button and potentiometer; four sketches (Blink, Button and LED, Potentiometer dimmer, Threshold alarm) with editable, validated values, an Upload step and a serial monitor. Shows what analogWrite() does on a pin without PWM. No free-form code execution.
 
 **1.6 Examples of IoT infrastructure**
-- [ ] Theory: smart home, smart grid, connected cars, wearables, supply chain/logistics, with a general reference infrastructure (devices → gateways → network → cloud platform → apps) in a table
-- [ ] Visualize (2D): animated infographic where each example highlights its path through the reference infrastructure
+- [x] Theory: smart home, smart grid, connected cars, wearables, supply chain/logistics, with a general reference infrastructure (devices → gateways → network → cloud platform → apps) in a table
+- [x] Visualize (2D): an example picker (smart home, smart grid, connected car, wearable, supply chain) drives a five-stage flow diagram; selecting a stage explains it for that example
 
 **Assessment and exit**
-- [ ] Quiz (8–10 MCQs) and viva (6–8 Q&A) for topics 1.1–1.6
-- [ ] Lab records for L01–L04 with auto-filled observation tables
-- [ ] Engine unit tests (L01 chain validation, L02 ADC/battery math, L03 latency model)
-- [ ] Glossary terms added. Typecheck, test and build pass.
+- [x] Quiz (8–10 MCQs) and viva (6–8 Q&A) for topics 1.1–1.6
+- [x] Lab records for L01–L04 with auto-filled observation tables
+- [x] Engine unit tests (L01 checker and rules, L02 ADC/battery maths, L03 latency model, L04 virtual Uno and sketches)
+- [x] Glossary terms added (23 new). Typecheck, test (62 tests) and build pass.
 
 ---
 
