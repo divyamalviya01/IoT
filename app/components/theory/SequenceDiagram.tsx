@@ -13,6 +13,8 @@ export interface SequenceMessage {
   reply?: boolean;
   /** Draw the message as lost on the way */
   lost?: boolean;
+  /** The message as it travels, e.g. HTTP text or XMPP XML, shown under the current step */
+  code?: string;
 }
 
 interface SequenceDiagramProps {
@@ -167,6 +169,15 @@ export function SequenceDiagram({
           "Press Next step to draw the first message."
         )}
       </p>
+
+      {current?.code && (
+        <pre
+          aria-label={`Contents of ${current.label}`}
+          className="-mt-1 max-h-64 overflow-auto rounded-lg border border-line bg-surface-2 p-3 text-[13px] leading-relaxed"
+        >
+          <code>{current.code}</code>
+        </pre>
+      )}
 
       <div className="flex flex-wrap gap-2" data-print-hide>
         <Button

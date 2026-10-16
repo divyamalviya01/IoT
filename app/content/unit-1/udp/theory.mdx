@@ -1,0 +1,123 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, SequenceDiagram, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+UDP sends packets straight away with no connection and no delivery checks, which makes it fast and light; TCP sets up a connection and guarantees every byte arrives in order, which costs time and extra messages.
+</Callout>
+
+## Two ways to deliver data
+
+The transport layer carries data between programs on two devices. It uses a <Term id="port">port</Term> number to find the right program, such as port 1883 for an MQTT broker.
+
+The internet offers two transport protocols, and they make opposite choices:
+
+- <Term id="udp">UDP</Term> (User Datagram Protocol) is like posting a postcard. You drop it in the box and hope it arrives.
+- <Term id="tcp">TCP</Term> (Transmission Control Protocol) is like a registered parcel with tracking. Every item is confirmed, and anything lost is sent again.
+
+## How UDP works
+
+UDP sends each message as a separate packet called a datagram. There is no setup and no reply.
+
+- **Connectionless:** the first datagram carries data immediately.
+- **No delivery guarantee:** lost datagrams are not resent.
+- **No ordering:** datagrams can arrive in a different order.
+- **Tiny header:** only 8 bytes.
+
+### The UDP header
+
+<CompareTable
+  caption="The 8-byte UDP header"
+  columns={["Field", "Size", "What it holds"]}
+  rows={[
+    ["Source port", "2 bytes", "The sender's port, so replies can come back"],
+    ["Destination port", "2 bytes", "The receiver's port, such as 5683 for CoAP"],
+    ["Length", "2 bytes", "Header plus data, in bytes"],
+    ["Checksum", "2 bytes", "Detects damaged datagrams (optional in IPv4, required in IPv6)"],
+  ]}
+/>
+
+## How TCP works
+
+TCP first opens a connection with a three-way <Term id="handshake">handshake</Term>. Then it numbers every byte, waits for an <Term id="acknowledgement">acknowledgement (ACK)</Term> and resends anything not acknowledged in time.
+
+Press **Next step** to see a TCP connection send one reading that gets lost once.
+
+<SequenceDiagram
+  caption="TCP: handshake, data, a loss and a retransmission"
+  participants={["Sensor", "Server"]}
+  messages={[
+    { from: "Sensor", to: "Server", label: "SYN", note: "The sensor asks to open a connection." },
+    { from: "Server", to: "Sensor", label: "SYN-ACK", reply: true, note: "The server agrees and acknowledges." },
+    { from: "Sensor", to: "Server", label: "ACK", note: "The connection is open. Three messages have passed and no data has moved yet." },
+    { from: "Sensor", to: "Server", label: "Data: 28.5 °C", lost: true, note: "The data segment is lost on the way." },
+    { from: "Sensor", to: "Server", label: "Data: 28.5 °C (again)", note: "No ACK arrived before the timer ran out, so TCP resends the same data." },
+    { from: "Server", to: "Sensor", label: "ACK", reply: true, note: "The server confirms it received the data. Delivery is guaranteed, but it took extra time and messages." },
+  ]}
+/>
+
+TCP also controls the flow of data so a fast sender does not swamp a slow receiver, and it slows down when the network is congested. Its header is at least 20 bytes.
+
+## TCP and UDP compared
+
+<CompareTable
+  caption="TCP vs UDP"
+  columns={["Feature", "TCP", "UDP"]}
+  rows={[
+    ["Connection", "Yes: three-way handshake first", "No: send immediately"],
+    ["Delivery", "Guaranteed: lost data is resent", "Not guaranteed: lost data stays lost"],
+    ["Order", "Data arrives in order", "Datagrams may arrive out of order"],
+    ["Header size", "20 bytes or more", "8 bytes"],
+    ["Speed", "Slower to start, waits for ACKs", "Fast, no waiting"],
+    ["Flow and congestion control", "Yes", "No"],
+    ["Used by", "HTTP, MQTT, XMPP, email", "CoAP, DNS, video calls, live streaming"],
+  ]}
+/>
+
+## When does IoT use UDP?
+
+UDP suits IoT when messages are small and frequent, and an occasional loss does not matter:
+
+- A temperature sensor sends a reading every 10 seconds. If one is lost, the next one arrives soon.
+- Battery devices save energy by skipping the handshake and ACKs.
+- CoAP runs over UDP and adds its own light reliability only for messages that need it.
+
+TCP suits IoT when every message matters, such as a payment, a firmware update or a command to unlock a door.
+
+<Callout kind="example" title="Live cricket on your phone">
+Video streaming and voice calls use UDP. A lost packet means a tiny glitch, which is better than the whole video pausing while TCP waits for a resend. IoT sensors that send frequent readings make the same trade-off.
+</Callout>
+
+## Advantages and limitations of UDP
+
+**Advantages**
+
+- Very small 8-byte header and no handshake, so less data and less energy.
+- No waiting for acknowledgements, so lower delay.
+- Supports broadcast and multicast: one packet can reach many devices.
+
+**Limitations**
+
+- Lost packets are not resent unless the application does it.
+- No ordering, flow control or congestion control.
+- Applications must handle any reliability they need themselves.
+
+<KeyPoints
+  points={[
+    "UDP is connectionless, unreliable and fast, with an 8-byte header.",
+    "TCP uses a three-way handshake (SYN, SYN-ACK, ACK), ACKs and retransmission to guarantee in-order delivery.",
+    "UDP header fields: source port, destination port, length, checksum (2 bytes each).",
+    "MQTT and HTTP run over TCP; CoAP runs over UDP.",
+    "IoT uses UDP for small, frequent readings where a lost packet is not serious.",
+  ]}
+/>
+
+<ExamTip
+  question="Differentiate between TCP and UDP. Why is UDP preferred in many IoT applications?"
+  short="TCP is connection-oriented and reliable: it uses a handshake, acknowledgements and retransmission, and has a 20-byte header. UDP is connectionless and unreliable but fast, with an 8-byte header. IoT often prefers UDP because readings are small and frequent, and skipping handshakes and ACKs saves time and battery."
+  long={[
+    "Explain the role of the transport layer and ports.",
+    "Describe UDP and draw its 8-byte header.",
+    "Describe TCP with a diagram of the three-way handshake and retransmission.",
+    "Give a comparison table of TCP and UDP.",
+    "Explain when IoT uses UDP and when it needs TCP, with examples.",
+  ]}
+/>

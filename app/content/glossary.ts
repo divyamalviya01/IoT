@@ -12,6 +12,216 @@ export interface GlossaryTerm {
 
 export const glossary: GlossaryTerm[] = [
   {
+    id: "acknowledgement",
+    term: "Acknowledgement (ACK)",
+    definition:
+      "A short reply that confirms a message arrived. If no ACK comes back in time, the sender can send the message again.",
+    topic: "udp",
+  },
+  {
+    id: "amqp",
+    term: "AMQP",
+    definition:
+      "Advanced Message Queuing Protocol: a messaging protocol for business systems that routes messages into queues through a broker.",
+    topic: "gateway-protocols",
+  },
+  {
+    id: "coap",
+    term: "CoAP",
+    definition:
+      "Constrained Application Protocol: a lightweight, web-like request–response protocol that runs over UDP, made for small devices.",
+    topic: "coap",
+  },
+  {
+    id: "dds",
+    term: "DDS",
+    definition:
+      "Data Distribution Service: a publish–subscribe standard without a central broker, used in robots, vehicles and defence systems.",
+    topic: "gateway-protocols",
+  },
+  {
+    id: "dtls",
+    term: "DTLS",
+    definition:
+      "Datagram TLS: the version of TLS encryption that works over UDP. CoAP uses it to secure messages.",
+    topic: "coap",
+  },
+  {
+    id: "encapsulation",
+    term: "Encapsulation",
+    definition:
+      "Wrapping data inside the headers of each protocol layer as it goes down the stack, like putting a letter in an envelope and then in a parcel.",
+    topic: "protocols-overview",
+  },
+  {
+    id: "federation",
+    term: "Federation",
+    definition:
+      "Servers run by different organisations connecting to each other, so users on one server can message users on another, like email.",
+    topic: "xmpp",
+  },
+  {
+    id: "handshake",
+    term: "Handshake",
+    definition:
+      "An exchange of messages that sets up a connection before data is sent. TCP uses a three-way handshake: SYN, SYN-ACK, ACK.",
+    topic: "udp",
+  },
+  {
+    id: "header",
+    term: "Header",
+    definition:
+      "Control information added in front of the data in a packet, such as addresses, ports and lengths.",
+    topic: "protocols-overview",
+  },
+  {
+    id: "jid",
+    term: "JID (Jabber ID)",
+    definition:
+      "The address of an XMPP user or device, written like user@domain/resource, for example sensor1@home.example/kitchen.",
+    topic: "xmpp",
+  },
+  {
+    id: "keep-alive",
+    term: "Keep-alive",
+    definition:
+      "Small messages sent regularly to show a connection is still working. MQTT clients send PINGREQ when they have nothing else to send.",
+    topic: "mqtt",
+  },
+  {
+    id: "last-will",
+    term: "Last Will and Testament (LWT)",
+    definition:
+      "A message an MQTT client leaves with the broker in advance. The broker publishes it if the client disconnects unexpectedly.",
+    topic: "mqtt",
+  },
+  {
+    id: "lwm2m",
+    term: "LwM2M",
+    definition:
+      "Lightweight M2M: a standard from OMA for managing IoT devices remotely, such as updating firmware or reading settings. It runs over CoAP.",
+    topic: "gateway-protocols",
+  },
+  {
+    id: "middleware",
+    term: "Middleware",
+    definition:
+      "Software that sits between devices and applications and handles common jobs such as messaging, device management and data storage.",
+    topic: "protocols-overview",
+  },
+  {
+    id: "modbus",
+    term: "Modbus",
+    definition:
+      "A simple industrial protocol from 1979 for reading and writing values (registers) in machines, over serial lines or TCP.",
+    topic: "gateway-protocols",
+  },
+  {
+    id: "observe",
+    term: "Observe (CoAP)",
+    definition:
+      "A CoAP option that lets a client register interest in a resource once and then receive a notification every time it changes.",
+    topic: "coap",
+  },
+  {
+    id: "polling",
+    term: "Polling",
+    definition:
+      "Asking a server again and again whether anything has changed. It is simple but wastes requests when nothing is new.",
+    topic: "http",
+  },
+  {
+    id: "port",
+    term: "Port",
+    definition:
+      "A number that identifies which program on a device should receive a message, such as 80 for HTTP or 1883 for MQTT.",
+    topic: "udp",
+  },
+  {
+    id: "qos",
+    term: "QoS (quality of service)",
+    definition:
+      "In MQTT, the delivery guarantee for a message: 0 at most once, 1 at least once, 2 exactly once.",
+    topic: "mqtt",
+  },
+  {
+    id: "rest",
+    term: "REST",
+    definition:
+      "A style of web API where each thing is a resource with its own URL, read and changed with standard HTTP methods such as GET and PUT.",
+    topic: "http",
+  },
+  {
+    id: "retained-message",
+    term: "Retained message",
+    definition:
+      "An MQTT message the broker keeps as the last known value of a topic and sends to every new subscriber straight away.",
+    topic: "mqtt",
+  },
+  {
+    id: "rtos",
+    term: "RTOS (real-time operating system)",
+    definition:
+      "A small operating system for microcontrollers that runs tasks on strict schedules, such as FreeRTOS or Zephyr.",
+    topic: "protocols-overview",
+  },
+  {
+    id: "stanza",
+    term: "Stanza",
+    definition:
+      "A single XML message in XMPP. There are three kinds: message, presence and iq (info/query).",
+    topic: "xmpp",
+  },
+  {
+    id: "status-code",
+    term: "Status code",
+    definition:
+      "A three-digit number in an HTTP response that says how the request went, such as 200 OK or 404 Not Found.",
+    topic: "http",
+  },
+  {
+    id: "tcp",
+    term: "TCP",
+    definition:
+      "Transmission Control Protocol: sets up a connection and makes sure every byte arrives, in order, resending anything lost.",
+    topic: "udp",
+  },
+  {
+    id: "topic",
+    term: "Topic (MQTT)",
+    definition:
+      "A text label such as home/kitchen/temperature that names what a message is about. Subscribers choose topics to receive.",
+    topic: "mqtt",
+  },
+  {
+    id: "udp",
+    term: "UDP",
+    definition:
+      "User Datagram Protocol: sends packets without a connection or delivery checks. It is fast and light, but lost packets stay lost.",
+    topic: "udp",
+  },
+  {
+    id: "webhook",
+    term: "Webhook",
+    definition:
+      "A URL a server calls when something happens, so the receiver gets updates without polling.",
+    topic: "http",
+  },
+  {
+    id: "wildcard",
+    term: "Wildcard (MQTT)",
+    definition:
+      "A symbol in an MQTT subscription that matches many topics: + matches one level and # matches all remaining levels.",
+    topic: "mqtt",
+  },
+  {
+    id: "xmpp",
+    term: "XMPP",
+    definition:
+      "Extensible Messaging and Presence Protocol: an XML-based chat protocol that devices can also use to message each other and share presence.",
+    topic: "xmpp",
+  },
+  {
     id: "adc",
     term: "ADC (analog-to-digital converter)",
     definition:

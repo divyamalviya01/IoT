@@ -1,0 +1,129 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, LayerStack, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+IoT protocols are the agreed rules devices use to talk, arranged in layers from the radio up to the application; IoT software is the code that runs on devices, gateways and servers to use them.
+</Callout>
+
+## Why protocols come in layers
+
+A <Term id="protocol">protocol</Term> is a set of rules for sending and understanding messages. Sending a sensor reading across the internet involves many jobs: choosing a radio channel, addressing the device, delivering the data and making sense of it.
+
+No single protocol does all of this. Instead, protocols are stacked in layers. Each layer does one job and uses the layer below it. This is called a protocol stack.
+
+Layers can be swapped independently. The same MQTT application can run over Wi-Fi, Ethernet or 4G without changing a line of the application.
+
+## The IoT protocol stack
+
+<LayerStack
+  caption="The IoT protocol stack. Select a layer to see what it does."
+  layers={[
+    { name: "Application layer", detail: "Gives meaning to the data and defines how devices and apps exchange messages.", items: ["MQTT", "CoAP", "HTTP", "XMPP", "AMQP", "DDS"] },
+    { name: "Transport layer", detail: "Carries data between programs on two devices, identified by port numbers. TCP is reliable; UDP is light and fast.", items: ["TCP", "UDP"] },
+    { name: "Network layer", detail: "Gives every device an address and finds a route across networks.", items: ["IPv4", "IPv6", "6LoWPAN", "RPL"] },
+    { name: "Link and physical layer", detail: "Sends bits over a wire or radio between neighbouring devices.", items: ["Wi-Fi", "Ethernet", "IEEE 802.15.4", "BLE", "LoRa", "4G/5G"] },
+  ]}
+/>
+
+<CompareTable
+  caption="Classic internet stack and a typical IoT stack"
+  columns={["Layer", "Classic internet (TCP/IP)", "Typical IoT"]}
+  rows={[
+    ["Application", "HTTP, SMTP (email), FTP", "MQTT, CoAP, HTTP, XMPP, AMQP, DDS"],
+    ["Transport", "TCP, UDP", "TCP (for MQTT, HTTP), UDP (for CoAP)"],
+    ["Network", "IPv4, IPv6", "IPv6, 6LoWPAN (IPv6 for small radios), RPL routing"],
+    ["Link / physical", "Ethernet, Wi-Fi", "IEEE 802.15.4, BLE, LoRa, Wi-Fi, cellular"],
+  ]}
+/>
+
+## Encapsulation: how layers wrap data
+
+When data goes down the stack, each layer adds its own <Term id="header">header</Term> in front of it. This is called <Term id="encapsulation">encapsulation</Term>. It is like putting a letter in an envelope, the envelope in a parcel, and the parcel in a delivery van.
+
+At the receiver, each layer removes its own header and passes the rest up.
+
+<CompareTable
+  caption="Sending the 4-byte reading “28.5” with MQTT over Wi-Fi"
+  columns={["Layer", "Adds", "Size added"]}
+  rows={[
+    ["Application (MQTT)", "Message type, length and the topic “home/temp”", "13 bytes"],
+    ["Transport (TCP)", "Ports, sequence number, flags", "20 bytes"],
+    ["Network (IPv4)", "Source and destination addresses", "20 bytes"],
+    ["Link (Wi-Fi)", "Radio addresses and an error check", "About 36 bytes"],
+  ]}
+  note="About 93 bytes travel over the air to carry 4 bytes of data. Exact sizes vary with options."
+/>
+
+<Callout kind="remember">
+Headers are overhead: they are needed, but they are not your data. Small sensor readings can be smaller than their headers, which is why IoT protocols try to keep headers short.
+</Callout>
+
+## Why IoT needs its own protocols
+
+Web protocols were designed for powerful computers on fast, reliable links. IoT devices are different:
+
+- **Small memory and slow processors:** protocols must be simple to implement.
+- **Batteries:** every extra byte sent costs energy, so headers must be short.
+- **Lossy radio links:** packets go missing more often than on a cable.
+- **Huge numbers of devices:** one server may talk to millions of devices.
+
+So IoT uses lightweight protocols such as MQTT (2-byte minimum header) and CoAP (4-byte header). 6LoWPAN shrinks the 40-byte IPv6 header to a few bytes for tiny radios.
+
+## IoT software
+
+Protocols need software to run them. IoT software works at three places: on the device, on the gateway and in the cloud.
+
+<CompareTable
+  caption="Software used in IoT systems"
+  columns={["Where", "Software", "Examples"]}
+  rows={[
+    ["Device", "Firmware: the program on the microcontroller", "Arduino sketches, MicroPython scripts"],
+    ["Device", "Real-time operating systems (RTOS)", "FreeRTOS, Zephyr, RIOT, Contiki"],
+    ["Device / gateway", "Embedded Linux", "Raspberry Pi OS, Yocto Linux"],
+    ["Development", "Tools to write and upload code", "Arduino IDE, PlatformIO, ESP-IDF"],
+    ["Gateway / server", "Message brokers and middleware", "Mosquitto (MQTT broker), Node-RED, Eclipse Kura"],
+    ["Cloud", "IoT platforms that store and analyse data", "AWS IoT Core, ThingsBoard (covered in Unit 3)"],
+  ]}
+/>
+
+An <Term id="rtos">RTOS</Term> lets a small microcontroller run several tasks, such as reading a sensor and running the radio, on strict schedules. <Term id="middleware">Middleware</Term> sits between devices and applications and handles common jobs such as messaging and device management.
+
+<Callout kind="example" title="A Wi-Fi smart plug">
+An ESP32 inside the plug runs FreeRTOS. Its firmware publishes the power reading with MQTT, over TCP, over IPv4, over Wi-Fi. A Mosquitto broker on a home server receives it, and Node-RED switches the plug off when the geyser has been on for too long.
+</Callout>
+
+## Advantages and limitations of layering
+
+**Advantages**
+
+- Each layer can be designed, tested and replaced on its own.
+- Different makers' products work together if they follow the same layer standards.
+- The same application works over many kinds of network.
+
+**Limitations**
+
+- Every layer adds a header, so small messages carry a lot of overhead.
+- More layers mean more processing on small devices.
+- A problem can be hard to trace when it could sit in any layer.
+
+<KeyPoints
+  points={[
+    "Protocols are arranged in layers: application, transport, network and link/physical.",
+    "IoT application protocols include MQTT, CoAP, HTTP, XMPP, AMQP and DDS.",
+    "TCP is reliable; UDP is lightweight. MQTT and HTTP use TCP; CoAP uses UDP.",
+    "Encapsulation: each layer adds a header as data goes down the stack.",
+    "IoT software includes firmware, RTOSs (FreeRTOS, Zephyr), brokers (Mosquitto) and tools like Node-RED.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the IoT protocol stack. Name the protocols used at each layer."
+  short="The IoT protocol stack has four layers: link/physical (Wi-Fi, IEEE 802.15.4, BLE, LoRa), network (IPv6, 6LoWPAN, RPL), transport (TCP, UDP) and application (MQTT, CoAP, HTTP, XMPP). Each layer adds a header to the data, which is called encapsulation."
+  long={[
+    "Define a protocol and explain why protocols are layered.",
+    "Draw the four-layer stack and name two or more protocols at each layer.",
+    "Compare it with the classic TCP/IP stack in a table.",
+    "Explain encapsulation with a worked example of header sizes.",
+    "Explain why IoT needs lightweight protocols.",
+    "List the main kinds of IoT software with examples.",
+  ]}
+/>
