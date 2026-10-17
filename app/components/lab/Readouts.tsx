@@ -17,11 +17,21 @@ const toneClass = {
 };
 
 /** Live measurements from a simulation, laid out like instrument readouts. */
-export function Readouts({ items, className }: { items: Readout[]; className?: string }) {
+export function Readouts({
+  items,
+  className,
+  columns = 4,
+}: {
+  items: Readout[];
+  className?: string;
+  /** Columns on wider screens; phones always use two */
+  columns?: 2 | 4;
+}) {
   return (
     <dl
       className={cn(
-        "grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-4",
+        "grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line",
+        columns === 4 && "sm:grid-cols-4",
         className,
       )}
     >

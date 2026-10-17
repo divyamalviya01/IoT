@@ -1,0 +1,138 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, SequenceDiagram, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+HTTP is the web's request–response protocol: a client sends a request with a method such as GET or PUT to a URL, and the server sends back a response with a status code and data.
+</Callout>
+
+## What is HTTP?
+
+HTTP (HyperText Transfer Protocol) is the protocol your browser uses to load web pages. It runs over TCP, on port 80, or port 443 for HTTPS, its encrypted form.
+
+HTTP is also used by many IoT devices and almost every IoT cloud platform. A device can upload readings with HTTP, and apps read device data through HTTP APIs.
+
+HTTP is **request–response**: the client always starts, and the server only answers. It is also **stateless**: each request is handled on its own, so it must carry everything the server needs.
+
+## Requests and responses
+
+Press **Next step** to see an app read a sensor and switch on an LED.
+
+<SequenceDiagram
+  caption="An app talking to an IoT device over HTTP"
+  participants={["Phone app", "Device"]}
+  messages={[
+    { from: "Phone app", to: "Device", label: "GET /sensors/temperature", note: "The app asks for the current temperature. GET only reads; it changes nothing.", code: "GET /sensors/temperature HTTP/1.1\nHost: device.local\nAccept: application/json" },
+    { from: "Device", to: "Phone app", label: "200 OK", reply: true, note: "The device answers with status 200 (OK) and the reading as JSON.", code: "HTTP/1.1 200 OK\nContent-Type: application/json\nContent-Length: 28\n\n{\"value\": 28.5, \"unit\": \"C\"}" },
+    { from: "Phone app", to: "Device", label: "PUT /actuators/led", note: "PUT replaces the LED's state with the one in the request body.", code: "PUT /actuators/led HTTP/1.1\nHost: device.local\nContent-Type: application/json\nContent-Length: 14\n\n{\"state\":\"on\"}" },
+    { from: "Device", to: "Phone app", label: "200 OK", reply: true, note: "The LED is now on, and the device confirms with 200 OK.", code: "HTTP/1.1 200 OK\nContent-Type: application/json\nContent-Length: 14\n\n{\"state\":\"on\"}" },
+  ]}
+/>
+
+A request has a **method**, a **path** (part of the URL), **headers** and sometimes a **body**. A response has a <Term id="status-code">status code</Term>, headers and usually a body.
+
+## HTTP methods
+
+<CompareTable
+  caption="Common HTTP methods"
+  columns={["Method", "Meaning", "IoT example"]}
+  rows={[
+    ["GET", "Read a resource; changes nothing", "GET /sensors/temperature"],
+    ["POST", "Create something new or send data to be processed", "POST /readings with a new reading"],
+    ["PUT", "Replace a resource with new data", "PUT /actuators/led with {\"state\":\"on\"}"],
+    ["PATCH", "Change part of a resource", "PATCH /settings with a new reporting interval"],
+    ["DELETE", "Remove a resource", "DELETE /schedules/3"],
+  ]}
+/>
+
+## Status codes
+
+The first digit of a status code says what kind of result it is.
+
+<CompareTable
+  caption="Status codes you will meet"
+  columns={["Code", "Meaning", "When"]}
+  rows={[
+    ["200 OK", "Success", "The reading was returned or the LED was switched"],
+    ["201 Created", "A new resource was made", "A new reading was stored"],
+    ["204 No Content", "Success, nothing to send back", "A schedule was deleted"],
+    ["400 Bad Request", "The request was malformed", "The body was not valid JSON"],
+    ["401 Unauthorized", "Not logged in or no valid token", "The API key was missing"],
+    ["404 Not Found", "No such resource", "The path was misspelled"],
+    ["405 Method Not Allowed", "That method is not allowed here", "Trying to DELETE a sensor"],
+    ["500 Internal Server Error", "The server failed", "A bug in the device's code"],
+  ]}
+  note="2xx means success, 4xx means the client made a mistake, 5xx means the server failed."
+/>
+
+## REST: designing IoT APIs
+
+<Term id="rest">REST</Term> (Representational State Transfer) is a popular way to design HTTP APIs, described by Roy Fielding in 2000. Each thing is a **resource** with its own URL, and standard methods act on it.
+
+For an IoT device, resources might be `/sensors/temperature`, `/actuators/led` and `/settings`. Data is usually sent as JSON.
+
+## The cost of HTTP on small devices
+
+HTTP/1.1 headers are plain text. A simple request can carry 100–300 bytes of headers to send a 4-byte reading. Opening a new TCP connection for each request adds a handshake too.
+
+<Callout kind="remember">
+For a small reading, HTTP's headers can be fifty times bigger than the data. MQTT and CoAP were designed to avoid exactly this. HTTP/2 shrinks headers by compressing them, but most small devices still use HTTP/1.1.
+</Callout>
+
+## Polling and webhooks
+
+Because the client always starts, an app that wants updates must keep asking. This is <Term id="polling">polling</Term>. If it polls every 5 seconds but the value changes once an hour, almost every request is wasted.
+
+A <Term id="webhook">webhook</Term> turns this around. The app registers a URL, and the server calls that URL only when something happens. Server-sent events and WebSockets also let servers push updates.
+
+<CompareTable
+  caption="Polling vs webhooks"
+  columns={["", "Polling", "Webhook"]}
+  rows={[
+    ["Who starts", "The client, again and again", "The server, when there is news"],
+    ["Wasted requests", "Many, when nothing changes", "None"],
+    ["Delay", "Up to one polling interval", "Almost immediate"],
+    ["Needs", "Nothing special", "A URL the server can reach"],
+  ]}
+/>
+
+<Callout kind="example" title="UPI payment alerts">
+When you pay with UPI, the shop's payment app does not keep asking the bank whether money has arrived. The payment provider calls the shop's server (a webhook) the moment the payment succeeds, and the shop's speaker announces it.
+</Callout>
+
+## Advantages and limitations for IoT
+
+**Advantages**
+
+- Understood everywhere: every language, cloud and firewall supports it.
+- Simple REST APIs that are easy to test with a browser or tools like curl.
+- Works through firewalls and proxies that block other protocols.
+- HTTPS gives strong, well-tested security.
+
+**Limitations**
+
+- Large text headers waste bandwidth and battery.
+- Request–response only: no built-in way for a server to push updates.
+- TCP connections and TLS handshakes are heavy for small devices.
+- Polling for updates wastes requests and energy.
+
+<KeyPoints
+  points={[
+    "HTTP is a stateless request–response protocol over TCP (port 80, or 443 for HTTPS).",
+    "Methods: GET reads, POST creates, PUT replaces, PATCH changes part, DELETE removes.",
+    "Status codes: 2xx success, 4xx client error (404 Not Found), 5xx server error.",
+    "REST treats each thing as a resource with its own URL.",
+    "Polling wastes requests; webhooks let the server notify the client.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain HTTP and REST in IoT. What are the limitations of HTTP for constrained devices?"
+  short="HTTP is a stateless request–response protocol over TCP. A client sends a method (GET, POST, PUT, DELETE) to a URL and the server returns a status code and data. REST designs APIs as resources with URLs. HTTP's large text headers, TCP overhead and lack of push make it heavy for small battery devices."
+  long={[
+    "Define HTTP and explain request–response with a diagram.",
+    "List the main methods with IoT examples.",
+    "Explain status code classes with examples.",
+    "Explain REST and show a resource design for an IoT device.",
+    "Explain polling and webhooks.",
+    "List the advantages and limitations of HTTP for IoT.",
+  ]}
+/>

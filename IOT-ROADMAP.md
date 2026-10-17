@@ -160,13 +160,13 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 | L02 | Sensor Node Simulator (ADC, thresholds, battery) | 1.3 | Motion, Recharts |
 | L03 | Edge vs Fog vs Cloud: Response Time and Bandwidth | 1.4 | Motion, Recharts |
 | L04 | Virtual Arduino and GPIO | 1.5 | SVG, Motion |
-| L05 | TCP vs UDP Packet Lab | 1.8 | Motion |
-| L06 | MQTT Broker Simulator (topics, wildcards, QoS, retained, LWT) | 1.9 | three.js, Motion |
+| L05 | TCP vs UDP Packet Lab (with a UDP header inspector) | 1.8 | Motion, Recharts |
+| L06 | MQTT Broker Simulator (topics, wildcards, QoS, retained, LWT; the 3D broker is in the 1.9 Visualize tab) | 1.9 | Motion |
 | L07 | REST API Playground | 1.10 | Motion |
 | L08 | CoAP Client–Server Simulator | 1.11 | Motion |
-| L09 | XMPP Device Messaging | 1.12 | Motion |
-| L10 | Gateway Protocol Translator | 1.13 | Motion |
-| L11 | Protocol Race: MQTT vs CoAP vs HTTP vs XMPP | 1.14 | Recharts |
+| L09 | XMPP Device Messaging | 1.12 | Motion, Recharts |
+| L10 | Gateway Protocol Translator (topic template, °C/°F, percentage deadband) | 1.13 | Motion, Recharts |
+| L11 | Protocol Race: MQTT vs CoAP vs HTTP vs XMPP (TCP resends lost segments, so even MQTT QoS 0 delivers; CoAP NON does not) | 1.14 | Motion, Recharts |
 | L12 | Network Topology Simulator | 2.1 | three.js |
 | L13 | Communication Pattern Playground | 2.2 | Motion, Recharts |
 | L14 | Protocol Stack Builder | 2.3 | Drag and drop |
@@ -286,47 +286,47 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 **Syllabus:** IoT protocols and software, MQTT, UDP, MQTT brokers, publish–subscribe modes, HTTP, CoAP, XMPP and gateway protocols.
 
 **1.7 IoT protocols and software overview**
-- [ ] Theory: IoT protocol stack vs TCP/IP (application: MQTT, CoAP, HTTP, XMPP, AMQP, DDS; transport: TCP, UDP; network: IPv6, 6LoWPAN, RPL; link: 802.15.4, BLE, Wi-Fi), IoT software (FreeRTOS, Contiki, RIOT, Zephyr, Arduino IDE, Node-RED, middleware)
-- [ ] Visualize (2D, interactive): encapsulation explorer. Type a sensor reading, watch headers wrap it layer by layer, and see the byte count grow.
+- [x] Theory: IoT protocol stack vs TCP/IP (application: MQTT, CoAP, HTTP, XMPP, AMQP, DDS; transport: TCP, UDP; network: IPv6, 6LoWPAN, RPL; link: 802.15.4, BLE, Wi-Fi), IoT software (FreeRTOS, Contiki, RIOT, Zephyr, Arduino IDE, Node-RED, middleware)
+- [x] Visualize (2D, interactive): encapsulation explorer. Type a sensor reading, watch headers wrap it layer by layer, and see the byte count grow.
 
 **1.8 UDP (vs TCP)**
-- [ ] Theory: connectionless delivery, 8-byte UDP header fields, TCP 3-way handshake, TCP vs UDP comparison table, when IoT uses UDP
-- [ ] Visualize (2D): side-by-side animation of the TCP handshake and ACKs next to UDP "fire and forget" under packet loss
-- [ ] Lab **L05 TCP vs UDP**: set loss % and latency, send N packets, and record delivered, lost, retransmitted and total time. Includes a UDP header field inspector.
+- [x] Theory: connectionless delivery, 8-byte UDP header fields, TCP 3-way handshake, TCP vs UDP comparison table, when IoT uses UDP
+- [x] Visualize (2D): side-by-side animation of the TCP handshake and ACKs next to UDP "fire and forget" under packet loss
+- [x] Lab **L05 TCP vs UDP**: set loss % and latency, send N packets, and record delivered, lost, retransmitted and total time. Includes a UDP header field inspector.
 
 **1.9 MQTT, brokers and publish–subscribe modes**
-- [ ] Theory: pub/sub vs request/response, broker role, topics and wildcards (`+`, `#`), **QoS 0/1/2** (animated sequence diagrams), retained messages, Last Will and Testament, keep-alive, clean vs persistent session, packet types, topic-based vs content-based filtering, MQTT-SN; broker comparison table (Mosquitto, HiveMQ, EMQX, VerneMQ, AWS IoT Core)
-- [ ] Visualize (3D): broker hub with publishers and subscribers around it. Messages fly as glowing particles and fan out only to matching subscribers.
-- [ ] Lab **L06 MQTT Broker Simulator**: create clients, subscribe with wildcards, and publish with a QoS level and retained flag. Network loss shows QoS 1 duplicates vs QoS 2 exactly-once, and disconnecting a client fires its LWT. Includes a packet-level log and a topic-matcher tester.
+- [x] Theory: pub/sub vs request/response, broker role, topics and wildcards (`+`, `#`), **QoS 0/1/2** (animated sequence diagrams), retained messages, Last Will and Testament, keep-alive, clean vs persistent session, packet types, topic-based vs content-based filtering, MQTT-SN; broker comparison table (Mosquitto, HiveMQ, EMQX, VerneMQ, AWS IoT Core)
+- [x] Visualize (3D): broker hub with publishers and subscribers around it. Messages fly as glowing particles and fan out only to matching subscribers.
+- [x] Lab **L06 MQTT Broker Simulator**: create clients, subscribe with wildcards, and publish with a QoS level and retained flag. Network loss shows QoS 1 duplicates vs QoS 2 exactly-once, and disconnecting a client fires its LWT. Includes a packet-level log and a topic-matcher tester.
 
 **1.10 HTTP**
-- [ ] Theory: request/response, methods, status codes, REST, header overhead, polling vs webhooks
-- [ ] Visualize (2D): request/response animation with header-size bars and a "polling waste" timeline
-- [ ] Lab **L07 REST API Playground**: send `GET /sensors/temp` or `PUT /actuators/led` to a simulated device, see status codes and response bodies, and watch a virtual LED change state
+- [x] Theory: request/response, methods, status codes, REST, header overhead, polling vs webhooks
+- [x] Visualize (2D): request/response animation with header-size bars and a "polling waste" timeline
+- [x] Lab **L07 REST API Playground**: send `GET /sensors/temp` or `PUT /actuators/led` to a simulated device, see status codes and response bodies, and watch a virtual LED change state
 
 **1.11 CoAP**
-- [ ] Theory: CoAP over UDP, 4-byte header, CON/NON/ACK/RST, methods, Observe, `/.well-known/core` discovery, block-wise transfer, CoAP vs HTTP table
-- [ ] Visualize (2D): CON retransmission with exponential backoff, and the Observe pattern
-- [ ] Lab **L08 CoAP Simulator**: send CON/NON requests to a constrained node under loss, see a backoff timeline, observe a resource, and inspect header bytes
+- [x] Theory: CoAP over UDP, 4-byte header, CON/NON/ACK/RST, methods, Observe, `/.well-known/core` discovery, block-wise transfer, CoAP vs HTTP table
+- [x] Visualize (2D): CON retransmission with exponential backoff, and the Observe pattern
+- [x] Lab **L08 CoAP Simulator**: send CON/NON requests to a constrained node under loss, see a backoff timeline, observe a resource, and inspect header bytes
 
 **1.12 XMPP**
-- [ ] Theory: XML streams, JID (`user@domain/resource`), stanzas (message, presence, iq), client–server–federation, IoT extensions (XEPs), pros and cons
-- [ ] Visualize (2D): federated servers relaying presence and message stanzas while the XML builds up live
-- [ ] Lab **L09 XMPP Device Messaging**: two devices exchange presence and message stanzas, with a raw XML view and a size comparison against MQTT
+- [x] Theory: XML streams, JID (`user@domain/resource`), stanzas (message, presence, iq), client–server–federation, IoT extensions (XEPs), pros and cons
+- [x] Visualize (2D): federated servers relaying presence and message stanzas while the XML builds up live
+- [x] Lab **L09 XMPP Device Messaging**: two devices exchange presence and message stanzas, with a raw XML view and a size comparison against MQTT
 
 **1.13 Gateway protocols**
-- [ ] Theory: gateway roles (protocol translation, aggregation, filtering, security, edge processing), field and gateway protocols (Modbus, BACnet, OPC-UA, LwM2M, AMQP, DDS: short table), gateway architecture diagram
-- [ ] Visualize (2D): a Zigbee/BLE/Modbus frame enters the gateway and leaves as a JSON MQTT message
-- [ ] Lab **L10 Gateway Protocol Translator**: devices send raw frames, students set mapping rules (topic template, unit conversion, "send only if change > X") and see the output and bandwidth saved
+- [x] Theory: gateway roles (protocol translation, aggregation, filtering, security, edge processing), field and gateway protocols (Modbus, BACnet, OPC-UA, LwM2M, AMQP, DDS: short table), gateway architecture diagram
+- [x] Visualize (2D): a Zigbee/BLE/Modbus frame enters the gateway and leaves as a JSON MQTT message
+- [x] Lab **L10 Gateway Protocol Translator**: devices send raw frames, students set mapping rules (topic template, unit conversion, "send only if change > X") and see the output and bandwidth saved
 
 **1.14 Protocol comparison (summary)**
-- [ ] Theory: MQTT vs CoAP vs HTTP vs XMPP vs AMQP master table, plus a radar chart (overhead, latency, reliability, power, complexity)
-- [ ] Lab **L11 Protocol Race**: the same payload is sent over each protocol under identical network conditions, compared on bytes on the wire, time and battery cost
+- [x] Theory: MQTT vs CoAP vs HTTP vs XMPP vs AMQP master table, plus a radar chart (overhead, latency, reliability, power, complexity)
+- [x] Lab **L11 Protocol Race**: the same payload is sent over each protocol under identical network conditions, compared on bytes on the wire, time and battery cost
 
 **Assessment and exit**
-- [ ] Quiz and viva for 1.7–1.14, lab records for L05–L11
-- [ ] Engine unit tests: MQTT wildcard matching, QoS 1/2 state machines, retained/LWT, CoAP backoff, gateway rules
-- [ ] Unit 1 test available at `/quiz/unit-1`
+- [x] Quiz and viva for 1.7–1.14, lab records for L05–L11
+- [x] Engine unit tests: MQTT wildcard matching, QoS 1/2 state machines, retained/LWT, CoAP backoff, gateway rules
+- [x] Unit 1 test available at `/quiz/unit-1`
 
 ---
 

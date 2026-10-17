@@ -741,7 +741,7 @@ export const labs: Lab[] = [
     topic: "1.8",
     phase: 2,
     aim: "To compare reliability and speed of TCP and UDP under different packet-loss and delay conditions.",
-    tech: ["Motion"],
+    tech: ["Motion", "Recharts"],
   },
   {
     id: "L06",
@@ -750,7 +750,7 @@ export const labs: Lab[] = [
     topic: "1.9",
     phase: 2,
     aim: "To publish and subscribe to MQTT topics through a broker and study wildcards, QoS levels, retained messages and Last Will.",
-    tech: ["three.js", "Motion"],
+    tech: ["Motion"],
   },
   {
     id: "L07",
@@ -777,7 +777,7 @@ export const labs: Lab[] = [
     topic: "1.12",
     phase: 2,
     aim: "To exchange presence and message stanzas between two devices using XMPP and compare message size with MQTT.",
-    tech: ["Motion"],
+    tech: ["Motion", "Recharts"],
   },
   {
     id: "L10",
@@ -786,7 +786,7 @@ export const labs: Lab[] = [
     topic: "1.13",
     phase: 2,
     aim: "To translate device frames from local protocols into MQTT messages using gateway mapping and filtering rules.",
-    tech: ["Motion"],
+    tech: ["Motion", "Recharts"],
   },
   {
     id: "L11",
@@ -795,7 +795,7 @@ export const labs: Lab[] = [
     topic: "1.14",
     phase: 2,
     aim: "To compare MQTT, CoAP, HTTP and XMPP on message size, delivery time and energy for the same sensor reading.",
-    tech: ["Recharts"],
+    tech: ["Motion", "Recharts"],
   },
   {
     id: "L12",

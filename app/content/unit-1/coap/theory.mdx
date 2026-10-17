@@ -1,0 +1,157 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, SequenceDiagram, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+CoAP is a lightweight, web-like protocol for small devices: it uses GET, PUT, POST and DELETE on URLs like HTTP, but runs over UDP with a 4-byte binary header and adds its own simple reliability.
+</Callout>
+
+## What is CoAP?
+
+<Term id="coap">CoAP</Term> (Constrained Application Protocol) was standardised by the IETF in 2014 as RFC 7252. It is designed for constrained devices: small microcontrollers with kilobytes of memory on lossy, low-power networks.
+
+CoAP copies the good ideas of the web. Every sensor value is a resource with a URL such as `coap://sensor.local/temp`, and clients use familiar methods. This makes it easy to translate CoAP to HTTP at a gateway.
+
+CoAP runs over UDP on port 5683, or port 5684 when secured with <Term id="dtls">DTLS</Term>.
+
+## Why not just use HTTP?
+
+<CompareTable
+  caption="CoAP and HTTP compared"
+  columns={["Feature", "HTTP/1.1", "CoAP"]}
+  rows={[
+    ["Transport", "TCP", "UDP"],
+    ["Header", "Text, often hundreds of bytes", "Binary, 4-byte fixed header"],
+    ["Setup", "TCP handshake before data", "None: the first message carries the request"],
+    ["Reliability", "From TCP", "Optional: confirmable messages with retries"],
+    ["Server push", "No (needs polling or webhooks)", "Yes, with Observe"],
+    ["Multicast", "No", "Yes: one request to many devices"],
+    ["Security", "TLS", "DTLS"],
+    ["Methods", "GET, POST, PUT, DELETE, …", "GET, POST, PUT, DELETE"],
+  ]}
+/>
+
+## The four message types
+
+Because UDP does not guarantee delivery, CoAP lets each message choose:
+
+<CompareTable
+  caption="CoAP message types"
+  columns={["Type", "Name", "Meaning"]}
+  rows={[
+    ["CON", "Confirmable", "Must be acknowledged; resent until an ACK arrives"],
+    ["NON", "Non-confirmable", "Sent once, no acknowledgement (fire and forget)"],
+    ["ACK", "Acknowledgement", "Confirms a CON message; can carry the response (piggybacked)"],
+    ["RST", "Reset", "“I cannot process this message”"],
+  ]}
+/>
+
+### A confirmable request
+
+<SequenceDiagram
+  caption="CON request with a piggybacked response"
+  participants={["Client", "Sensor"]}
+  messages={[
+    { from: "Client", to: "Sensor", label: "CON GET /temp (MID 0x1a2b)", note: "A confirmable GET request with message ID 0x1a2b.", code: "Type: CON   Code: 0.01 GET   Message ID: 0x1a2b\nToken: 7d 34\nOption: Uri-Path = \"temp\"" },
+    { from: "Sensor", to: "Client", label: "ACK 2.05 Content: 28.5", reply: true, note: "The sensor acknowledges and sends the reading in the same message. This is a piggybacked response.", code: "Type: ACK   Code: 2.05 Content   Message ID: 0x1a2b\nToken: 7d 34\nOption: Content-Format = text/plain\nPayload: 28.5" },
+  ]}
+/>
+
+### When a message is lost
+
+If no ACK arrives, the client waits and resends. The first wait is 2 to 3 seconds, and it doubles after every try. After 4 retries, the client gives up.
+
+<SequenceDiagram
+  caption="Retransmission with exponential back-off"
+  participants={["Client", "Sensor"]}
+  messages={[
+    { from: "Client", to: "Sensor", label: "CON GET /temp", lost: true, note: "The request is lost on the radio link." },
+    { from: "Client", to: "Sensor", label: "CON GET /temp (after ~2.5 s)", lost: true, note: "No ACK after about 2.5 seconds, so the client resends. This copy is lost too." },
+    { from: "Client", to: "Sensor", label: "CON GET /temp (after ~5 s more)", note: "The wait doubles to about 5 seconds before the next try. This time it arrives." },
+    { from: "Sensor", to: "Client", label: "ACK 2.05 Content: 28.5", reply: true, note: "The same message ID lets the sensor spot and ignore any duplicate copies." },
+  ]}
+/>
+
+## Response codes
+
+CoAP codes look like `c.dd`, where the class `c` works like HTTP's first digit.
+
+<CompareTable
+  caption="CoAP codes and their HTTP cousins"
+  columns={["CoAP code", "Meaning", "Like HTTP"]}
+  rows={[
+    ["0.01 / 0.02 / 0.03 / 0.04", "GET / POST / PUT / DELETE request", "GET / POST / PUT / DELETE"],
+    ["2.01 Created", "A resource was created", "201"],
+    ["2.04 Changed", "A resource was updated", "204"],
+    ["2.05 Content", "Here is the data you asked for", "200"],
+    ["4.04 Not Found", "No such resource", "404"],
+    ["4.05 Method Not Allowed", "That method is not allowed here", "405"],
+    ["5.00 Internal Server Error", "The server failed", "500"],
+  ]}
+/>
+
+## The 4-byte header
+
+Every CoAP message starts with the same 4 bytes:
+
+<CompareTable
+  caption="CoAP fixed header"
+  columns={["Field", "Size", "Meaning"]}
+  rows={[
+    ["Version (Ver)", "2 bits", "Always 1"],
+    ["Type (T)", "2 bits", "CON, NON, ACK or RST"],
+    ["Token length (TKL)", "4 bits", "How many token bytes follow (0–8)"],
+    ["Code", "8 bits", "Method or response code, such as 0.01 GET or 2.05 Content"],
+    ["Message ID", "16 bits", "Matches ACKs to CONs and detects duplicates"],
+  ]}
+  note="After the header come the token (0–8 bytes), the options such as Uri-Path, a 0xFF marker and the payload."
+/>
+
+## Special features
+
+- **<Term id="observe">Observe</Term>:** a client sends GET with the Observe option once. The server then sends a notification every time the resource changes, with no polling.
+- **Resource discovery:** `GET /.well-known/core` returns a list of the device's resources, so a client can find out what a new device offers.
+- **Block-wise transfer:** large data, such as a firmware image, is split into numbered blocks that fit small packets.
+- **Multicast:** one request can reach every device in a group, such as "all lights on floor 2".
+- **Proxies:** a gateway can translate between CoAP and HTTP, so web apps can reach CoAP devices.
+
+<Callout kind="example" title="Smart street lights">
+Street-light controllers on a 6LoWPAN mesh run CoAP servers. The city's gateway observes `/status` on each light, gets a notification only when a lamp fails, and uses a multicast PUT to dim a whole street at midnight.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Tiny 4-byte header and no connection setup: ideal for small devices and lossy radios.
+- Familiar REST model; easy to map to HTTP.
+- Choose reliability per message with CON or NON.
+- Observe gives server push; multicast reaches groups of devices.
+
+**Limitations**
+
+- UDP traffic is sometimes blocked by firewalls and home routers.
+- Built-in reliability is simple: no flow or congestion control like TCP.
+- DTLS security adds a handshake and extra bytes.
+- Fewer cloud services support it directly than MQTT or HTTP.
+
+<KeyPoints
+  points={[
+    "CoAP (RFC 7252) is a REST-style protocol over UDP (port 5683, or 5684 with DTLS) for constrained devices.",
+    "Message types: CON (confirmable), NON (non-confirmable), ACK and RST.",
+    "Its fixed header is 4 bytes: version, type, token length, code and message ID.",
+    "Lost CON messages are resent with exponential back-off: about 2–3 s, then doubling, up to 4 retries.",
+    "Observe pushes changes to clients; /.well-known/core lists a device's resources.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain CoAP. How does it achieve reliability over UDP?"
+  short="CoAP is a lightweight REST-style protocol for constrained devices that runs over UDP with a 4-byte header and methods such as GET and PUT. Reliability comes from confirmable (CON) messages: the receiver replies with an ACK, and the sender resends with exponential back-off until an ACK arrives or it gives up."
+  long={[
+    "Define CoAP and state why it was created (constrained devices, RFC 7252).",
+    "Compare CoAP with HTTP in a table.",
+    "Explain the four message types and draw a CON/ACK exchange.",
+    "Explain retransmission with exponential back-off, with a diagram.",
+    "Describe the 4-byte header.",
+    "Explain Observe, resource discovery and block-wise transfer.",
+  ]}
+/>

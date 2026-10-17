@@ -1,0 +1,131 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+XMPP is an open messaging and presence protocol built on XML: devices and people log in to servers with addresses like email, exchange small XML messages, and see who is online.
+</Callout>
+
+## What is XMPP?
+
+<Term id="xmpp">XMPP</Term> (Extensible Messaging and Presence Protocol) started life in 1999 as Jabber, an open alternative to closed chat apps, created by Jeremie Miller. The IETF standardised it as RFC 6120 and RFC 6121 in 2011.
+
+It was built for instant messaging, but the same features suit IoT: a device can send messages, answer requests and announce whether it is online. It runs over TCP, usually on port 5222 for clients and 5269 between servers.
+
+## Addresses: Jabber IDs
+
+Every user or device has a <Term id="jid">Jabber ID (JID)</Term> that looks like an email address with an optional extra part:
+
+`sensor1@home.example/kitchen`
+
+- **sensor1** is the local name of the device or user.
+- **home.example** is the server's domain.
+- **kitchen** is the resource: one particular connection, so a user can be logged in from several devices at once.
+
+## Stanzas: the three kinds of message
+
+XMPP sends data as an XML stream. Each message in the stream is a <Term id="stanza">stanza</Term>. There are only three kinds:
+
+<CompareTable
+  caption="The three XMPP stanzas"
+  columns={["Stanza", "Purpose", "IoT example"]}
+  rows={[
+    ["message", "Push a message to someone", "A sensor sends a temperature alert to a phone"],
+    ["presence", "Announce availability and subscribe to others' status", "A device says it is online, away or offline"],
+    ["iq (info/query)", "Request and response: get or set something and wait for the result", "A phone asks a sensor for its current reading"],
+  ]}
+/>
+
+A message stanza from a sensor might look like this:
+
+```xml
+<message from="sensor1@home.example/kitchen"
+         to="phone@home.example"
+         type="chat">
+  <body>Temperature is 28.5 °C</body>
+</message>
+```
+
+An iq request and its result share an `id`, so the reply can be matched to the question:
+
+```xml
+<iq type="get" id="r1" to="sensor1@home.example/kitchen">
+  <query xmlns="urn:example:sensor"/>
+</iq>
+
+<iq type="result" id="r1" from="sensor1@home.example/kitchen">
+  <reading unit="C">28.5</reading>
+</iq>
+```
+
+## Architecture: clients, servers and federation
+
+XMPP uses a client–server design, like email:
+
+- Each client connects to its own server.
+- Servers relay stanzas to their own clients.
+- Servers run by different organisations connect to each other. This is called <Term id="federation">federation</Term>.
+
+So a sensor on `home.example` can message an engineer on `company.example`, just as Gmail users can email Outlook users.
+
+## Extensions for IoT
+
+The "X" in XMPP stands for extensible. New features are added through XMPP Extension Protocols, called XEPs. Some XEPs were written for IoT, such as XEP-0323 for reading sensor data and XEP-0325 for controlling devices.
+
+XMPP also includes strong security: TLS encryption for the connection and SASL for logging in.
+
+<Callout kind="example" title="Smart home assistant">
+A home's devices each have a JID on the family's XMPP server. The doorbell sends a message stanza with a snapshot link when someone rings. The parents' phones see the doorbell's presence change to "offline" if its Wi-Fi drops.
+</Callout>
+
+## XMPP compared with MQTT
+
+<CompareTable
+  caption="XMPP and MQTT"
+  columns={["Feature", "XMPP", "MQTT"]}
+  rows={[
+    ["Message format", "XML text: readable but verbose", "Binary: very compact"],
+    ["Pattern", "Client–server messaging, request–response (iq), presence", "Publish–subscribe through a broker"],
+    ["Addressing", "Each device has a JID", "Messages are sent to topics"],
+    ["Presence", "Built in", "Only through Last Will messages"],
+    ["Federation", "Yes, servers connect across organisations", "No"],
+    ["Overhead for a small reading", "Often 100+ bytes of XML", "A few bytes of header"],
+  ]}
+/>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Open standard with many free servers and libraries.
+- Built-in presence, request–response and federation.
+- Extensible through XEPs.
+- Strong security with TLS and SASL.
+
+**Limitations**
+
+- XML is verbose, so messages are large for small readings.
+- Needs a TCP connection that stays open, which costs battery.
+- More complex than MQTT for simple telemetry.
+- No built-in quality-of-service levels like MQTT's QoS 0/1/2.
+
+<KeyPoints
+  points={[
+    "XMPP (formerly Jabber, RFC 6120) is an XML-based messaging and presence protocol over TCP.",
+    "Addresses are JIDs: local@domain/resource.",
+    "Three stanzas: message (push), presence (availability) and iq (request–response).",
+    "Servers federate, so devices on different servers can talk.",
+    "XML makes XMPP readable and extensible but much larger than MQTT.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain XMPP and its use in IoT."
+  short="XMPP is an open, XML-based messaging and presence protocol that runs over TCP. Each device has a JID such as sensor1@home.example/kitchen. It uses three stanzas: message, presence and iq. Servers can federate, and XEPs extend it for IoT, such as reading sensor data."
+  long={[
+    "Define XMPP and give its origin (Jabber, 1999; RFC 6120).",
+    "Explain JIDs with an example.",
+    "Explain the three stanzas with XML examples.",
+    "Draw the client–server–federation architecture.",
+    "Explain how XMPP is used and extended for IoT.",
+    "Compare it with MQTT and list advantages and limitations.",
+  ]}
+/>

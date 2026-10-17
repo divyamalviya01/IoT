@@ -8,6 +8,8 @@ export interface ChartSeries {
   key: string;
   label: string;
   unit?: string;
+  /** Fixed colour, when a series keeps its colour as others are hidden */
+  color?: string;
 }
 
 interface ChartCardProps<Row extends Record<string, unknown>> {
@@ -98,7 +100,7 @@ export function ChartCard<Row extends Record<string, unknown>>({
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-2" aria-label="Legend">
           {series.map((s, i) => (
             <li key={s.key} className="flex items-center gap-1.5">
-              <span className="h-2.5 w-4 rounded-sm" style={{ background: seriesColor(i) }} aria-hidden />
+              <span className="h-2.5 w-4 rounded-sm" style={{ background: s.color ?? seriesColor(i) }} aria-hidden />
               {s.label}
             </li>
           ))}

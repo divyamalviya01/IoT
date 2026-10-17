@@ -1,0 +1,226 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, SequenceDiagram, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+MQTT is a lightweight publish–subscribe messaging protocol: devices publish messages to named topics on a broker, and the broker forwards each message to every client subscribed to that topic.
+</Callout>
+
+## What is MQTT?
+
+<Term id="mqtt">MQTT</Term> (Message Queuing Telemetry Transport) is the most widely used messaging protocol in IoT. It runs over TCP and keeps messages very small: the smallest MQTT message header is just 2 bytes.
+
+Andy Stanford-Clark of IBM and Arlen Nipper created MQTT in 1999 to monitor oil pipelines over expensive satellite links. It became an OASIS open standard in 2014 (version 3.1.1), and MQTT 5.0 followed in 2019.
+
+MQTT normally uses TCP port 1883, or port 8883 when encrypted with TLS.
+
+## Publish–subscribe vs request–response
+
+With HTTP, a client asks a server for data and waits for the answer. This is request–response.
+
+MQTT works differently. Senders, called **publishers**, send messages without knowing who will receive them. Receivers, called **subscribers**, say which messages they want. A server in the middle, the <Term id="broker">broker</Term>, matches them up.
+
+<CompareTable
+  caption="Two ways to exchange messages"
+  columns={["", "Request–response (HTTP)", "Publish–subscribe (MQTT)"]}
+  rows={[
+    ["Who starts", "The client asks each time", "The publisher sends when it has news"],
+    ["Who knows whom", "The client must know the server's address", "Publishers and subscribers only know the broker"],
+    ["One message to many", "One request gets one response", "One message can reach thousands of subscribers"],
+    ["Getting updates", "Ask again and again (polling)", "Updates arrive as they happen"],
+    ["Coupling", "Tight: both must be online together", "Loose: they never talk directly"],
+  ]}
+/>
+
+## The broker
+
+The broker is the post office of MQTT. It accepts connections from clients, receives every published message and forwards a copy to each client whose subscription matches.
+
+Because clients only talk to the broker, a sensor never needs to know how many apps are listening, and new apps can be added without touching the sensor.
+
+<CompareTable
+  caption="Popular MQTT brokers"
+  columns={["Broker", "Type", "Known for"]}
+  rows={[
+    ["Mosquitto", "Open source (Eclipse)", "Very lightweight; runs even on a Raspberry Pi"],
+    ["HiveMQ", "Commercial, with a free community edition", "Enterprise features and clustering"],
+    ["EMQX", "Open source, with a commercial edition", "Handles millions of connections"],
+    ["VerneMQ", "Open source", "Distributed clusters"],
+    ["AWS IoT Core", "Managed cloud service", "MQTT broker run by Amazon, no servers to manage"],
+  ]}
+/>
+
+## Topics and wildcards
+
+Every MQTT message has a <Term id="topic">topic</Term>: a text label with levels separated by slashes, such as `home/livingroom/temperature`.
+
+Subscribers can use <Term id="wildcard">wildcards</Term> to match many topics with one subscription:
+
+- **`+` (single level):** matches exactly one level. `home/+/temperature` matches `home/kitchen/temperature` but not `home/kitchen/fridge/temperature`.
+- **`#` (multi level):** matches all remaining levels, and must come last. `home/#` matches everything under `home`.
+
+<CompareTable
+  caption="Which topics does each subscription match?"
+  columns={["Subscription", "home/kitchen/temperature", "home/door/status", "office/kitchen/temperature"]}
+  rows={[
+    ["home/kitchen/temperature", "Yes", "No", "No"],
+    ["home/+/temperature", "Yes", "No", "No"],
+    ["+/kitchen/temperature", "Yes", "No", "Yes"],
+    ["home/#", "Yes", "Yes", "No"],
+    ["#", "Yes", "Yes", "Yes"],
+  ]}
+/>
+
+<Callout kind="remember">
+Topics are case-sensitive: `Home/temp` and `home/temp` are different topics. Topics starting with `$`, such as `$SYS/…`, are reserved for broker statistics and are not matched by a leading wildcard.
+</Callout>
+
+## Quality of service (QoS)
+
+MQTT lets each message choose how hard the network should try to deliver it. This is its <Term id="qos">quality of service</Term>, or QoS. Press **Next step** in each diagram.
+
+### QoS 0: at most once
+
+<SequenceDiagram
+  caption="QoS 0: fire and forget"
+  participants={["Sensor", "Broker", "App"]}
+  messages={[
+    { from: "Sensor", to: "Broker", label: "PUBLISH (QoS 0)", note: "The sensor sends the message once. There is no reply.", code: "PUBLISH\n  topic:   home/temp\n  QoS:     0\n  payload: 28.5" },
+    { from: "Broker", to: "App", label: "PUBLISH (QoS 0)", note: "The broker forwards it once. If it is lost, it is gone." },
+  ]}
+/>
+
+### QoS 1: at least once
+
+<SequenceDiagram
+  caption="QoS 1: acknowledged, may arrive twice"
+  participants={["Sensor", "Broker"]}
+  messages={[
+    { from: "Sensor", to: "Broker", label: "PUBLISH (QoS 1, id 7)", note: "The message carries a packet ID so it can be acknowledged.", code: "PUBLISH\n  topic:     home/temp\n  QoS:       1\n  packet ID: 7\n  payload:   28.5" },
+    { from: "Broker", to: "Sensor", label: "PUBACK (id 7)", reply: true, lost: true, note: "The broker received it, but its acknowledgement is lost." },
+    { from: "Sensor", to: "Broker", label: "PUBLISH again (DUP)", note: "No PUBACK arrived, so the sensor resends with the DUP flag. The broker now has the message twice: a duplicate." },
+    { from: "Broker", to: "Sensor", label: "PUBACK (id 7)", reply: true, note: "This time the acknowledgement arrives. The message got through at least once." },
+  ]}
+/>
+
+### QoS 2: exactly once
+
+<SequenceDiagram
+  caption="QoS 2: a four-step handshake, never duplicated"
+  participants={["Sensor", "Broker"]}
+  messages={[
+    { from: "Sensor", to: "Broker", label: "PUBLISH (QoS 2, id 8)", note: "The sensor sends the message with packet ID 8." },
+    { from: "Broker", to: "Sensor", label: "PUBREC", reply: true, note: "Publish received: the broker stores the message ID so it can ignore any copies." },
+    { from: "Sensor", to: "Broker", label: "PUBREL", note: "Publish release: the sensor tells the broker it may now pass the message on." },
+    { from: "Broker", to: "Sensor", label: "PUBCOMP", reply: true, note: "Publish complete: both sides can forget the ID. The message was delivered exactly once." },
+  ]}
+/>
+
+<CompareTable
+  caption="The three QoS levels"
+  columns={["QoS", "Guarantee", "Messages per publish", "Use when"]}
+  rows={[
+    ["0", "At most once: may be lost", "1", "Frequent readings where a lost one does not matter"],
+    ["1", "At least once: may be duplicated", "2", "Alerts that must arrive, where duplicates are harmless"],
+    ["2", "Exactly once: no loss, no duplicates", "4", "Billing, commands such as “dispense medicine”"],
+  ]}
+/>
+
+The QoS a subscriber receives is the lower of the publisher's QoS and the subscriber's QoS.
+
+## Retained messages, Last Will and sessions
+
+<CompareTable
+  caption="Useful MQTT features"
+  columns={["Feature", "What it does", "Example"]}
+  rows={[
+    ["Retained message", "The broker keeps the last message on a topic and sends it to every new subscriber straight away", "A new phone app instantly shows the last known temperature"],
+    ["Last Will and Testament", "A message the client leaves with the broker, published if the client disconnects unexpectedly", "“sensor-7 offline” is published when its battery dies"],
+    ["Keep-alive", "The client sends a small PINGREQ if it has been quiet, so the broker knows it is still there", "Every 60 seconds"],
+    ["Clean session", "The broker forgets the client's subscriptions when it disconnects", "A dashboard that only wants live data"],
+    ["Persistent session", "The broker remembers subscriptions and stores QoS 1 and 2 messages while the client is offline", "A phone that loses signal in a lift"],
+  ]}
+/>
+
+A <Term id="retained-message">retained message</Term> is the "last known value" of a topic. The <Term id="last-will">Last Will</Term> is set when the client connects. <Term id="keep-alive">Keep-alive</Term> messages let the broker notice a silent, dead client.
+
+## Publish–subscribe modes
+
+The syllabus mentions publish–subscribe modes. Pub/sub systems differ in how a subscriber chooses messages and how messages are delivered:
+
+<CompareTable
+  caption="Ways to filter and deliver messages"
+  columns={["Mode", "How it works", "Example"]}
+  rows={[
+    ["Topic-based", "Subscribers choose topic names (MQTT works this way)", "Subscribe to home/+/temperature"],
+    ["Content-based", "Subscribers set conditions on the message content", "Only readings where temperature > 30"],
+    ["Type-based", "Subscribers choose a kind of message or event", "All “door event” messages"],
+    ["QoS 0, 1, 2", "Delivery mode for each message, from fire-and-forget to exactly once", "Readings at QoS 0, alarms at QoS 1"],
+    ["Live or stored delivery", "Clean sessions get only live messages; persistent sessions also get messages stored while offline", "A phone reconnecting after a flight"],
+  ]}
+/>
+
+MQTT itself filters by topic only. Content-based filtering is usually added by rules engines in brokers and cloud platforms.
+
+## MQTT packet types
+
+<CompareTable
+  caption="MQTT control packets"
+  columns={["Packet", "Purpose"]}
+  rows={[
+    ["CONNECT / CONNACK", "Open a session with the broker and confirm it"],
+    ["PUBLISH", "Send a message to a topic"],
+    ["PUBACK", "Acknowledge a QoS 1 message"],
+    ["PUBREC / PUBREL / PUBCOMP", "The three replies in a QoS 2 handshake"],
+    ["SUBSCRIBE / SUBACK", "Ask for topics and confirm the subscription"],
+    ["UNSUBSCRIBE / UNSUBACK", "Stop receiving topics and confirm"],
+    ["PINGREQ / PINGRESP", "Keep-alive check"],
+    ["DISCONNECT", "Close the session cleanly (no Last Will is sent)"],
+  ]}
+/>
+
+## MQTT-SN
+
+MQTT needs TCP, which is too heavy for the smallest sensor networks. **MQTT-SN** (MQTT for Sensor Networks) runs over UDP or other non-TCP links such as Zigbee. It replaces long topic names with short numeric topic IDs to save bytes. A gateway translates MQTT-SN to normal MQTT.
+
+<Callout kind="example" title="Smart building monitoring">
+A college building has 200 sensors publishing to topics like `block-a/floor-2/room-204/temperature`. The facilities dashboard subscribes to `block-a/#`, and an alarm panel subscribes to `+/+/+/smoke`. Adding a new energy app needs no change to any sensor: it just subscribes.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Very small headers and low power use.
+- One message can reach many subscribers; senders and receivers are independent.
+- Three QoS levels let each message choose its reliability.
+- Retained messages, Last Will and persistent sessions handle unreliable networks.
+- Supported by every major IoT cloud platform.
+
+**Limitations**
+
+- Needs a broker, which is a central point that must stay up.
+- Runs over TCP, which is heavy for the smallest devices (MQTT-SN helps).
+- Topics carry no fixed meaning; teams must agree on naming.
+- Security (TLS, passwords) must be switched on; it is not automatic.
+
+<KeyPoints
+  points={[
+    "MQTT is a lightweight publish–subscribe protocol over TCP (port 1883, or 8883 with TLS).",
+    "Publishers send to topics on a broker; the broker forwards to matching subscribers.",
+    "Wildcards: + matches one topic level, # matches all remaining levels.",
+    "QoS 0 = at most once, QoS 1 = at least once (may duplicate), QoS 2 = exactly once (4-step).",
+    "Retained messages, Last Will and Testament, keep-alive and persistent sessions make MQTT reliable on poor networks.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain MQTT with its publish–subscribe architecture and QoS levels."
+  short="MQTT is a lightweight publish–subscribe protocol that runs over TCP. Clients publish messages to topics on a broker, and the broker forwards them to every client subscribed to matching topics. It offers QoS 0 (at most once), QoS 1 (at least once) and QoS 2 (exactly once)."
+  long={[
+    "Define MQTT and give its origin (IBM, 1999) and standard (OASIS).",
+    "Draw the architecture: publishers → broker → subscribers.",
+    "Explain topics and the + and # wildcards with examples.",
+    "Explain QoS 0, 1 and 2 with message diagrams.",
+    "Describe retained messages, Last Will and Testament and persistent sessions.",
+    "List popular brokers and give advantages and limitations.",
+  ]}
+/>

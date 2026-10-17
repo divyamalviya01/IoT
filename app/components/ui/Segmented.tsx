@@ -49,7 +49,8 @@ export function Segmented<T extends string>({
               key={option.value}
               className={cn(
                 "relative flex cursor-pointer items-center justify-center gap-1.5 rounded-md font-semibold transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus",
-                size === "sm" ? "h-7 min-w-7 px-2 text-sm" : "h-8 min-w-8 px-3 text-[0.95rem]",
+                // min-h, not h: a long label wraps onto a second line instead of being clipped.
+                size === "sm" ? "min-h-7 min-w-7 px-2 py-0.5 text-center text-sm leading-tight" : "min-h-8 min-w-8 px-3 py-1 text-center text-[0.95rem] leading-tight",
                 checked
                   ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line-strong)]"
                   : "text-ink-2 hover:text-ink",

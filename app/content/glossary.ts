@@ -19,6 +19,47 @@ export const glossary: GlossaryTerm[] = [
     topic: "udp",
   },
   {
+    id: "checksum",
+    term: "Checksum",
+    definition:
+      "A small number worked out from the bytes of a message and sent with it. The receiver works it out again; if the two differ, the data was damaged on the way.",
+    topic: "udp",
+  },
+  {
+    id: "retransmission",
+    term: "Retransmission",
+    definition: "Sending a message again because no acknowledgement came back in time, so the first copy is taken to be lost.",
+    topic: "udp",
+  },
+  {
+    id: "head-of-line-blocking",
+    term: "Head-of-line blocking",
+    definition:
+      "When one lost packet holds up the packets behind it. TCP delivers data strictly in order, so later data waits until the missing piece is resent.",
+    topic: "udp",
+  },
+  {
+    id: "exponential-backoff",
+    term: "Exponential back-off",
+    definition:
+      "Waiting twice as long before each new retry. CoAP and TCP use it so that a busy network is not flooded with resends.",
+    topic: "coap",
+  },
+  {
+    id: "persistent-session",
+    term: "Persistent session",
+    definition:
+      "An MQTT session that the broker keeps after the client disconnects: its subscriptions stay, and QoS 1 and 2 messages are stored until it reconnects. A clean session is forgotten instead.",
+    topic: "mqtt",
+  },
+  {
+    id: "deadband",
+    term: "Deadband",
+    definition:
+      "A filter rule that sends a new reading only when it differs from the last one sent by more than a set amount, so tiny changes do not waste bandwidth.",
+    topic: "gateway-protocols",
+  },
+  {
     id: "amqp",
     term: "AMQP",
     definition:

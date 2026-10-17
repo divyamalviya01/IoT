@@ -84,7 +84,7 @@ export default function EncapsulationVisual() {
   return (
     <div className="grid grid-cols-1 gap-6">
       <div className="grid gap-4 rounded-lg border border-line bg-surface p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid min-w-0 gap-4">
           <label htmlFor={inputId} className="grid gap-1.5">
             <span className="text-[0.95rem] font-semibold">Sensor reading (the payload)</span>
             <input
@@ -104,7 +104,7 @@ export default function EncapsulationVisual() {
               setWrapped(4);
             }}
             options={(Object.keys(STACK_LABEL) as StackId[]).map((s) => ({ value: s, label: STACK_LABEL[s] }))}
-            className="min-w-0 max-w-full overflow-x-auto pb-1"
+            className="min-w-0 max-w-full"
           />
         </div>
         <div className="flex flex-wrap gap-2">

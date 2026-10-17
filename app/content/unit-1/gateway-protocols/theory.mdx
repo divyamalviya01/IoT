@@ -1,0 +1,122 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Cloud, Cpu, Radio, Router, ShieldCheck } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+An IoT gateway connects local devices that speak many different protocols to the internet, translating their messages into a common protocol and filtering, combining and securing the data on the way.
+</Callout>
+
+## Why gateways are needed
+
+Devices in a building or factory speak many languages. Zigbee bulbs, BLE wristbands, Modbus energy meters and BACnet air-conditioners all use different protocols, and most of them cannot reach the internet on their own.
+
+A <Term id="gateway">gateway</Term> sits between these devices and the cloud. It understands the local protocols on one side and speaks an internet protocol, usually MQTT or HTTP, on the other.
+
+<FlowDiagram
+  nodes={[
+    { label: "Local devices", sub: "Zigbee, BLE, Modbus", icon: Cpu, tone: "u1" },
+    { label: "Gateway", sub: "Translate, filter, secure", icon: Router, tone: "u2" },
+    { label: "Internet", sub: "MQTT or HTTP over TLS", icon: Radio, tone: "neutral" },
+    { label: "Cloud", sub: "One common format", icon: Cloud, tone: "u3" },
+  ]}
+  links={["Many protocols", "One protocol", "Internet"]}
+  caption="A gateway turns many local protocols into one internet protocol."
+/>
+
+## What a gateway does
+
+<CompareTable
+  caption="Jobs of an IoT gateway"
+  columns={["Job", "What it means", "Example"]}
+  rows={[
+    ["Protocol translation", "Convert local messages into an internet protocol", "A Zigbee temperature report becomes an MQTT message"],
+    ["Data aggregation", "Combine many small messages into fewer, larger ones", "Send one summary of 50 sensors every minute"],
+    ["Filtering and edge processing", "Drop or process data locally", "Send a reading only if it changed by more than 0.5 °C"],
+    ["Store and forward", "Keep data while the internet is down and send it later", "A farm gateway buffers readings during a network outage"],
+    ["Security", "Encrypt traffic and keep the local network hidden", "TLS to the cloud, firewall towards the internet"],
+    ["Device management", "Add, configure and update devices", "Push new firmware to 200 sensors overnight"],
+  ]}
+/>
+
+<Callout kind="remember">
+Translation is only half the job. A good gateway also reduces data. Sending only meaningful changes can cut internet traffic and cloud costs dramatically.
+</Callout>
+
+## Protocols a gateway meets
+
+Gateways speak field protocols to machines and buildings, and messaging protocols to the cloud.
+
+<CompareTable
+  caption="Field and gateway protocols"
+  columns={["Protocol", "Where it is used", "Key idea"]}
+  rows={[
+    ["Modbus", "Factories, energy meters, solar inverters", "Simple master–slave reads and writes of numbered registers (1979); RTU over RS-485 or TCP on port 502"],
+    ["BACnet", "Building automation: air-conditioning, lighting, lifts", "Standard objects such as “analog input” for building equipment (ASHRAE 135)"],
+    ["OPC UA", "Industry 4.0, connecting PLCs and factory software", "Secure, platform-independent data models for machines (IEC 62541)"],
+    ["LwM2M", "Managing IoT devices remotely", "Device management over CoAP with standard objects, such as 3303 for temperature"],
+    ["AMQP", "Business systems and cloud back ends", "Message queues and routing through a broker; reliable delivery"],
+    ["DDS", "Robots, vehicles, defence and medical systems", "Real-time publish–subscribe without a central broker"],
+    ["MQTT", "Most links from gateways to the cloud", "Lightweight publish–subscribe through a broker"],
+  ]}
+/>
+
+- <Term id="modbus">Modbus</Term> is one of the oldest and most common industrial protocols. A gateway asks a meter "read registers 1 and 2" and gets back raw numbers.
+- <Term id="lwm2m">LwM2M</Term> standardises device management: reading settings, rebooting and updating firmware over CoAP.
+- <Term id="amqp">AMQP</Term> suits business back ends that need queues, routing rules and guaranteed delivery.
+- <Term id="dds">DDS</Term> lets devices publish and subscribe directly, with no broker, and fine control over timing. ROS 2, used in robots, runs on DDS.
+
+## How translation works
+
+Take a Zigbee temperature sensor. It reports a raw 16-bit number in hundredths of a degree, such as 2850. The gateway:
+
+1. **Receives** the Zigbee frame.
+2. **Decodes** it and finds the value 2850 in the temperature cluster.
+3. **Converts** it: 2850 × 0.01 = 28.50 °C.
+4. **Publishes** it as MQTT to a topic such as `site/kitchen/temperature` with the payload `{"value": 28.5, "unit": "C"}`.
+
+The cloud never needs to know about Zigbee. Replace the sensor with a BLE or Modbus one and the cloud sees the same message. You can try this in the **Visualize** tab and in lab L10.
+
+<Callout kind="example" title="Smart building in a college">
+A gateway in the electrical room reads 40 Modbus energy meters every second. It averages each meter over one minute and publishes 40 MQTT messages a minute instead of 2,400, so the energy dashboard stays live but the internet link and cloud bill stay small.
+</Callout>
+
+## Gateway architecture
+
+A typical gateway has radios and ports for local devices (Zigbee, BLE, RS-485), a processor running Linux, local storage, and a secure internet link (Ethernet, Wi-Fi or 4G). Its software has protocol adapters for each device type, a rules engine, a local buffer and a cloud connector.
+
+## Advantages and limitations of gateways
+
+**Advantages**
+
+- Lets old and new devices with different protocols join one system.
+- Cuts internet traffic by filtering and aggregating data.
+- Keeps working locally when the internet is down.
+- Adds security for devices too small to protect themselves.
+
+**Limitations**
+
+- A single point of failure: if the gateway stops, every device behind it is cut off.
+- Translation can lose detail or add delay.
+- One more device to secure, update and maintain.
+
+<KeyPoints
+  points={[
+    "A gateway connects local devices to the internet and translates their protocols, usually into MQTT or HTTP.",
+    "Gateway jobs: translation, aggregation, filtering, store and forward, security and device management.",
+    "Field protocols include Modbus (factories), BACnet (buildings) and OPC UA (Industry 4.0).",
+    "LwM2M manages devices over CoAP; AMQP suits business back ends; DDS is brokerless publish–subscribe.",
+    "Filtering at the gateway can greatly reduce internet traffic.",
+  ]}
+/>
+
+<ExamTip
+  question="What is an IoT gateway? Explain its functions and the protocols it uses."
+  short="An IoT gateway connects local devices to the internet. It translates local protocols such as Zigbee, BLE and Modbus into internet protocols such as MQTT, and also aggregates and filters data, stores it during outages and adds security."
+  long={[
+    "Explain why gateways are needed, with a block diagram.",
+    "List and explain the gateway's functions with examples.",
+    "Describe field protocols: Modbus, BACnet and OPC UA.",
+    "Describe LwM2M, AMQP and DDS briefly.",
+    "Walk through a translation example step by step.",
+    "List the advantages and limitations of gateways.",
+  ]}
+/>

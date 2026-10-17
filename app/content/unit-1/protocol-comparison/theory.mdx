@@ -1,0 +1,101 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+No IoT protocol is best at everything: MQTT suits many devices sending telemetry, CoAP suits tiny devices on lossy networks, HTTP suits occasional uploads and web APIs, XMPP suits messaging with presence, and AMQP suits business back ends.
+</Callout>
+
+## The protocols side by side
+
+You have now met the main IoT application protocols. This table brings them together.
+
+<CompareTable
+  caption="IoT application protocols compared"
+  columns={["Feature", "MQTT", "CoAP", "HTTP", "XMPP", "AMQP"]}
+  rows={[
+    ["Transport", "TCP", "UDP", "TCP", "TCP", "TCP"],
+    ["Pattern", "Publish–subscribe via broker", "Request–response (REST) + Observe", "Request–response (REST)", "Client–server messaging, presence, request–response", "Queues and routing via broker"],
+    ["Header size", "2 bytes minimum", "4 bytes fixed", "Text, often 100+ bytes", "XML, often 100+ bytes", "8-byte frame header"],
+    ["Reliability", "QoS 0, 1, 2", "CON (acknowledged) or NON", "From TCP", "From TCP", "Acknowledgements and transactions"],
+    ["Server push", "Yes", "Yes, with Observe", "No (polling or webhooks)", "Yes", "Yes"],
+    ["Security", "TLS (port 8883)", "DTLS (port 5684)", "TLS (HTTPS, port 443)", "TLS and SASL", "TLS and SASL"],
+    ["Default port", "1883", "5683", "80", "5222", "5672"],
+    ["Best for", "Telemetry from many devices", "Tiny devices, lossy radios", "Web APIs, occasional uploads", "Device messaging with presence", "Enterprise and cloud back ends"],
+  ]}
+/>
+
+## What the differences mean
+
+**Overhead.** MQTT and CoAP use compact binary headers. HTTP and XMPP send readable text and XML, so a 4-byte reading can travel with a hundred bytes or more of headers.
+
+**Transport.** CoAP's UDP needs no connection, so a sleepy device can wake, send one packet and sleep. MQTT, HTTP, XMPP and AMQP need a TCP connection, which costs a handshake and keep-alive traffic.
+
+**Pattern.** Publish–subscribe (MQTT, AMQP) lets one message reach many receivers and keeps senders and receivers independent. Request–response (HTTP, CoAP) is simpler when one client wants one answer.
+
+**Reliability.** MQTT lets each message choose QoS 0, 1 or 2. CoAP chooses per message with CON or NON. HTTP and XMPP rely on TCP.
+
+## Choosing a protocol
+
+<CompareTable
+  caption="Which protocol fits which job?"
+  columns={["Situation", "Good choice", "Why"]}
+  rows={[
+    ["1,000 sensors stream readings to a cloud dashboard", "MQTT", "Light, publish–subscribe, QoS levels, supported by every IoT cloud"],
+    ["Battery sensors on a 6LoWPAN mesh", "CoAP", "UDP, 4-byte header, no connection to keep open"],
+    ["A device uploads a photo once a day", "HTTP", "Simple, works through any firewall, every cloud accepts it"],
+    ["Devices that must show online/offline status and chat with people", "XMPP", "Built-in presence and federation"],
+    ["Orders and billing events between business systems", "AMQP", "Queues, routing and guaranteed delivery"],
+    ["Robots sharing sensor data in real time", "DDS", "Brokerless, real-time publish–subscribe"],
+  ]}
+/>
+
+<Callout kind="remember">
+A real system often uses several protocols: CoAP or Zigbee on the device network, MQTT from the gateway to the cloud, HTTP for the mobile app's API, and AMQP between cloud services.
+</Callout>
+
+## A quick way to decide
+
+1. **Is the device very small, on a lossy, low-power network?** Prefer CoAP (or MQTT-SN).
+2. **Do many receivers need the same data, or do devices send frequent telemetry?** Prefer MQTT.
+3. **Is it an occasional upload or a web API for apps?** Prefer HTTP.
+4. **Do you need presence and person-to-device messaging?** Consider XMPP.
+5. **Is it business back-end messaging with queues?** Consider AMQP.
+
+<Callout kind="example" title="A smart-city water network">
+Flow meters in pipes use CoAP over a low-power mesh to report to street gateways. Gateways publish to the city's MQTT broker. The water board's billing system receives events through AMQP queues, and citizens see their usage through an HTTP API in a mobile app.
+</Callout>
+
+## Advantages and limitations of each
+
+<CompareTable
+  caption="Strengths and weaknesses"
+  columns={["Protocol", "Strength", "Weakness"]}
+  rows={[
+    ["MQTT", "Light, flexible QoS, huge ecosystem", "Needs a broker and a TCP connection"],
+    ["CoAP", "Smallest overhead, works on tiny devices, multicast", "UDP can be blocked; simple reliability only"],
+    ["HTTP", "Universal, simple, firewall-friendly", "Heavy headers; no push"],
+    ["XMPP", "Presence, federation, extensible", "Verbose XML; more complex"],
+    ["AMQP", "Reliable queues and routing", "Heavy for small devices"],
+  ]}
+/>
+
+<KeyPoints
+  points={[
+    "MQTT: publish–subscribe over TCP, 2-byte header, QoS 0/1/2, best for telemetry.",
+    "CoAP: REST over UDP, 4-byte header, CON/NON and Observe, best for constrained devices.",
+    "HTTP: REST over TCP, large text headers, best for web APIs and occasional uploads.",
+    "XMPP: XML messaging with presence and federation. AMQP: reliable queues for back ends.",
+    "Real systems often combine protocols at different layers of the system.",
+  ]}
+/>
+
+<ExamTip
+  question="Compare MQTT, CoAP, HTTP and XMPP for IoT applications."
+  short="MQTT is a lightweight publish–subscribe protocol over TCP with QoS levels, suited to telemetry. CoAP is a REST protocol over UDP with a 4-byte header, suited to constrained devices. HTTP is a heavier request–response protocol suited to web APIs. XMPP is an XML messaging protocol with presence, suited to device messaging."
+  long={[
+    "Introduce the need for different application protocols in IoT.",
+    "Give a comparison table: transport, pattern, header size, reliability, push, security, ports.",
+    "Explain the effect of overhead and transport on battery devices.",
+    "Match each protocol to suitable applications with examples.",
+    "Explain why real systems combine several protocols.",
+  ]}
+/>
