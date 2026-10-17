@@ -1,0 +1,169 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, SequenceDiagram, Term } from "~/components/theory";
+import { Cloud, Cpu, Router, Smartphone } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+A communication pattern is the rule for who starts a conversation and how data flows: request–response, publish–subscribe, push–pull or exclusive pair.
+</Callout>
+
+## Why patterns matter
+
+A temperature sensor and a phone app can exchange the same reading in very different ways. The app can keep asking, the sensor can announce changes, readings can wait in a queue, or the two can keep a line open.
+
+The choice decides how fast data arrives, how many messages are sent, how much battery is used and how much work the server does. The four patterns below come from Bahga and Madisetti's *Internet of Things: A Hands-On Approach*.
+
+## 1. Request–response
+
+The client sends a request and the server sends a response. The server keeps no memory of the client between requests (it is **stateless**).
+
+<SequenceDiagram
+  caption="Request–response: the app asks, the server answers"
+  participants={["App", "Server"]}
+  messages={[
+    { from: "App", to: "Server", label: "GET /temperature", note: "The app asks for the latest reading." },
+    { from: "Server", to: "App", label: "200 OK: 28.5 °C", reply: true, note: "The server answers and forgets the request." },
+    { from: "App", to: "Server", label: "GET /temperature", note: "To see changes, the app must ask again. This is called polling." },
+    { from: "Server", to: "App", label: "200 OK: 28.5 °C", reply: true, note: "Nothing changed, so this round trip was wasted." },
+  ]}
+/>
+
+- **Protocols:** HTTP REST, CoAP.
+- **Good for:** occasional reads and commands, such as switching a light.
+- **Weak at:** watching for changes. The app only learns of a change at its next poll, and a value that changes twice between polls is missed.
+
+## 2. Publish–subscribe
+
+Publishers send messages to a **broker** on a topic. The broker forwards a copy to every subscriber of that topic. Publishers and subscribers never know about each other.
+
+<SequenceDiagram
+  caption="Publish–subscribe: the broker copies each message to every subscriber"
+  participants={["Sensor", "Broker", "App 1", "App 2"]}
+  messages={[
+    { from: "App 1", to: "Broker", label: "SUBSCRIBE home/temp", note: "Apps tell the broker which topics they want." },
+    { from: "App 2", to: "Broker", label: "SUBSCRIBE home/temp" },
+    { from: "Sensor", to: "Broker", label: "PUBLISH home/temp 29.0", note: "The sensor publishes only when the value changes." },
+    { from: "Broker", to: "App 1", label: "29.0", note: "The broker sends one copy to each subscriber, at once." },
+    { from: "Broker", to: "App 2", label: "29.0" },
+  ]}
+/>
+
+- **Protocols:** MQTT, and also AMQP and XMPP publish–subscribe.
+- **Good for:** one sensor feeding many apps, with updates in real time.
+- **Weak at:** needs an always-on broker; every subscriber gets every message, wanted or not.
+
+## 3. Push–pull
+
+Producers **push** messages into a <Term id="message-queue">message queue</Term>. Consumers **pull** messages out when they are ready. Each message goes to **one** consumer only, so several consumers share the work.
+
+<SequenceDiagram
+  caption="Push–pull: readings wait in a queue until a worker pulls them"
+  participants={["Sensor", "Queue", "Worker 1", "Worker 2"]}
+  messages={[
+    { from: "Sensor", to: "Queue", label: "push reading A", note: "The sensor pushes readings into the queue and carries on." },
+    { from: "Sensor", to: "Queue", label: "push reading B" },
+    { from: "Worker 1", to: "Queue", label: "pull", note: "A worker asks for work when it is free." },
+    { from: "Queue", to: "Worker 1", label: "reading A", reply: true, note: "Reading A goes to worker 1 only." },
+    { from: "Worker 2", to: "Queue", label: "pull" },
+    { from: "Queue", to: "Worker 2", label: "reading B", reply: true, note: "Reading B goes to worker 2. The queue spreads the work and holds readings while workers are busy." },
+  ]}
+/>
+
+- **Tools:** AMQP work queues (RabbitMQ), ZeroMQ PUSH/PULL sockets, cloud queues.
+- **Good for:** sharing heavy work among workers, and absorbing bursts when data arrives faster than it can be processed.
+- **Weak at:** delay grows when the queue backs up; it does not suit sending every reading to every app.
+
+<Term id="push-pull">Push–pull</Term> differs from publish–subscribe in three ways: each message has **one** receiver instead of a copy for everyone, the **consumer** decides when to take a message, and the queue **stores** messages when the two sides work at different speeds.
+
+## 4. Exclusive pair
+
+The client and the server open one connection and **keep it open**. Either side can send at any time, in both directions (full duplex). The server must remember every open connection, so it is **stateful**.
+
+<SequenceDiagram
+  caption="Exclusive pair: one connection kept open, both sides can send"
+  participants={["App", "Server"]}
+  messages={[
+    { from: "App", to: "Server", label: "Open connection (WebSocket handshake)", note: "One setup at the start." },
+    { from: "Server", to: "App", label: "Connection open", reply: true },
+    { from: "Server", to: "App", label: "29.0 °C", note: "The server pushes each change straight down the open connection." },
+    { from: "App", to: "Server", label: "Set fan: ON", note: "The app can send at any moment too." },
+    { from: "Server", to: "App", label: "29.5 °C", note: "If the connection drops, anything sent meanwhile is lost unless the app reconnects and asks again." },
+  ]}
+/>
+
+- **Protocol:** <Term id="websocket">WebSocket</Term>.
+- **Good for:** live dashboards, chat, remote control: instant updates both ways.
+- **Weak at:** each open connection costs the server memory; nothing is kept for a client that is not connected.
+
+## The four patterns compared
+
+<CompareTable
+  caption="Communication patterns"
+  columns={["Pattern", "Who starts", "Copies of each message", "Server keeps", "Delay", "Protocols", "Typical use"]}
+  rows={[
+    ["Request–response", "Client, every time", "One per request", "Nothing (stateless)", "Up to one poll interval", "HTTP REST, CoAP", "Read a value, send a command"],
+    ["Publish–subscribe", "Publisher", "One per subscriber", "Subscriptions, sessions", "Very low", "MQTT", "Sensor feeding many apps"],
+    ["Push–pull", "Producer pushes, consumer pulls", "One in total", "The queue", "Grows if the queue backs up", "AMQP queues, ZeroMQ", "Sharing work among workers"],
+    ["Exclusive pair", "Either side, any time", "One per connection", "Every open connection", "Very low", "WebSocket", "Live dashboards, remote control"],
+  ]}
+/>
+
+<Callout kind="example" title="One cricket app, two patterns">
+A cricket app fetches the full scorecard with request–response when you open a match. While you watch, it keeps an exclusive-pair (WebSocket) connection open, so each ball's score appears the moment it happens, without the app asking again and again.
+</Callout>
+
+## IoT communication models
+
+The Internet Architecture Board (RFC 7452) describes four ways IoT devices connect. Each can use any of the patterns above.
+
+<CompareTable
+  caption="IoT communication models"
+  columns={["Model", "How it works", "Example"]}
+  rows={[
+    ["Device-to-device", "Two devices talk directly, often over Bluetooth, Zigbee or Z-Wave", "A smart switch turning on a bulb without the internet"],
+    ["Device-to-cloud", "The device connects straight to a cloud service over Wi-Fi or mobile data", "A smart plug reporting to its maker's cloud"],
+    ["Device-to-gateway", "The device talks to a local gateway (a hub or phone app), which forwards to the cloud", "A BLE fitness band syncing through a phone"],
+    ["Back-end data sharing", "Clouds share device data with other authorised services", "A building's energy data shared with the electricity company"],
+  ]}
+/>
+
+<FlowDiagram
+  nodes={[
+    { label: "Sensor", sub: "BLE or Zigbee", icon: Cpu, tone: "u1" },
+    { label: "Gateway", sub: "Hub or phone", icon: Router, tone: "u2" },
+    { label: "Cloud", sub: "Stores and shares", icon: Cloud, tone: "u3" },
+    { label: "App", sub: "Shows the data", icon: Smartphone, tone: "neutral" },
+  ]}
+  links={["Short range", "Internet", "Internet"]}
+  caption="Device-to-gateway: the most common model for small, low-power devices."
+/>
+
+## Choosing a pattern
+
+- A reading needed now and then, or a one-off command: **request–response**.
+- One sensor, many interested apps, real-time updates: **publish–subscribe**.
+- Lots of data to process, more than one worker, bursts to smooth out: **push–pull**.
+- Constant two-way exchange with instant updates: **exclusive pair**.
+
+Lab L13 runs the same monitoring job under all four patterns and compares messages, delay, missed readings and server load.
+
+<KeyPoints
+  points={[
+    "Request–response: the client asks, the server answers; stateless; polling wastes messages and can miss changes (HTTP, CoAP).",
+    "Publish–subscribe: a broker copies each message to every subscriber of a topic (MQTT).",
+    "Push–pull: producers push into a queue and consumers pull; each message goes to one consumer and the queue absorbs bursts.",
+    "Exclusive pair: one long-lived, full-duplex connection between client and server; stateful (WebSocket).",
+    "Communication models (RFC 7452): device-to-device, device-to-cloud, device-to-gateway and back-end data sharing.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the IoT communication patterns with suitable diagrams."
+  short="IoT uses four patterns. Request–response: a client requests and a stateless server responds (HTTP, CoAP). Publish–subscribe: publishers send to a broker, which copies messages to subscribers of each topic (MQTT). Push–pull: producers push into a queue and consumers pull, each message going to one consumer. Exclusive pair: a persistent full-duplex connection between client and server (WebSocket)."
+  long={[
+    "Explain why the choice of pattern matters (delay, messages, energy, server load).",
+    "Describe request–response with a diagram and mention polling.",
+    "Describe publish–subscribe with a broker diagram.",
+    "Describe push–pull with a queue diagram and contrast it with publish–subscribe.",
+    "Describe exclusive pair (WebSocket) and its stateful server.",
+    "Add a comparison table and the four communication models.",
+  ]}
+/>

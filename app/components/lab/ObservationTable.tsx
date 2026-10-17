@@ -24,11 +24,12 @@ export function ObservationTable({
   const blankRows = Math.max(0, minRows - rows.length);
 
   return (
-    <div className={cn("relative overflow-x-auto rounded-lg border border-line", className)}>
-      <table className="w-full border-collapse text-[0.95rem]">
+    // In print the table must fit A4: no scrolling, smaller text, and long values may wrap anywhere.
+    <div className={cn("relative overflow-x-auto rounded-lg border border-line print:overflow-visible print:rounded-none", className)}>
+      <table className="w-full border-collapse text-[0.95rem] print:text-[8.5pt] [&_td]:print:px-1.5 [&_td]:print:py-1 [&_td]:print:[overflow-wrap:anywhere] [&_th]:print:px-1.5 [&_th]:print:py-1">
         <thead className="bg-surface-2">
           <tr>
-            <th scope="col" className="w-12 border-b border-line-strong px-3 py-2 text-left font-bold">
+            <th scope="col" className="w-12 border-b border-line-strong px-3 py-2 text-left font-bold print:w-7 print:whitespace-nowrap">
               No.
             </th>
             {columns.map((col) => (

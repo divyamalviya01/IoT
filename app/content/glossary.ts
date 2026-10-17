@@ -11,6 +11,162 @@ export interface GlossaryTerm {
 }
 
 export const glossary: GlossaryTerm[] = [
+  // Unit 2, part A: communication
+  {
+    id: "point-to-point",
+    term: "Point-to-point link",
+    definition: "A direct link between exactly two devices, such as a sensor wired to a microcontroller. Nothing else shares it.",
+    topic: "point-to-point",
+  },
+  {
+    id: "broadcast",
+    term: "Broadcast",
+    definition: "Sending one message to every device on a network at once, whether or not each one needs it.",
+    topic: "point-to-point",
+  },
+  {
+    id: "topology",
+    term: "Topology",
+    definition: "The shape in which the devices of a network are connected, such as star, mesh, tree, bus or ring.",
+    topic: "point-to-point",
+  },
+  {
+    id: "hop",
+    term: "Hop",
+    definition: "One step a message takes from one device to the next. A message that passes through two routers on its way takes three hops.",
+    topic: "point-to-point",
+  },
+  {
+    id: "single-point-of-failure",
+    term: "Single point of failure",
+    definition: "One part whose failure stops the whole system, such as the hub of a star network.",
+    topic: "point-to-point",
+  },
+  {
+    id: "duplex",
+    term: "Simplex, half duplex and full duplex",
+    definition:
+      "Simplex sends one way only (a TV broadcast). Half duplex sends both ways but one at a time (a walkie-talkie). Full duplex sends both ways at once (a phone call).",
+    topic: "point-to-point",
+  },
+  {
+    id: "uart",
+    term: "UART",
+    definition:
+      "Universal Asynchronous Receiver–Transmitter: a simple serial link with one wire each way and no clock wire. Both ends agree on the speed in advance.",
+    topic: "point-to-point",
+  },
+  {
+    id: "baud-rate",
+    term: "Baud rate",
+    definition: "How many signal changes a serial line makes per second. For a UART it is the number of bits per second, such as 9600.",
+    topic: "point-to-point",
+  },
+  {
+    id: "parity-bit",
+    term: "Parity bit",
+    definition: "An extra bit that makes the number of 1s even (or odd), so the receiver can spot a single flipped bit.",
+    topic: "point-to-point",
+  },
+  {
+    id: "i2c",
+    term: "I²C",
+    definition:
+      "Inter-Integrated Circuit: a two-wire bus (data and clock) on which one controller talks to many chips, each with its own address. Common for sensors on a board.",
+    topic: "point-to-point",
+  },
+  {
+    id: "spi",
+    term: "SPI",
+    definition:
+      "Serial Peripheral Interface: a fast four-wire link between a controller and chips such as displays and SD cards. It is full duplex and uses a clock wire.",
+    topic: "point-to-point",
+  },
+  {
+    id: "rs-485",
+    term: "RS-485",
+    definition:
+      "A wired standard that sends signals as the difference between two wires, so it resists noise and reaches about 1200 m. Used by Modbus in factories.",
+    topic: "point-to-point",
+  },
+  {
+    id: "wifi-direct",
+    term: "Wi-Fi Direct",
+    definition: "Lets two Wi-Fi devices connect to each other directly, with no router, for example to share files or a screen.",
+    topic: "point-to-point",
+  },
+  {
+    id: "push-pull",
+    term: "Push–pull",
+    definition:
+      "A pattern in which producers push messages into a queue and consumers pull them out when they are ready. Each message goes to one consumer.",
+    topic: "communication-patterns",
+  },
+  {
+    id: "exclusive-pair",
+    term: "Exclusive pair",
+    definition:
+      "A pattern in which a client and a server keep one connection open and both can send at any time, as with a WebSocket.",
+    topic: "communication-patterns",
+  },
+  {
+    id: "message-queue",
+    term: "Message queue",
+    definition: "A waiting line of messages held by a server until a consumer takes them, so senders and receivers need not work at the same speed.",
+    topic: "communication-patterns",
+  },
+  {
+    id: "websocket",
+    term: "WebSocket",
+    definition:
+      "A protocol that turns one HTTP request into a long-lived, two-way connection, so a server can send data to a browser or device at any moment.",
+    topic: "communication-patterns",
+  },
+  {
+    id: "osi-model",
+    term: "OSI model",
+    definition:
+      "A seven-layer reference model of networking: physical, data link, network, transport, session, presentation and application.",
+    topic: "protocol-architecture",
+  },
+  {
+    id: "perception-layer",
+    term: "Perception layer",
+    definition: "The bottom layer of IoT architecture: the sensors and actuators that sense and act on the physical world.",
+    topic: "protocol-architecture",
+  },
+  {
+    id: "adaptation-layer",
+    term: "Adaptation layer",
+    definition: "A layer that fits one protocol onto another, such as 6LoWPAN squeezing IPv6 packets into small IEEE 802.15.4 radio frames.",
+    topic: "protocol-architecture",
+  },
+  {
+    id: "6lowpan",
+    term: "6LoWPAN",
+    definition:
+      "IPv6 over Low-power Wireless Personal Area Networks: an adaptation layer that compresses IPv6 headers so they fit in small radio frames.",
+    topic: "6lowpan",
+  },
+  {
+    id: "ieee-802-15-4",
+    term: "IEEE 802.15.4",
+    definition: "A standard for low-power, low-data-rate radios (250 kbit/s at 2.4 GHz). Zigbee, Thread and 6LoWPAN all run on top of it.",
+    topic: "protocol-architecture",
+  },
+  {
+    id: "rpl",
+    term: "RPL",
+    definition: "Routing Protocol for Low-power and lossy networks: finds routes for IPv6 packets through a mesh of small battery devices.",
+    topic: "protocol-architecture",
+  },
+  {
+    id: "iot-a",
+    term: "IoT-A reference model",
+    definition:
+      "A European reference architecture (Internet of Things – Architecture) that gives common names and views for designing IoT systems, including security and trust.",
+    topic: "protocol-architecture",
+  },
   {
     id: "acknowledgement",
     term: "Acknowledgement (ACK)",

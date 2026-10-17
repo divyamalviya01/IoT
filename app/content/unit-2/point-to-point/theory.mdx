@@ -1,0 +1,140 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+A point-to-point link joins exactly two devices directly; when many devices must connect, they are arranged in a pattern called a topology, such as star, mesh, tree, bus or ring.
+</Callout>
+
+## Who talks to whom
+
+Every IoT system has to decide how its devices are joined. There are four basic ways to send a message:
+
+<CompareTable
+  caption="Ways to send a message"
+  columns={["Way", "What happens", "IoT example"]}
+  rows={[
+    ["Point-to-point", "One device sends to exactly one other device over a direct link", "A sensor wired to an Arduino; a phone paired with a fitness band"],
+    ["Point-to-multipoint", "One central device talks to many devices, one link each", "A Wi-Fi router serving many smart plugs"],
+    ["Broadcast", "One message goes to every device at once", "A gateway announcing the time to every node"],
+    ["Mesh", "Devices pass messages for each other, hop by hop", "Zigbee bulbs relaying commands across a house"],
+  ]}
+/>
+
+A <Term id="point-to-point">point-to-point link</Term> is the simplest: two ends, nothing else sharing the link, no addresses needed. It is easy to build and secure, but it does not scale, because every new pair needs its own link.
+
+## Direction of talk: simplex and duplex
+
+A link can carry data one way or both ways (<Term id="duplex">duplex</Term>):
+
+<CompareTable
+  caption="Simplex, half duplex and full duplex"
+  columns={["Mode", "Direction", "Everyday example", "IoT example"]}
+  rows={[
+    ["Simplex", "One way only", "TV or radio broadcast", "A beacon that only transmits"],
+    ["Half duplex", "Both ways, one at a time", "Walkie-talkie", "I²C and RS-485 buses"],
+    ["Full duplex", "Both ways at once", "Phone call", "UART and SPI"],
+  ]}
+/>
+
+## Network topologies
+
+When more than two devices connect, their arrangement is called the <Term id="topology">topology</Term>. In IoT, the devices usually send their readings to a gateway. Each step a message takes is one <Term id="hop">hop</Term>.
+
+<CompareTable
+  caption="Topologies compared"
+  columns={["Topology", "Shape", "Advantages", "Limitations", "IoT example"]}
+  rows={[
+    ["Star", "Every device links to a central hub", "Simple, one hop to the hub, one bad device affects only itself", "The hub is a single point of failure; range limited by the hub", "Wi-Fi devices around a router; BLE sensors around a phone"],
+    ["Mesh", "Devices link to several neighbours", "Many routes, so it survives failures; extends range hop by hop", "More links and routing work; more power for routers", "Zigbee and Thread smart homes"],
+    ["Tree", "Devices hang off parents in branches", "Easy to grow and organise in levels", "A broken branch cuts off everything below it", "Sensor networks with cluster heads"],
+    ["Bus", "All devices share one cable", "Cheapest wiring, easy to add a device", "One cable break splits the network; devices take turns", "Modbus devices on RS-485; CAN bus in cars"],
+    ["Ring", "Each device links to the next in a loop", "Survives one break by going the other way", "Two breaks split it; long trips round the loop", "Some factory and fibre networks"],
+  ]}
+/>
+
+A part whose failure stops everything is a <Term id="single-point-of-failure">single point of failure</Term>. The hub of a star is one. A mesh avoids them by giving each device more than one route.
+
+<Callout kind="remember" title="More links, more strength">
+Adding links costs money and power, but it removes single points of failure. A star has the fewest links and a full mesh the most. Lab L12 lets you fail nodes and links to see who gets cut off.
+</Callout>
+
+## Wired point-to-point links on a board
+
+Inside an IoT device, chips talk to each other over short wired links. Four are worth knowing:
+
+<CompareTable
+  caption="Short-range wired links"
+  columns={["Link", "Wires", "Duplex", "Shape", "Typical use"]}
+  rows={[
+    ["UART", "2 (TX, RX) + ground", "Full", "Point-to-point", "Microcontroller to GPS or GSM module, serial monitor"],
+    ["I²C", "2 (data SDA, clock SCL)", "Half", "Bus with addresses, 100 or 400 kbit/s", "Many sensors on one board, such as BMP280 and OLED displays"],
+    ["SPI", "4 (MOSI, MISO, clock, chip select)", "Full", "One controller, chips chosen by a select wire", "SD cards, fast displays, radio chips"],
+    ["RS-485", "2 (a twisted pair)", "Half", "Bus, up to 32 devices, about 1200 m", "Modbus meters and factory machines"],
+  ]}
+/>
+
+<Term id="uart">UART</Term> has no clock wire. Both ends agree on a speed, the <Term id="baud-rate">baud rate</Term>, such as 9600 bits per second. Each character travels as a frame:
+
+1. The line rests high (1).
+2. A **start bit** (0) tells the receiver a character is coming.
+3. **Eight data bits** follow, lowest bit first.
+4. An optional **<Term id="parity-bit">parity bit</Term>** helps detect an error.
+5. A **stop bit** (1) ends the frame.
+
+So 8 data bits cost 10 bits on the wire, and 9600 baud carries at most 960 characters a second. The Visualize tab animates a frame.
+
+<Term id="i2c">I²C</Term> and <Term id="spi">SPI</Term> add a clock wire, so they can go faster and do not need an agreed speed. <Term id="rs-485">RS-485</Term> sends each bit as the difference between two wires, which cancels electrical noise over long factory cables.
+
+## Wireless point-to-point links
+
+<CompareTable
+  caption="Wireless links between two devices"
+  columns={["Technology", "Range", "How it pairs", "Example"]}
+  rows={[
+    ["Bluetooth / BLE", "About 10–100 m", "Pairing between a phone and one device", "Fitness band to phone"],
+    ["NFC", "A few centimetres", "Tap two devices together", "UPI tap-to-pay, FASTag-style tags"],
+    ["Wi-Fi Direct", "Tens of metres", "Two Wi-Fi devices connect without a router", "Phone to printer or TV"],
+  ]}
+/>
+
+<Term id="wifi-direct">Wi-Fi Direct</Term> is useful when there is no router, such as sending a file from a phone to a projector in a classroom.
+
+<Callout kind="example" title="A smart home uses several at once">
+Inside a smart switch, the microcontroller talks to its relay driver over I²C. The switch joins a Zigbee mesh with the other switches. The Zigbee hub sits in a star around the Wi-Fi router. One building, three kinds of link.
+</Callout>
+
+## Advantages and limitations of point-to-point links
+
+**Advantages**
+
+- Simple: no addresses, no sharing and no collisions.
+- Private and secure, because only two devices use the link.
+- Full speed of the link for one pair.
+
+**Limitations**
+
+- Does not scale: n devices need many separate links to all talk directly (a full mesh of n devices needs n(n − 1)/2 links).
+- Each device needs a separate port or radio for each partner.
+- No relaying, so range is limited to the link itself.
+
+<KeyPoints
+  points={[
+    "Point-to-point joins exactly two devices; point-to-multipoint, broadcast and mesh connect many.",
+    "Simplex is one way, half duplex is both ways one at a time, full duplex is both ways at once.",
+    "Topologies: star (hub is a single point of failure), mesh (many routes), tree (branches), bus (one shared cable), ring (loop).",
+    "UART frame: start bit, 8 data bits (lowest first), optional parity bit, stop bit. 9600 baud ≈ 960 characters per second.",
+    "I²C is a 2-wire addressed bus, SPI a fast 4-wire link, RS-485 a long, noise-resistant bus.",
+    "Wireless point-to-point: Bluetooth/BLE, NFC and Wi-Fi Direct.",
+  ]}
+/>
+
+<ExamTip
+  question="What is point-to-point communication? Explain the common network topologies used in IoT with their merits and demerits."
+  short="Point-to-point communication is a direct link between exactly two devices, such as UART between a microcontroller and a module or Bluetooth between a phone and a band. Networks of many devices use topologies: star (simple, hub is a single point of failure), mesh (resilient, more links), tree (branches), bus (shared cable, cheap) and ring (loop)."
+  long={[
+    "Define point-to-point and compare it with point-to-multipoint, broadcast and mesh.",
+    "Explain simplex, half duplex and full duplex with examples.",
+    "Draw and compare star, mesh, tree, bus and ring topologies in a table.",
+    "Describe wired links (UART frame, I²C, SPI, RS-485) and wireless links (Bluetooth, NFC, Wi-Fi Direct).",
+    "Give an IoT example that combines several kinds of link.",
+  ]}
+/>

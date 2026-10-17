@@ -1,0 +1,142 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, LayerStack, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+An IoT architecture splits the system into layers, from the sensors at the bottom to the user's application at the top, and each protocol works at one layer, using the layer below and serving the layer above.
+</Callout>
+
+## Why use layers?
+
+An IoT system is too big to design as one piece. Layers split it into jobs that can be built and changed separately. A farmer's app does not care whether the soil sensor uses LoRa or Wi-Fi, as long as the layer below delivers the reading.
+
+Each layer offers services to the one above and uses the one below. Two devices talk layer to layer: the application on the sensor talks to the application on the server, through all the layers underneath.
+
+## The 3-layer architecture
+
+The simplest and most widely taught IoT model has three layers. Select a layer to read about it.
+
+<LayerStack
+  caption="3-layer IoT architecture"
+  layers={[
+    { name: "Application layer", detail: "Delivers services to the user, built on the collected data: smart homes, smart cities, health monitoring, agriculture.", items: ["Smart-home app", "Health app", "Cloud platform"] },
+    { name: "Network layer", detail: "Carries data from the things to servers and connects devices to each other and to the internet. Gateways sit here.", items: ["Wi-Fi", "Zigbee", "4G / 5G", "Gateway"] },
+    { name: "Perception layer", detail: "The physical layer of things: sensors that sense the world and actuators that act on it. Also called the sensing or device layer.", items: ["Sensors", "Actuators", "RFID tags", "Cameras"] },
+  ]}
+/>
+
+The bottom layer is the <Term id="perception-layer">perception layer</Term>. It turns physical quantities, such as heat or movement, into data.
+
+## The 5-layer architecture
+
+The 3-layer model hides a lot of work in the network and application layers. The 5-layer model splits it further:
+
+<LayerStack
+  caption="5-layer IoT architecture"
+  layers={[
+    { name: "Business layer", detail: "Manages the whole system: business and profit models, charging, and users' privacy. Uses the results of the layers below to make decisions.", items: ["Business model", "Billing plan", "Privacy policy"] },
+    { name: "Application layer", detail: "Delivers the services that users see.", items: ["Smart-home app", "Smart-city portal", "Health app"] },
+    { name: "Processing layer", detail: "Also called the middleware layer. Stores, analyses and processes the large amount of data from the transport layer.", items: ["Databases", "Cloud computing", "Big-data analytics"] },
+    { name: "Transport layer", detail: "Moves data between the perception layer and the processing layer through networks.", items: ["Wi-Fi", "Zigbee", "Bluetooth", "4G", "RFID and NFC links"] },
+    { name: "Perception layer", detail: "Sensors and actuators that gather information from the physical world.", items: ["Sensors", "Actuators", "RFID tags"] },
+  ]}
+/>
+
+<Callout kind="remember" title="Same words, different meanings">
+The "transport layer" of the 5-layer IoT model means moving data through networks such as Wi-Fi and Zigbee. In the OSI and TCP/IP models, the transport layer means TCP and UDP. Read the question carefully in the exam.
+</Callout>
+
+<CompareTable
+  caption="3-layer and 5-layer models side by side"
+  columns={["3-layer model", "5-layer model", "Example in a smart farm"]}
+  rows={[
+    ["Application", "Business", "Subscription plan for farmers"],
+    ["Application", "Application", "Farmer's app showing soil moisture"],
+    ["Application / network", "Processing", "Cloud database and irrigation rules"],
+    ["Network", "Transport", "LoRaWAN to a gateway, then 4G"],
+    ["Perception", "Perception", "Soil-moisture sensor and water valve"],
+  ]}
+/>
+
+## The IoT protocol stack and the OSI model
+
+The <Term id="osi-model">OSI model</Term> has seven layers. The internet's TCP/IP model groups them into four or five. IoT protocols fit into the same layers:
+
+<CompareTable
+  caption="Where IoT protocols sit"
+  columns={["OSI layer", "TCP/IP layer", "Internet stack (a laptop)", "IoT stack (a small sensor)"]}
+  rows={[
+    ["7 Application, 6 Presentation, 5 Session", "Application", "HTTP, DNS", "CoAP, MQTT, XMPP, AMQP"],
+    ["4 Transport", "Transport", "TCP", "UDP (and TCP for MQTT)"],
+    ["3 Network", "Internet", "IPv4 / IPv6", "IPv6, routed by RPL"],
+    ["(between 3 and 2)", "Adaptation", "Not needed", "6LoWPAN"],
+    ["2 Data link, 1 Physical", "Link", "Ethernet, Wi-Fi", "IEEE 802.15.4, BLE, LoRaWAN"],
+  ]}
+/>
+
+### The IETF stack for constrained devices
+
+The Internet Engineering Task Force (IETF) designed a full IP stack for tiny battery devices. Each layer swaps a heavy internet protocol for a light one:
+
+<LayerStack
+  caption="IETF constrained-device stack"
+  layers={[
+    { name: "Application: CoAP", detail: "REST like HTTP, but with a 4-byte binary header instead of text headers.", items: ["Replaces HTTP"] },
+    { name: "Transport: UDP", detail: "No handshake and an 8-byte header, which saves battery.", items: ["Replaces TCP"] },
+    { name: "Network: IPv6 + RPL", detail: "IPv6 gives every sensor its own address. RPL is a routing protocol that finds routes through the low-power mesh; it adds no header of its own to each reading.", items: ["Enough addresses for billions of things"] },
+    { name: "Adaptation: 6LoWPAN", detail: "Compresses the 40-byte IPv6 header to a few bytes and splits large packets, so they fit in 127-byte radio frames.", items: ["Header compression", "Fragmentation"] },
+    { name: "Link + physical: IEEE 802.15.4", detail: "A low-power radio at 250 kbit/s with small frames. Zigbee and Thread use it too.", items: ["Replaces Wi-Fi or Ethernet"] },
+  ]}
+/>
+
+<Term id="6lowpan">6LoWPAN</Term> is an <Term id="adaptation-layer">adaptation layer</Term>: it does not route or deliver anything itself, it adapts IPv6 to the small frames of <Term id="ieee-802-15-4">IEEE 802.15.4</Term>. <Term id="rpl">RPL</Term> builds the routes that IPv6 packets follow through the mesh.
+
+The Visualize tab shows a reading travelling down a sender's stack, gaining a header at each layer, and up the receiver's stack, losing them again. Lab L14 asks you to place protocols in the right layers.
+
+## The IoT-A reference model (an introduction)
+
+<Term id="iot-a">IoT-A</Term> (Internet of Things – Architecture) was a European research project (2010–2013). It produced an **Architectural Reference Model**: a common set of names and views that any IoT system can be described with. It includes:
+
+- **Domain model:** the users, physical things, devices, resources and services, and how they relate.
+- **Information model:** how data about things is structured.
+- **Functional model:** groups of functions such as device, communication, IoT service, virtual entity, service organisation, process management and application, with management and security running across all of them.
+- **Communication model:** how parts exchange information.
+- **Trust, security and privacy model:** studied in Unit 3 (topics 3.12 and 3.13).
+
+<Callout kind="example" title="A smart streetlight, layer by layer">
+A light sensor and an LED driver in the pole form the perception layer. The pole joins a mesh of other poles over IEEE 802.15.4 with 6LoWPAN and RPL, reaching a gateway that forwards data over 4G. The city's lighting platform (processing) dims lights on empty roads, and the control-room app (application) shows faults. The city's energy budget and maintenance contracts belong to the business layer.
+</Callout>
+
+## Advantages and limitations of layered architecture
+
+**Advantages**
+
+- Each layer can be designed, changed or replaced without rewriting the others.
+- Standard interfaces let devices from different makers work together.
+- Easier to teach, design and troubleshoot.
+
+**Limitations**
+
+- Extra headers at every layer add overhead, which matters on small radios.
+- Strict layering can hide information that would help save energy.
+- Different books use different models (3, 4, 5 or more layers), which can confuse.
+
+<KeyPoints
+  points={[
+    "3-layer model: perception (sensors, actuators), network (transmission, gateways), application (services).",
+    "5-layer model: perception, transport, processing (middleware), application, business.",
+    "IoT protocols map onto OSI: CoAP/MQTT at application, UDP/TCP at transport, IPv6 + RPL at network, 6LoWPAN as adaptation, IEEE 802.15.4/BLE at link and physical.",
+    "The IETF constrained stack is CoAP over UDP over IPv6 (routed by RPL) over 6LoWPAN over IEEE 802.15.4.",
+    "IoT-A gives a reference model with domain, information, functional, communication, and trust, security and privacy models.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the IoT protocol architecture. Compare the 3-layer and 5-layer models."
+  short="IoT architecture divides the system into layers. The 3-layer model has perception (sensors and actuators), network (transmitting data) and application (user services). The 5-layer model adds detail: perception, transport, processing (storing and analysing data), application and business (managing the system and its business model)."
+  long={[
+    "Explain why layered architecture is used.",
+    "Draw and explain the 3-layer model with examples at each layer.",
+    "Draw and explain the 5-layer model and compare it with the 3-layer model in a table.",
+    "Map IoT protocols onto the OSI layers and show the IETF stack (CoAP, UDP, IPv6/RPL, 6LoWPAN, IEEE 802.15.4).",
+    "Briefly introduce the IoT-A reference model.",
+  ]}
+/>

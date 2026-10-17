@@ -804,7 +804,7 @@ export const labs: Lab[] = [
     topic: "2.1",
     phase: 3,
     aim: "To study how star, mesh, tree, bus and ring topologies behave when a node or link fails.",
-    tech: ["three.js"],
+    tech: ["SVG"],
   },
   {
     id: "L13",

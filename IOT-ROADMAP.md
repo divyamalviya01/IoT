@@ -167,9 +167,9 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 | L09 | XMPP Device Messaging | 1.12 | Motion, Recharts |
 | L10 | Gateway Protocol Translator (topic template, °C/°F, percentage deadband) | 1.13 | Motion, Recharts |
 | L11 | Protocol Race: MQTT vs CoAP vs HTTP vs XMPP (TCP resends lost segments, so even MQTT QoS 0 delivers; CoAP NON does not) | 1.14 | Motion, Recharts |
-| L12 | Network Topology Simulator | 2.1 | three.js |
+| L12 | Network Topology Simulator (2D SVG; the 3D topology scene is in the 2.1 Visualize tab) | 2.1 | SVG |
 | L13 | Communication Pattern Playground | 2.2 | Motion, Recharts |
-| L14 | Protocol Stack Builder | 2.3 | Drag and drop |
+| L14 | Protocol Stack Builder (tap or drag; four challenges) | 2.3 | Drag and drop |
 | L15 | Wireless Technology Selector | 2.4 | Recharts |
 | L16 | Zigbee Mesh Self-Healing | 2.6 | three.js |
 | L17 | BLE Explorer (advertising, GATT, RSSI) | 2.8 | Motion |
@@ -334,23 +334,23 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 **Syllabus:** IoT point-to-point communication technologies, IoT communication pattern, IoT protocol architecture.
 
 **2.1 Point-to-point communication technologies**
-- [ ] Theory: point-to-point vs point-to-multipoint vs broadcast vs mesh, topologies (star, mesh, tree, bus, ring) pros/cons table, simplex/half/full duplex, wired short-range links (UART, I²C, SPI, RS-485) and wireless P2P (Bluetooth, NFC, Wi-Fi Direct)
-- [ ] Visualize (3D): nodes morph between topologies while packets show the routes. Includes a 2D UART frame animation (start bit, data bits, parity, stop bit).
-- [ ] Lab **L12 Network Topology Simulator**: pick a topology and node count, then fail a node or link to see who loses connectivity, hop counts and redundant paths
+- [x] Theory: point-to-point vs point-to-multipoint vs broadcast vs mesh, topologies (star, mesh, tree, bus, ring) pros/cons table, simplex/half/full duplex, wired short-range links (UART, I²C, SPI, RS-485) and wireless P2P (Bluetooth, NFC, Wi-Fi Direct)
+- [x] Visualize (3D): nodes morph between topologies while packets show the routes. Includes a 2D UART frame animation (start bit, data bits, parity, stop bit).
+- [x] Lab **L12 Network Topology Simulator**: pick a topology and node count, then fail a node or link to see who loses connectivity, hop counts and redundant paths
 
 **2.2 IoT communication patterns**
-- [ ] Theory: request–response, publish–subscribe, push–pull, exclusive pair, plus communication models (device-to-device, device-to-gateway, device-to-cloud, back-end data sharing), with a comparison table
-- [ ] Visualize (2D): one temperature-monitoring scenario animated under each pattern, with a toggle to switch
-- [ ] Lab **L13 Communication Pattern Playground**: run the scenario under each pattern and compare messages sent, latency and server load on a chart
+- [x] Theory: request–response, publish–subscribe, push–pull, exclusive pair, plus communication models (device-to-device, device-to-gateway, device-to-cloud, back-end data sharing), with a comparison table
+- [x] Visualize (2D): one temperature-monitoring scenario animated under each pattern, with a toggle to switch
+- [x] Lab **L13 Communication Pattern Playground**: run the scenario under each pattern and compare messages sent, latency and server load on a chart. An "App 1 offline" toggle shows publish–subscribe delivering late where exclusive pair loses readings.
 
 **2.3 IoT protocol architecture**
-- [ ] Theory: 3-layer (perception, network, application) and 5-layer (perception, transport, processing, application, business) models, IoT stack mapped to OSI, IETF stack (802.15.4 → 6LoWPAN → IPv6/RPL → UDP → CoAP), short intro to the IoT-A reference model (linked from Phase 6)
-- [ ] Visualize (3D): translucent stacked layers with protocol tokens, as a packet travels down the sender stack and up the receiver stack
-- [ ] Lab **L14 Protocol Stack Builder**: drag protocol tokens into the correct layers, with instant validation and explanations
+- [x] Theory: 3-layer (perception, network, application) and 5-layer (perception, transport, processing, application, business) models, IoT stack mapped to OSI, IETF stack (802.15.4 → 6LoWPAN → IPv6/RPL → UDP → CoAP), short intro to the IoT-A reference model (linked from Phase 6)
+- [x] Visualize (3D): translucent stacked layers with protocol tokens, as a packet travels down the sender stack and up the receiver stack
+- [x] Lab **L14 Protocol Stack Builder**: drag protocol tokens into the correct layers, with instant validation and explanations
 
 **Assessment and exit**
-- [ ] Quiz and viva for 2.1–2.3, lab records for L12–L14
-- [ ] Engine unit tests: topology connectivity (BFS) and pattern message counts
+- [x] Quiz and viva for 2.1–2.3, lab records for L12–L14
+- [x] Engine unit tests: topology connectivity (BFS) and pattern message counts
 
 ---
 

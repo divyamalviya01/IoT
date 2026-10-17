@@ -19,7 +19,7 @@ Layers can be swapped independently. The same MQTT application can run over Wi-F
   layers={[
     { name: "Application layer", detail: "Gives meaning to the data and defines how devices and apps exchange messages.", items: ["MQTT", "CoAP", "HTTP", "XMPP", "AMQP", "DDS"] },
     { name: "Transport layer", detail: "Carries data between programs on two devices, identified by port numbers. TCP is reliable; UDP is light and fast.", items: ["TCP", "UDP"] },
-    { name: "Network layer", detail: "Gives every device an address and finds a route across networks.", items: ["IPv4", "IPv6", "6LoWPAN", "RPL"] },
+    { name: "Network layer", detail: "Gives every device an address and finds a route across networks. 6LoWPAN is strictly an adaptation layer just below IPv6: it squeezes IPv6 into small radio frames (see topic 2.3).", items: ["IPv4", "IPv6", "6LoWPAN", "RPL"] },
     { name: "Link and physical layer", detail: "Sends bits over a wire or radio between neighbouring devices.", items: ["Wi-Fi", "Ethernet", "IEEE 802.15.4", "BLE", "LoRa", "4G/5G"] },
   ]}
 />
@@ -30,7 +30,7 @@ Layers can be swapped independently. The same MQTT application can run over Wi-F
   rows={[
     ["Application", "HTTP, SMTP (email), FTP", "MQTT, CoAP, HTTP, XMPP, AMQP, DDS"],
     ["Transport", "TCP, UDP", "TCP (for MQTT, HTTP), UDP (for CoAP)"],
-    ["Network", "IPv4, IPv6", "IPv6, 6LoWPAN (IPv6 for small radios), RPL routing"],
+    ["Network", "IPv4, IPv6", "IPv6, 6LoWPAN (an adaptation layer that fits IPv6 onto small radios), RPL routing"],
     ["Link / physical", "Ethernet, Wi-Fi", "IEEE 802.15.4, BLE, LoRa, Wi-Fi, cellular"],
   ]}
 />
