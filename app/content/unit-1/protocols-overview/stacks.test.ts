@@ -10,13 +10,13 @@ describe("protocol stacks", () => {
     expect(total(parts)).toBe(93);
   });
 
-  it("6LoWPAN shrinks CoAP's IPv6 and UDP headers from 48 to 7 bytes", () => {
+  it("6LoWPAN shrinks CoAP's IPv6 and UDP headers from 48 to 6 bytes", () => {
     const plain = buildStack("coap", "28.5", false);
     const squeezed = buildStack("coap", "28.5", true);
     expect(plain.map((p) => p.layer)).toEqual(["Application", "Transport", "Network", "Link"]);
     expect(plain[1].bytes + plain[2].bytes).toBe(48);
-    expect(squeezed[1].bytes).toBe(7);
-    expect(total(plain) - total(squeezed)).toBe(41);
+    expect(squeezed[1].bytes).toBe(6);
+    expect(total(plain) - total(squeezed)).toBe(42);
   });
 
   it("HTTP headers grow with the payload length field", () => {

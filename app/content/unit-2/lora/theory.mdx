@@ -1,0 +1,137 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Cloud, Cpu, Radio, Server } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+LoRa is a long-range, low-power radio that sends data as chirps; LoRaWAN is the network protocol on top of it, letting battery sensors reach gateways kilometres away for years.
+</Callout>
+
+## LPWAN: the problem it solves
+
+Many IoT devices are spread over large areas, such as soil sensors on a farm or water meters across a city. They send only a few bytes now and then, but they must reach far and run for years on a battery. Wi-Fi and Bluetooth cannot reach; mobile data uses too much power and costs a monthly fee.
+
+<Term id="lpwan">Low-Power Wide-Area Networks (LPWAN)</Term> fill this gap. LoRaWAN is the best-known LPWAN that anyone can build without a mobile operator.
+
+## LoRa and LoRaWAN are not the same
+
+<CompareTable
+  caption="LoRa vs LoRaWAN"
+  columns={["", "LoRa", "LoRaWAN"]}
+  rows={[
+    ["What it is", "The radio modulation (physical layer)", "The network protocol (MAC and above)"],
+    ["Made by", "Semtech (chip maker)", "The LoRa Alliance (open standard)"],
+    ["Defines", "How bits become chirps on the air", "Device classes, gateways, network server, security, data rates"],
+  ]}
+/>
+
+## Chirp spread spectrum
+
+<Term id="lora">LoRa</Term> sends data as <Term id="chirp">chirps</Term>: signals whose frequency sweeps steadily from the bottom to the top of the channel. Data is carried by where each chirp starts.
+
+Because each chirp is spread over the whole channel and lasts a known time, the receiver can pick it out even when it is **weaker than the background noise**, down to about 20 dB below the noise at the slowest setting. That is how LoRa reaches kilometres on milliwatts.
+
+## Spreading factor: the main trade-off
+
+The <Term id="spreading-factor">spreading factor (SF)</Term> sets how long each chirp lasts, from SF7 to SF12. Each step up **doubles** the chirp time:
+
+- the receiver can decode a **weaker signal**, so the range grows;
+- but the data rate roughly **halves** and each message stays on the air twice as long, which uses more battery.
+
+<CompareTable
+  caption="Spreading factors at 125 kHz, sending 10 bytes of data (23 bytes on air)"
+  columns={["SF", "Bit rate", "Time on air", "Weakest signal it can hear", "Range, open land (illustrative)", "Range, city (illustrative)"]}
+  rows={[
+    ["SF7", "5469 bps", "61.7 ms", "−124.5 dBm", "4.0 km", "1.1 km"],
+    ["SF8", "3125 bps", "113.2 ms", "−127.0 dBm", "5.0 km", "1.3 km"],
+    ["SF9", "1758 bps", "205.8 ms", "−129.5 dBm", "6.2 km", "1.6 km"],
+    ["SF10", "977 bps", "370.7 ms", "−132.0 dBm", "7.6 km", "1.9 km"],
+    ["SF11", "537 bps", "823.3 ms", "−134.5 dBm", "9.4 km", "2.3 km"],
+    ["SF12", "293 bps", "1482.8 ms", "−137.0 dBm", "11.7 km", "2.7 km"],
+  ]}
+  note="Ranges come from a simple link-budget model (14 dBm transmitter, 10 dB margin). Real range depends on antenna height, terrain and buildings."
+/>
+
+<Term id="airtime">Time on air</Term> follows Semtech's formula; lab L19 calculates it for any SF, bandwidth and payload. LoRaWAN's **adaptive data rate (ADR)** lets the network move devices near a gateway to a low SF, saving their batteries.
+
+## LoRaWAN architecture: a star of stars
+
+<FlowDiagram
+  nodes={[
+    { label: "End devices", sub: "Battery sensors", icon: Cpu, tone: "u1" },
+    { label: "Gateways", sub: "Forward every packet they hear", icon: Radio, tone: "u2" },
+    { label: "Network server", sub: "Removes duplicates, ADR, security", icon: Server, tone: "neutral" },
+    { label: "Application server", sub: "Uses the data", icon: Cloud, tone: "u3" },
+  ]}
+  links={["LoRa radio", "Internet (IP)", "Internet (IP)"]}
+  caption="LoRaWAN is a star of stars, not a mesh: devices never relay for each other."
+/>
+
+- An end device does not pick a gateway. **Every gateway in range** hears its uplink and forwards it.
+- The **network server** throws away the duplicate copies, checks security and decides which gateway sends any reply.
+- Gateways are simple packet forwarders, connected by Ethernet or mobile data.
+
+## Device classes
+
+<CompareTable
+  caption="LoRaWAN device classes"
+  columns={["Class", "When it can receive", "Power", "Example"]}
+  rows={[
+    ["A (all devices)", "Only in two short windows (RX1, RX2) just after it sends", "Lowest", "Soil and water sensors"],
+    ["B", "Also in scheduled slots, kept in time by gateway beacons", "Medium", "Meters that must accept commands at set times"],
+    ["C", "Almost always, except while sending", "Highest (mains-powered)", "Street lights, valves"],
+  ]}
+/>
+
+## Airtime rules
+
+Radio rules stop one device from hogging the band:
+
+- In Europe's EU868 band, each device may transmit only **1 %** of the time, about 864 seconds a day. After a message, a device must stay quiet for 99 times its time on air.
+- India's **IN865** band (865–867 MHz) has no duty-cycle limit; the rules limit transmit power instead. Shared networks such as **The Things Network** still ask each device to stay under **30 seconds of airtime a day**.
+
+Security uses AES-128 with two keys: a network key that the network server checks, and an application key, so the network operator cannot read the data.
+
+<Callout kind="note" title="Sigfox: another LPWAN">
+<Term id="sigfox">Sigfox</Term> uses ultra-narrowband radio run by an operator. A device may send up to 140 messages a day of just 12 bytes each, and receive only 4. The company went bankrupt in 2022 and was bought by UnaBiz. Cellular IoT (NB-IoT and LTE-M) is covered in topic 3.22.
+</Callout>
+
+<Callout kind="example" title="Smart farming in India">
+A farmer co-operative fits soil-moisture sensors across several villages. Each sensor sends 10 bytes every hour at SF9 or SF10 to a gateway on the panchayat office roof, about 5 km away. With LoRaWAN, a pair of AA batteries lasts several years, and the gateway's 4G link carries the data to the irrigation dashboard.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Very long range: kilometres from one gateway.
+- Very low power: years on a battery.
+- Licence-free band; anyone can set up private gateways.
+- Robust radio that works below the noise floor.
+
+**Limitations**
+
+- Very low data rate: a few bytes per message, a few hundred bps at SF12.
+- Airtime limits restrict how often devices may send.
+- High latency for downlinks in Class A.
+- Not suitable for audio, video or real-time control.
+
+<KeyPoints
+  points={[
+    "LoRa is the chirp spread spectrum radio (physical layer); LoRaWAN is the network protocol from the LoRa Alliance.",
+    "Spreading factor SF7–SF12: each step doubles chirp time, giving more range but half the data rate and twice the airtime.",
+    "Architecture: star of stars. End devices → gateways (all in range forward) → network server → application server. Not a mesh.",
+    "Device classes: A (receive only after sending, lowest power), B (scheduled slots), C (always listening).",
+    "EU868 limits devices to 1 % airtime; India's IN865 limits power instead, but networks such as TTN ask for under 30 s a day.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain LoRa and LoRaWAN: modulation, architecture and device classes."
+  short="LoRa is a long-range, low-power radio that uses chirp spread spectrum; the spreading factor (SF7–SF12) trades range against data rate. LoRaWAN is the network protocol on top: end devices send to every gateway in range, gateways forward to a network server, which passes data to application servers (a star-of-stars). Devices are Class A, B or C depending on when they can receive."
+  long={[
+    "Explain LPWAN and why IoT needs it.",
+    "Differentiate LoRa (physical layer) and LoRaWAN (network protocol).",
+    "Explain chirp spread spectrum and the spreading-factor trade-off with a table.",
+    "Draw the star-of-stars architecture and explain each part.",
+    "Explain device classes A, B and C, airtime rules, security and applications; add a note on Sigfox.",
+  ]}
+/>

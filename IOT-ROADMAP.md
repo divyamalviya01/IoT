@@ -171,9 +171,9 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 | L13 | Communication Pattern Playground | 2.2 | Motion, Recharts |
 | L14 | Protocol Stack Builder (tap or drag; four challenges) | 2.3 | Drag and drop |
 | L15 | Wireless Technology Selector | 2.4 | Recharts |
-| L16 | Zigbee Mesh Self-Healing | 2.6 | three.js |
+| L16 | Zigbee Mesh Self-Healing (2D floor plan; the 3D house mesh is in the 2.6 Visualize tab) | 2.6 | SVG, Motion |
 | L17 | BLE Explorer (advertising, GATT, RSSI) | 2.8 | Motion |
-| L18 | NFC Tap Lab | 2.9 | three.js |
+| L18 | NFC Tap Lab (2D; the 3D phone tap is in the 2.9 Visualize tab) | 2.9 | SVG, Motion |
 | L19 | LoRa Airtime and Range Calculator | 2.10 | Recharts |
 | L20 | Flow-Based IoT Programming (Node-RED style) | 3.4 | @xyflow/react |
 | L21 | IoT Dashboard Builder | 3.5 | Recharts |
@@ -358,45 +358,45 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 **Syllabus:** Selection of wireless technologies: 6LoWPAN, Zigbee, Wi-Fi, BT, BLE, SIG, NFC, LoRa, WiDi.
 
 **2.4 Selecting a wireless technology**
-- [ ] Theory: selection criteria (range, data rate, power, cost, topology, band, network size, security), master comparison table, range vs data-rate scatter chart (log scales)
-- [ ] Visualize (3D): range rings around a device for each technology (NFC cm → BLE/Wi-Fi tens of metres → LoRa km), with a log-scale toggle
-- [ ] Lab **L15 Wireless Technology Selector**: enter requirements and get a recommended technology with reasons. Scenario cards: farm 5 km → LoRa, wearable → BLE, tap-to-pay → NFC, CCTV → Wi-Fi, home lighting mesh → Zigbee. NB-IoT/LTE-M are added in Phase 8.
+- [x] Theory: selection criteria (range, data rate, power, cost, topology, band, network size, security), master comparison table, range vs data-rate scatter chart (log scales)
+- [x] Visualize (3D): range rings around a device for each technology (NFC cm → BLE/Wi-Fi tens of metres → LoRa km), with a log-scale toggle
+- [x] Lab **L15 Wireless Technology Selector**: enter requirements and get a recommended technology with reasons. Scenario cards: farm 5 km → LoRa, wearable → BLE, tap-to-pay → NFC, CCTV → Wi-Fi, home lighting mesh → Zigbee. NB-IoT/LTE-M are added in Phase 8.
 
 **2.5 6LoWPAN**
-- [ ] Theory: IPv6 over IEEE 802.15.4, header compression (40-byte IPv6 header → a few bytes), fragmentation (127-byte frames), mesh-under vs route-over, edge router
-- [ ] Visualize (2D, interactive): header-compression animation and a fragmentation calculator (payload size → frames and overhead, with and without compression)
+- [x] Theory: IPv6 over IEEE 802.15.4, header compression (40-byte IPv6 header → a few bytes), fragmentation (127-byte frames), mesh-under vs route-over, edge router
+- [x] Visualize (2D, interactive): header-compression animation and a fragmentation calculator (payload size → frames and overhead, with and without compression)
 
 **2.6 Zigbee**
-- [ ] Theory: 802.15.4 base, coordinator/router/end device, mesh, 2.4 GHz at 250 kbps, application profiles, Zigbee 3.0 and Matter (mention)
-- [ ] Visualize (3D): Zigbee mesh across a house
-- [ ] Lab **L16 Zigbee Mesh Self-Healing**: place routers and end devices, remove a node and watch traffic re-route, recording hop count before and after
+- [x] Theory: 802.15.4 base, coordinator/router/end device, mesh, 2.4 GHz at 250 kbps, application profiles, Zigbee 3.0 and Matter (mention)
+- [x] Visualize (3D): Zigbee mesh across a house
+- [x] Lab **L16 Zigbee Mesh Self-Healing**: place routers and end devices, remove a node and watch traffic re-route, recording hop count before and after
 
 **2.7 Wi-Fi**
-- [ ] Theory: 802.11 b/g/n/ac/ax, 2.4/5/6 GHz, infrastructure vs ad-hoc, Wi-Fi HaLow (802.11ah) for IoT, power trade-offs
-- [ ] Visualize (2D, interactive): 2.4 GHz channel-overlap chart. Assign channels to access points and see interference (why channels 1, 6 and 11).
+- [x] Theory: 802.11 b/g/n/ac/ax, 2.4/5/6 GHz, infrastructure vs ad-hoc, Wi-Fi HaLow (802.11ah) for IoT, power trade-offs
+- [x] Visualize (2D, interactive): 2.4 GHz channel-overlap chart. Assign channels to access points and see interference (why channels 1, 6 and 11).
 
 **2.8 Bluetooth Classic, BLE and Bluetooth SIG**
-- [ ] Theory: Classic (piconet/scatternet, frequency hopping), BLE (advertising channels 37/38/39, central/peripheral, GATT services and characteristics, beacons), Bluetooth Mesh, and the **Bluetooth SIG** (who maintains the standards and profiles); Classic vs BLE table
-- [ ] Visualize (2D): advertising packets hopping across channels, and a GATT tree
-- [ ] Lab **L17 BLE Explorer**: scan for simulated peripherals (heart-rate band, beacon), connect, browse services and characteristics, read or subscribe to notifications, and drag the phone to see RSSI → distance
+- [x] Theory: Classic (piconet/scatternet, frequency hopping), BLE (advertising channels 37/38/39, central/peripheral, GATT services and characteristics, beacons), Bluetooth Mesh, and the **Bluetooth SIG** (who maintains the standards and profiles); Classic vs BLE table
+- [x] Visualize (2D): advertising packets hopping across channels, and a GATT tree
+- [x] Lab **L17 BLE Explorer**: scan for simulated peripherals (heart-rate band, beacon), connect, browse services and characteristics, read or subscribe to notifications, and drag the phone to see RSSI → distance
 
 **2.9 NFC**
-- [ ] Theory: 13.56 MHz, under ~10 cm, modes (reader/writer, peer-to-peer, card emulation), NDEF, NFC vs RFID (FASTag example)
-- [ ] Visualize (3D): a phone taps a tag inside an animated magnetic field
-- [ ] Lab **L18 NFC Tap Lab**: write an NDEF record (URL/text) to a virtual tag and tap to read it. A distance slider shows reads failing beyond a few centimetres.
+- [x] Theory: 13.56 MHz, under ~10 cm, modes (reader/writer, peer-to-peer, card emulation), NDEF, NFC vs RFID (FASTag example)
+- [x] Visualize (3D): a phone taps a tag inside an animated magnetic field
+- [x] Lab **L18 NFC Tap Lab**: write an NDEF record (URL/text) to a virtual tag and tap to read it. A distance slider shows reads failing beyond a few centimetres.
 
 **2.10 LoRa / LoRaWAN (+ Sigfox note)**
-- [ ] Theory: chirp spread spectrum, spreading factor SF7–SF12 trade-off, star-of-stars architecture (end device → gateway → network server → app), device classes A/B/C, duty-cycle limits; short Sigfox sidebar as another LPWAN
-- [ ] Visualize (3D): farm with gateways and km-range coverage, plus a 2D chirp waveform
-- [ ] Lab **L19 LoRa Airtime and Range Calculator**: choose SF, bandwidth and payload to get time-on-air (standard Semtech formula), maximum messages per day under 1 % duty cycle and an indicative range, charted across SFs
+- [x] Theory: chirp spread spectrum, spreading factor SF7–SF12 trade-off, star-of-stars architecture (end device → gateway → network server → app), device classes A/B/C, duty-cycle limits; short Sigfox sidebar as another LPWAN
+- [x] Visualize (3D): farm with gateways and km-range coverage, plus a 2D chirp waveform
+- [x] Lab **L19 LoRa Airtime and Range Calculator**: choose SF, bandwidth and payload to get time-on-air (standard Semtech formula), maximum messages per day under 1 % duty cycle and an indicative range, charted across SFs
 
 **2.11 WiDi (theory only)**
-- [ ] Theory: Intel Wireless Display, peer-to-peer screen mirroring over Wi-Fi, discontinued and succeeded by Miracast / Wi-Fi Direct; simple static diagram and comparison with Miracast and Chromecast
+- [x] Theory: Intel Wireless Display, peer-to-peer screen mirroring over Wi-Fi, discontinued and succeeded by Miracast / Wi-Fi Direct; simple static diagram and comparison with Miracast, Google Cast (Chromecast) and AirPlay
 
 **Assessment and exit**
-- [ ] Quiz and viva for 2.4–2.11, lab records for L15–L19
-- [ ] Engine unit tests: selector scoring, mesh re-routing, LoRa airtime formula against known reference values, 6LoWPAN fragment math
-- [ ] Unit 2 test available at `/quiz/unit-2`
+- [x] Quiz and viva for 2.4–2.11, lab records for L15–L19
+- [x] Engine unit tests: selector scoring, mesh re-routing, LoRa airtime formula against known reference values, 6LoWPAN fragment math
+- [x] Unit 2 test available at `/quiz/unit-2`
 
 ---
 

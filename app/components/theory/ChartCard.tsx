@@ -28,6 +28,8 @@ interface ChartCardProps<Row extends Record<string, unknown>> {
   className?: string;
   /** Drop the card border and padding, for charts inside an existing panel */
   bare?: boolean;
+  /** Legend entries when colour stands for something other than the series, e.g. one dot per technology */
+  legend?: { label: string; color: string }[];
 }
 
 /** Series colour by fixed slot order. Never cycle: past 8 series, regroup. */
@@ -65,7 +67,9 @@ export function ChartCard<Row extends Record<string, unknown>>({
   emptyText = "No data yet.",
   className,
   bare = false,
+  legend,
 }: ChartCardProps<Row>) {
+  const legendItems = legend ?? (series.length > 1 ? series.map((s, i) => ({ label: s.label, color: s.color ?? seriesColor(i) })) : []);
   const hydrated = useHydrated();
   const [showTable, setShowTable] = useState(false);
   const tableId = useId();
@@ -96,12 +100,12 @@ export function ChartCard<Row extends Record<string, unknown>>({
         </button>
       </div>
 
-      {series.length > 1 && (
+      {legendItems.length > 0 && (
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-2" aria-label="Legend">
-          {series.map((s, i) => (
-            <li key={s.key} className="flex items-center gap-1.5">
-              <span className="h-2.5 w-4 rounded-sm" style={{ background: s.color ?? seriesColor(i) }} aria-hidden />
-              {s.label}
+          {legendItems.map((item) => (
+            <li key={item.label} className="flex items-center gap-1.5">
+              <span className="h-2.5 w-4 rounded-sm" style={{ background: item.color }} aria-hidden />
+              {item.label}
             </li>
           ))}
         </ul>

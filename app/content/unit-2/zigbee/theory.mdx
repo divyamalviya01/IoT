@@ -1,0 +1,119 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, LayerStack, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Zigbee is a low-power wireless mesh networking standard built on IEEE 802.15.4, used to connect smart lights, plugs and sensors in homes and buildings.
+</Callout>
+
+## What Zigbee is
+
+<Term id="zigbee">Zigbee</Term> lets many small devices talk to each other over short radio links, passing messages along until they reach the hub. It was designed for devices that send little data and must run for years on a battery.
+
+<CompareTable
+  caption="Zigbee at a glance"
+  columns={["Feature", "Value"]}
+  rows={[
+    ["Radio standard", "IEEE 802.15.4"],
+    ["Frequency", "2.4 GHz worldwide (16 channels), also sub-GHz options in some regions"],
+    ["Data rate", "250 kbps at 2.4 GHz"],
+    ["Range", "About 10–100 m per hop, depending on walls"],
+    ["Topologies", "Star, tree and mesh"],
+    ["Network size", "Up to about 65,000 addresses in theory; real networks have tens to hundreds of devices"],
+    ["Security", "AES-128 encryption with network and link keys"],
+    ["Looked after by", "The Connectivity Standards Alliance (CSA), formerly the Zigbee Alliance"],
+  ]}
+/>
+
+## The Zigbee stack
+
+<LayerStack
+  caption="Zigbee protocol stack"
+  layers={[
+    { name: "Application layer", detail: "The device's job, described as clusters such as On/Off or Temperature Measurement. Zigbee 3.0 (2016) unified the older separate profiles so devices from different makers work together.", items: ["Clusters", "Zigbee 3.0"] },
+    { name: "Application support (APS) and device objects (ZDO)", detail: "Delivers messages to the right application on a device, manages security keys and handles joining.", items: ["Binding", "Discovery", "Security"] },
+    { name: "Network layer", detail: "Defined by Zigbee: gives devices network addresses, finds routes through the mesh and repairs them when a device fails.", items: ["Mesh routing", "Addressing"] },
+    { name: "IEEE 802.15.4 MAC and physical layers", detail: "The low-power radio: 2.4 GHz, 250 kbps, frames of at most 127 bytes.", items: ["2.4 GHz", "250 kbps"] },
+  ]}
+/>
+
+## Three kinds of device
+
+<CompareTable
+  caption="Zigbee device types"
+  columns={["Device", "Power", "Routes for others?", "Job", "Example"]}
+  rows={[
+    ["Coordinator", "Mains", "Yes", "Starts the network, picks the channel, lets devices join and holds the security keys (trust centre). Exactly one per network.", "The smart-home hub"],
+    ["Router", "Mains", "Yes", "Passes messages on and lets new devices join through it.", "Smart plugs, smart bulbs"],
+    ["End device", "Battery", "No", "Sleeps most of the time and talks only to its parent, which holds messages for it while it sleeps.", "Door, motion and temperature sensors"],
+  ]}
+/>
+
+The <Term id="coordinator">coordinator</Term> and every <Term id="zigbee-router">router</Term> must stay powered, because they relay for others. An <Term id="end-device">end device</Term> can sleep for minutes at a time, which is why a door sensor's coin cell lasts years.
+
+## Mesh networking and self-healing
+
+In a mesh, a message hops from router to router until it reaches its destination. If a router is unplugged, the network finds another route. This is called **self-healing**. End devices whose parent disappears re-join another router in range.
+
+<Callout kind="remember" title="What if the coordinator fails?">
+Routers keep passing messages along the routes they already have, so the mesh keeps working. What stops is new devices joining, because only the coordinator (trust centre) can let them in. In most homes the hub is also the gateway to the internet, so the app loses contact until the hub returns.
+</Callout>
+
+Lab L16 lets you place routers and end devices on a floor plan, fail a router, and watch messages re-route or devices become orphaned.
+
+## Zigbee, Matter and the CSA
+
+In 2021 the Zigbee Alliance renamed itself the <Term id="csa">Connectivity Standards Alliance (CSA)</Term>. The CSA also created <Term id="matter">Matter</Term>, a standard that lets smart-home devices from different makers work together.
+
+Matter runs over **Wi-Fi, Thread and Ethernet**, not over Zigbee. Existing Zigbee devices join a Matter home through a **bridge**, usually the Zigbee hub itself.
+
+<CompareTable
+  caption="Zigbee compared with its neighbours"
+  columns={["", "Zigbee", "Thread", "BLE", "Wi-Fi"]}
+  rows={[
+    ["Radio", "802.15.4", "802.15.4", "Bluetooth LE", "802.11"],
+    ["Mesh", "Yes", "Yes", "Possible (Bluetooth Mesh)", "Not usually"],
+    ["IP addresses", "No (needs a hub)", "Yes (IPv6 via 6LoWPAN)", "No", "Yes"],
+    ["Power", "Low", "Low", "Very low", "High"],
+    ["Matter", "Through a bridge", "Yes", "Only to set devices up", "Yes"],
+  ]}
+/>
+
+<Callout kind="example" title="Smart lights in an Indian flat">
+A family fits Zigbee bulbs in every room and a few battery door sensors. The bulbs are routers, so a sensor on the far balcony reaches the hub by hopping through the hall and living-room bulbs. If someone switches off the hall bulb at the wall, messages find a way round through the kitchen bulb instead.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Very low power: end devices last years on a coin cell.
+- Mesh extends range through the building and heals itself.
+- Large networks of cheap devices, with AES-128 security.
+
+**Limitations**
+
+- Low data rate: fine for commands and readings, not for audio or video.
+- Needs a hub or gateway to reach phones and the internet.
+- Shares the crowded 2.4 GHz band with Wi-Fi and Bluetooth.
+- Routers must stay powered; switching them off at the wall weakens the mesh.
+
+<KeyPoints
+  points={[
+    "Zigbee is a low-power mesh standard on IEEE 802.15.4: 2.4 GHz, 250 kbps, 10–100 m per hop.",
+    "Device types: one coordinator (starts the network, trust centre), routers (mains-powered, relay), end devices (battery, sleep, never relay).",
+    "Topologies: star, tree and mesh; the mesh heals by finding new routes when a router fails.",
+    "Zigbee 3.0 unified the application profiles. The Zigbee Alliance became the CSA in 2021.",
+    "Matter runs over Wi-Fi, Thread and Ethernet; Zigbee devices join Matter through a bridge.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain Zigbee: its protocol stack, device types and topologies."
+  short="Zigbee is a low-power wireless mesh standard built on IEEE 802.15.4 (2.4 GHz, 250 kbps). It has a coordinator that starts the network, routers that relay messages, and battery-powered end devices that sleep and never relay. It supports star, tree and mesh topologies, and the mesh heals itself when a router fails."
+  long={[
+    "Introduce Zigbee and its key figures (frequency, data rate, range, power, security).",
+    "Draw the stack: 802.15.4 PHY and MAC, network layer, APS/ZDO, application (clusters, Zigbee 3.0).",
+    "Explain the three device types in a table.",
+    "Draw star, tree and mesh topologies and explain self-healing.",
+    "Give applications, advantages and limitations; mention the CSA and Matter.",
+  ]}
+/>

@@ -37,7 +37,7 @@ export function buildStack(stack: StackId, payload: string, compress: boolean): 
       { layer: "Application", name: "CoAP header", bytes: coap, detail: `Fixed header (4), token (2), Uri-Path option “${path}” (${1 + utf8(path)}), payload marker (1)`, tone: "bg-u3" },
     ];
     if (compress) {
-      parts.push({ layer: "Network + transport", name: "6LoWPAN compressed IPv6 + UDP", bytes: 7, detail: "6LoWPAN squeezes the 48 bytes of IPv6 and UDP headers by leaving out values the receiver can work out (approximate best case)", tone: "bg-u2" });
+      parts.push({ layer: "Network + transport", name: "6LoWPAN compressed IPv6 + UDP", bytes: 6, detail: "6LoWPAN squeezes the 48 bytes of IPv6 and UDP headers into 6 (IPHC 2, compressed UDP 4) by leaving out values the receiver can work out (best case)", tone: "bg-u2" });
     } else {
       parts.push(
         { layer: "Transport", name: "UDP header", bytes: 8, detail: "Source port, destination port, length and checksum: 2 bytes each", tone: "bg-u2" },

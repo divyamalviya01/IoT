@@ -1,0 +1,155 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Cloud, Cpu, Router } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+6LoWPAN (IPv6 over Low-power Wireless Personal Area Networks) is an adaptation layer that squeezes IPv6 packets into tiny IEEE 802.15.4 radio frames by compressing headers and splitting large packets.
+</Callout>
+
+## The problem 6LoWPAN solves
+
+Every IoT device should ideally have its own internet address, and IPv6 has enough for billions of things. But IPv6 was designed for big networks:
+
+- An IPv6 header alone is **40 bytes**, and UDP adds **8 more**.
+- IPv6 expects links to carry packets of at least **1280 bytes**.
+- An <Term id="ieee-802-15-4">IEEE 802.15.4</Term> radio frame carries at most **127 bytes**, and up to 25 of those go to its own header and error check.
+
+Without help, the headers would eat half of every frame, and most IPv6 packets would not fit at all. 6LoWPAN, defined by the IETF in RFC 4944 and RFC 6282, fixes this.
+
+## Where it sits
+
+6LoWPAN is an <Term id="adaptation-layer">adaptation layer</Term> between IPv6 and the 802.15.4 radio:
+
+<CompareTable
+  caption="The 6LoWPAN stack"
+  columns={["Layer", "Protocol"]}
+  rows={[
+    ["Application", "CoAP, MQTT-SN"],
+    ["Transport", "UDP"],
+    ["Network", "IPv6, with RPL routing"],
+    ["Adaptation", "6LoWPAN: header compression, fragmentation, mesh addressing"],
+    ["Link + physical", "IEEE 802.15.4 (250 kbps at 2.4 GHz)"],
+  ]}
+/>
+
+## 1. Header compression
+
+<Term id="header-compression">Header compression</Term> leaves out anything the receiver can work out for itself:
+
+- The IP version is always 6.
+- Traffic class and flow label are usually zero.
+- The payload length can be read from the frame length.
+- The source and destination addresses can be built from the radio's own MAC addresses.
+- Common hop-limit values and UDP ports can be sent in a few bits.
+
+With the IPHC scheme, the 48 bytes of IPv6 and UDP headers shrink to as few as **6 bytes**: 2 bytes of IPHC, 1 byte saying UDP follows, 1 byte for both port numbers and the 2-byte UDP checksum.
+
+<CompareTable
+  caption="Room for data in one 127-byte frame (no link security)"
+  columns={["", "Uncompressed", "Compressed (best case)"]}
+  rows={[
+    ["Frame size", "127 bytes", "127 bytes"],
+    ["802.15.4 header and check", "up to 25 bytes", "up to 25 bytes"],
+    ["Dispatch + IPv6 + UDP headers", "1 + 40 + 8 = 49 bytes", "6 bytes"],
+    ["Left for your data", "53 bytes", "96 bytes"],
+  ]}
+  note="Link-layer security (AES-CCM) takes about 21 more bytes, leaving 81 instead of 102 after the MAC header."
+/>
+
+## 2. Fragmentation
+
+If a packet is still too big, 6LoWPAN uses <Term id="fragmentation">fragmentation</Term>: it splits the packet across several frames and the receiver puts them back together.
+
+- The **first fragment** has a 4-byte header (the whole packet's size and a tag) and carries the IP and UDP headers.
+- **Later fragments** have a 5-byte header that adds an offset, counted in units of 8 bytes.
+- Every fragment except the last carries a multiple of 8 bytes.
+
+<CompareTable
+  caption="How many frames a UDP payload needs (no link security)"
+  columns={["Payload", "Uncompressed headers", "Compressed headers"]}
+  rows={[
+    ["50 bytes", "1 frame", "1 frame"],
+    ["80 bytes", "2 frames", "1 frame"],
+    ["100 bytes", "2 frames", "2 frames"],
+    ["200 bytes", "3 frames", "3 frames"],
+    ["500 bytes", "6 frames", "6 frames"],
+  ]}
+/>
+
+Compression matters most for small packets, which is what sensors usually send: at 80 bytes it halves the frames. For big payloads both need about the same number of frames, but compression still saves bytes. The Visualize tab has a calculator for any payload.
+
+<Callout kind="remember" title="Losing one fragment loses the packet">
+If one fragment is lost, the whole packet must be sent again. That is why IoT protocols keep messages small enough to fit in one frame whenever they can.
+</Callout>
+
+## 3. Mesh-under and route-over
+
+In a multi-hop network, packets must be forwarded from radio to radio. 6LoWPAN allows two ways:
+
+<CompareTable
+  caption="Mesh-under vs route-over"
+  columns={["", "Mesh-under", "Route-over"]}
+  rows={[
+    ["Where forwarding happens", "In the adaptation layer, using link (MAC) addresses", "In the IP layer: every radio hop is an IP hop"],
+    ["Routing protocol", "A link-layer mesh scheme", "RPL"],
+    ["The whole mesh looks like", "One IP link", "Many IP links joined by routers"],
+    ["Fragments", "Forwarded one by one, rebuilt only at the end", "Usually rebuilt at each hop"],
+    ["Used by", "Some early 802.15.4 meshes", "Thread, most modern 6LoWPAN networks"],
+  ]}
+/>
+
+<Term id="rpl">RPL</Term> builds a tree of routes towards the network's root, which is usually the border router.
+
+## The border router
+
+A 6LoWPAN network joins the wider internet through a <Term id="edge-router">border (edge) router</Term>. It compresses and expands headers, routes packets between the radio mesh and Wi-Fi or Ethernet, and often acts as the RPL root.
+
+<FlowDiagram
+  nodes={[
+    { label: "Sensors", sub: "802.15.4 + 6LoWPAN", icon: Cpu, tone: "u1" },
+    { label: "Border router", sub: "Compresses and routes", icon: Router, tone: "u2" },
+    { label: "Internet", sub: "Ordinary IPv6", icon: Cloud, tone: "u3" },
+  ]}
+  links={["Compressed IPv6", "Full IPv6"]}
+  caption="Each sensor has a real IPv6 address, reachable through the border router."
+/>
+
+<Callout kind="example" title="Matter over Thread">
+New smart-home devices that carry the Matter logo often use <Term id="thread">Thread</Term>, a mesh built on 802.15.4 and 6LoWPAN. Every bulb and sensor has an IPv6 address, and a Thread border router (often inside a smart speaker or hub) links them to the home Wi-Fi.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Gives tiny battery devices real IPv6 addresses, so they can be reached end to end.
+- Compression saves bytes, airtime and battery.
+- Works with standard internet tools and protocols such as CoAP.
+
+**Limitations**
+
+- Fragmentation is fragile: losing one fragment means resending the whole packet.
+- Needs a border router to reach other networks.
+- Low data rate (250 kbps) and small frames limit what can be sent.
+
+<KeyPoints
+  points={[
+    "6LoWPAN is an adaptation layer that carries IPv6 over IEEE 802.15.4 (RFC 4944, RFC 6282).",
+    "An 802.15.4 frame is at most 127 bytes; IPv6 + UDP headers are 48 bytes uncompressed.",
+    "IPHC header compression shrinks IPv6 + UDP headers to as few as 6 bytes by leaving out values the receiver can work out.",
+    "Fragmentation splits big packets: 4-byte header on the first fragment, 5-byte header on the rest, 8-byte offset units.",
+    "Mesh-under forwards in the adaptation layer; route-over forwards at the IP layer using RPL.",
+    "A border (edge) router connects the 6LoWPAN network to the internet. Thread is a well-known 6LoWPAN network.",
+  ]}
+/>
+
+<ExamTip
+  question="What is 6LoWPAN? Explain header compression and fragmentation."
+  short="6LoWPAN is an adaptation layer that lets IPv6 run over low-power IEEE 802.15.4 radios. Because a frame holds only 127 bytes, it compresses the 48-byte IPv6 and UDP headers to as little as 6 bytes, and splits packets that are still too big into fragments that the receiver reassembles."
+  long={[
+    "Explain why IPv6 does not fit 802.15.4 directly (header sizes, 127-byte frames, 1280-byte minimum MTU).",
+    "Draw the 6LoWPAN stack and place the adaptation layer.",
+    "Explain header compression with the fields that are left out and the byte savings.",
+    "Explain fragmentation with the FRAG1 and FRAGN headers and an example.",
+    "Compare mesh-under and route-over, and describe the border router.",
+  ]}
+/>

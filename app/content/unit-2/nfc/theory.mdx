@@ -1,0 +1,116 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, SequenceDiagram, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+NFC (Near Field Communication) is a 13.56 MHz radio link that works only over a few centimetres, used for tap-to-pay, smart tags and quick pairing.
+</Callout>
+
+## How NFC works
+
+<Term id="nfc">NFC</Term> uses **magnetic induction**. The reader (usually a phone) has a coil that makes a changing magnetic field at **13.56 MHz**. When a tag's coil comes close, the field induces a current in it.
+
+- A **passive tag** has no battery: the reader's field powers its chip, and the tag answers by changing how much power it draws.
+- The magnetic field fades very fast with distance. Reads are reliable up to about **4 cm**; about **10 cm** is the most it can manage.
+- Data rates are 106, 212 or 424 kbps: plenty for a web address or a payment.
+
+The short range is deliberate. You have to bring the phone or card close on purpose, so a payment or a door unlock cannot happen by accident from across the room.
+
+## Three operating modes
+
+<CompareTable
+  caption="NFC modes"
+  columns={["Mode", "What happens", "Example"]}
+  rows={[
+    ["Reader/writer", "The phone reads data from, or writes data to, a passive tag", "Tapping a smart poster to open a web page; writing a tag for a shop shelf"],
+    ["Card emulation", "The phone or watch behaves like a contactless card", "RuPay contactless payments, UPI tap-to-pay, metro and bus cards"],
+    ["Peer-to-peer", "Two powered devices exchange data", "Older phones beaming contacts (Android Beam was removed in Android 10, so this mode is mostly history)"],
+  ]}
+/>
+
+<Term id="card-emulation">Card emulation</Term> is behind tap-to-pay. The phone stores a token instead of the real card number, and the payment is encrypted, so the short range is only one layer of protection.
+
+## NDEF: the data on a tag
+
+Tags store data in <Term id="ndef">NDEF</Term> (NFC Data Exchange Format). An NDEF message contains one or more **records**, each with a type and a payload:
+
+<CompareTable
+  caption="Common NDEF record types"
+  columns={["Record", "Type", "Holds", "Example"]}
+  rows={[
+    ["URI", "U", "A web address, phone number or email", "https://example.com"],
+    ["Text", "T", "Plain text with a language code", "\"Room 204, Computer Lab\""],
+    ["Smart poster", "Sp", "A URI with a title and action", "A bus stop's live timetable"],
+    ["MIME", "media type", "Any data, such as Wi-Fi settings", "Join the guest Wi-Fi by tapping"],
+  ]}
+/>
+
+To save space, a URI record replaces common beginnings with one byte. For example, code `04` means "https://", so "https://example.com" takes 16 bytes as a record. Tags have little memory: an NTAG213 holds 144 bytes, an NTAG215 504 and an NTAG216 888. Lab L18 shows every byte of a record.
+
+<SequenceDiagram
+  caption="Reading a smart poster"
+  participants={["Phone", "Tag"]}
+  messages={[
+    { from: "Phone", to: "Tag", label: "13.56 MHz field on", note: "The phone's coil makes a magnetic field. The tag has no battery." },
+    { from: "Tag", to: "Phone", label: "Tag wakes, sends its ID", reply: true, note: "The field powers the tag's chip, which answers." },
+    { from: "Phone", to: "Tag", label: "Read NDEF message", note: "The phone asks for the stored data." },
+    { from: "Tag", to: "Phone", label: "URI record: https://example.com", reply: true, note: "The phone decodes the record and offers to open the page." },
+  ]}
+/>
+
+## NFC and RFID
+
+NFC grew out of <Term id="rfid">RFID</Term> (Radio Frequency Identification). RFID comes in several bands with very different ranges:
+
+<CompareTable
+  caption="RFID bands and NFC"
+  columns={["", "Low-frequency RFID", "High-frequency RFID and NFC", "UHF RFID"]}
+  rows={[
+    ["Frequency", "125–134 kHz", "13.56 MHz", "865–868 MHz in India"],
+    ["Range", "A few cm", "A few cm (NFC) up to about 1 m (some HF RFID)", "Several metres"],
+    ["Two-way between devices", "No", "Yes, for NFC", "No"],
+    ["Examples", "Animal tags, older access cards", "Tap-to-pay, smart posters, library books", "FASTag toll tags, warehouse tracking"],
+  ]}
+/>
+
+<Callout kind="remember" title="FASTag is not NFC">
+FASTag uses **UHF RFID**, read from several metres away by the toll plaza's overhead reader while the car is moving. NFC works only over a few centimetres, which is why it is used for payments that must be deliberate.
+</Callout>
+
+<Callout kind="example" title="Tap to pay at a kirana shop">
+A customer holds a RuPay contactless card or a phone with UPI tap-to-pay near the shop's card machine. The machine's field powers the card's chip, the encrypted payment details pass in a fraction of a second, and small payments go through without a PIN.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Very short range makes accidental or remote reads unlikely.
+- Passive tags need no battery and cost only a few rupees.
+- Instant and simple: tap and done, with no pairing.
+
+**Limitations**
+
+- Works only over a few centimetres, so it cannot be used for sensor networks.
+- Low data rate and small tag memory.
+- Not every phone has NFC, and some features (such as peer-to-peer) have been removed.
+
+<KeyPoints
+  points={[
+    "NFC works at 13.56 MHz by magnetic induction; reliable up to about 4 cm, at most about 10 cm.",
+    "Passive tags have no battery; the reader's field powers them.",
+    "Modes: reader/writer, card emulation (tap-to-pay) and peer-to-peer (mostly history).",
+    "Tags store NDEF messages made of records such as URI and Text; URI prefixes save bytes.",
+    "NFC is a special high-frequency RFID that can talk both ways; FASTag uses UHF RFID, not NFC.",
+  ]}
+/>
+
+<ExamTip
+  question="What is NFC? Explain its working and modes of operation, and compare NFC with RFID."
+  short="NFC is a short-range (a few centimetres) wireless link at 13.56 MHz that works by magnetic induction between coils. Passive tags are powered by the reader's field. Its modes are reader/writer, card emulation and peer-to-peer. NFC is based on high-frequency RFID but adds two-way communication between devices; RFID can also use other bands, such as UHF for FASTag, with ranges of several metres."
+  long={[
+    "Explain how NFC works: 13.56 MHz, coils, magnetic induction, passive tags, range.",
+    "Describe the three modes with Indian examples (RuPay contactless, UPI tap-to-pay, smart posters).",
+    "Explain NDEF records and tag memory.",
+    "Compare NFC with low-frequency, high-frequency and UHF RFID in a table.",
+    "Give advantages, limitations and security aspects.",
+  ]}
+/>

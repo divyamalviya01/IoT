@@ -1,0 +1,107 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+import RangeRateChart from "./RangeRateChart";
+
+<Callout kind="definition" title="In one line">
+No wireless technology is best at everything: you choose by asking how far, how fast, how long on a battery, how cheap and how many devices, then pick the technology whose trade-offs fit.
+</Callout>
+
+## Why the choice matters
+
+A soil sensor on a farm, a fitness band and a CCTV camera all need wireless links, but they need very different ones. The wrong choice means a battery that dies in a week, a signal that cannot reach, or a bill that is too high.
+
+Every radio trades **range**, **data rate** and **power** against each other. Sending far needs more power or a slower signal. Sending fast needs more power or a shorter distance. That is why there are so many technologies.
+
+## Selection criteria
+
+<CompareTable
+  caption="Questions to ask before choosing"
+  columns={["Criterion", "Question to ask", "Example"]}
+  rows={[
+    ["Range", "How far apart are the devices and the gateway?", "Centimetres for a payment, kilometres for a farm"],
+    ["Data rate", "How much data, how often?", "A few bytes an hour, or live video"],
+    ["Power", "Battery or mains? How long must the battery last?", "Years for a soil sensor, plugged in for a camera"],
+    ["Cost", "What can each device cost, and is there a network fee?", "Hundreds of cheap sensors need cheap radios"],
+    ["Topology", "Star around a hub, or a mesh that relays?", "Smart bulbs relaying for each other across a house"],
+    ["Frequency band", "Licence-free ISM band or a paid mobile network?", "2.4 GHz is free but crowded; 865–867 MHz goes farther"],
+    ["Network size", "Tens of devices or thousands?", "A whole street of smart meters"],
+    ["Security", "Is the data private or safety-critical?", "Payments and door locks need strong encryption"],
+  ]}
+/>
+
+Most IoT radios use licence-free <Term id="ism-band">ISM bands</Term>. Lower frequencies, such as India's 865–867 MHz band, travel farther and pass walls better than 2.4 GHz.
+
+## The technologies compared
+
+<CompareTable
+  caption="Common IoT wireless technologies (typical values)"
+  columns={["Technology", "Band", "Typical range", "Data rate", "Power", "Topology", "Security", "Typical use"]}
+  rows={[
+    ["NFC", "13.56 MHz", "Up to 4 cm (max 10 cm)", "424 kbps", "Very low (tags need no battery)", "Point-to-point", "Short range itself protects", "Tap-to-pay, smart posters"],
+    ["BLE", "2.4 GHz", "10–30 m", "1–2 Mbps", "Very low", "Star (mesh possible)", "AES-128 pairing", "Wearables, beacons"],
+    ["Bluetooth Classic", "2.4 GHz", "About 10 m", "Up to 3 Mbps", "Medium", "Piconet (star)", "Pairing, encryption", "Headsets, speakers"],
+    ["Zigbee", "2.4 GHz", "10–100 m per hop", "250 kbps", "Low", "Mesh", "AES-128", "Smart lights, home sensors"],
+    ["Wi-Fi", "2.4 / 5 / 6 GHz", "30–50 m indoors", "Up to Gbps", "High", "Star (access point)", "WPA2 / WPA3", "Cameras, smart TVs, IP devices"],
+    ["LoRaWAN", "865–867 MHz (India)", "2–5 km city, 10–15 km open", "0.3–5.5 kbps", "Very low", "Star of stars", "AES-128 (two keys)", "Farms, meters, city sensors"],
+  ]}
+  note="Cellular IoT (NB-IoT and LTE-M) is covered in topic 3.22."
+/>
+
+## The trade-off on one chart
+
+<RangeRateChart />
+
+The chart has logarithmic axes, so NFC's 4 cm and LoRaWAN's 5 km both fit. Notice the empty top-right corner. A technology that sends far **and** fast would need a lot of power, which IoT devices rarely have.
+
+<Callout kind="remember" title="Rules of thumb">
+Longer range usually means a lower data rate. A higher data rate usually means more power. Mesh networks extend range hop by hop, but routers must stay powered.
+</Callout>
+
+## Choosing, step by step
+
+1. **Rule out** anything that cannot reach far enough or carry the data. Live video rules out LoRaWAN and Zigbee; 5 km rules out everything except LPWAN or cellular.
+2. **Check power.** For a battery that must last years, prefer BLE, Zigbee end devices or LoRaWAN, and avoid always-on Wi-Fi.
+3. **Check topology.** Many devices spread through a building suit a mesh such as Zigbee or Thread.
+4. **Check who must connect.** If a phone talks to the device directly, use BLE, NFC or Wi-Fi.
+5. **Check IP.** If the device must speak IP without a gateway, use Wi-Fi, Thread (6LoWPAN) or cellular.
+
+Lab L15 turns these steps into a selector that ranks the technologies for your needs and explains why.
+
+<Callout kind="example" title="One smart city, many radios">
+Under India's Smart Cities Mission, one city may use several technologies at once: LoRaWAN for water meters and parking sensors spread over kilometres, a mesh for street lights that relay for each other, Wi-Fi or fibre for CCTV cameras, and NFC cards for bus fares.
+</Callout>
+
+## Advantages and limitations of comparing by criteria
+
+**Advantages**
+
+- Turns a confusing list of standards into a few clear questions.
+- Avoids over-paying for speed or range a project does not need.
+- Makes trade-offs visible, so the choice can be explained to others.
+
+**Limitations**
+
+- Real range depends on walls, terrain and antennas, so typical values are only a guide.
+- Some needs pull in different directions; there is rarely a perfect answer.
+- Running costs, such as network fees, can matter as much as the radio.
+
+<KeyPoints
+  points={[
+    "Selection criteria: range, data rate, power, cost, topology, frequency band, network size and security.",
+    "Range, data rate and power trade against each other: no technology is far, fast and frugal.",
+    "Short range: NFC (cm), BLE and Bluetooth (metres). Medium: Zigbee mesh and Wi-Fi (tens of metres). Long: LoRaWAN (km).",
+    "Low power favours BLE, Zigbee end devices and LoRaWAN; high data rates need Wi-Fi.",
+    "Phones talk directly to BLE, NFC and Wi-Fi; Zigbee and LoRaWAN need a gateway.",
+  ]}
+/>
+
+<ExamTip
+  question="What criteria are used to select a wireless technology for an IoT application? Compare the common technologies."
+  short="The main criteria are range, data rate, power consumption, cost, topology, frequency band, network size and security. For example, NFC suits a few centimetres (payments), BLE suits low-power wearables, Zigbee suits home meshes, Wi-Fi suits high data rates, and LoRaWAN suits kilometres at very low data rates."
+  long={[
+    "Explain why no single wireless technology fits every IoT application (the range–rate–power trade-off).",
+    "List and explain the selection criteria with examples.",
+    "Give a comparison table of NFC, BLE, Bluetooth Classic, Zigbee, Wi-Fi and LoRaWAN.",
+    "Describe a step-by-step way to choose, with two or three scenarios (farm, wearable, CCTV).",
+    "Conclude with how one system may combine several technologies.",
+  ]}
+/>

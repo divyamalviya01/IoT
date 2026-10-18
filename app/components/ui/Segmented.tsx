@@ -32,7 +32,7 @@ export function Segmented<T extends string>({
   const name = useId();
 
   return (
-    <fieldset className={cn("grid gap-1.5", className)}>
+    <fieldset className={cn("grid min-w-0 gap-1.5", className)}>
       <legend
         className={cn(
           "mb-1.5 text-[0.95rem] font-semibold text-ink",
@@ -41,7 +41,8 @@ export function Segmented<T extends string>({
       >
         {label}
       </legend>
-      <div className="inline-flex w-fit rounded-lg border border-line bg-surface-2 p-0.5">
+      {/* Options wrap onto a second row rather than overflow a narrow panel */}
+      <div className="inline-flex w-fit max-w-full flex-wrap rounded-lg border border-line bg-surface-2 p-0.5">
         {options.map((option) => {
           const checked = option.value === value;
           return (

@@ -169,7 +169,7 @@ export default function EncapsulationVisual() {
           <li>Each layer adds its header in front of everything above it, like envelopes inside a parcel.</li>
           <li>For a short reading, the headers are much bigger than the data itself.</li>
           <li>HTTP's text headers are far larger than MQTT's or CoAP's binary headers.</li>
-          <li>Turn on 6LoWPAN compression for CoAP and watch the IPv6 and UDP headers shrink from 48 bytes to about 7.</li>
+          <li>Turn on 6LoWPAN compression for CoAP and watch the IPv6 and UDP headers shrink from 48 bytes to 6.</li>
         </ul>
       </section>
     </div>

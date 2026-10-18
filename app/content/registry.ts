@@ -840,7 +840,7 @@ export const labs: Lab[] = [
     topic: "2.6",
     phase: 4,
     aim: "To observe how a Zigbee mesh network re-routes traffic when a router fails.",
-    tech: ["three.js"],
+    tech: ["SVG", "Motion"],
   },
   {
     id: "L17",
@@ -858,7 +858,7 @@ export const labs: Lab[] = [
     topic: "2.9",
     phase: 4,
     aim: "To write and read NDEF records on an NFC tag and find the working distance of NFC.",
-    tech: ["three.js"],
+    tech: ["SVG", "Motion"],
   },
   {
     id: "L19",

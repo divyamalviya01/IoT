@@ -1,0 +1,95 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Laptop, Monitor, Wifi } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+WiDi (Intel Wireless Display) let a laptop show its screen on a TV over a direct Wi-Fi link with no cable; Intel ended it around 2016, and the open Miracast standard took its place.
+</Callout>
+
+## What WiDi was
+
+**WiDi** was Intel's technology, launched in 2010, for mirroring a laptop's screen and sound on a TV or projector without an HDMI cable. It needed an Intel processor and Intel Wi-Fi in the laptop, and a WiDi-ready TV or a small receiver box plugged into the TV.
+
+The laptop and the receiver talked **directly**, peer to peer over Wi-Fi, without going through the home router. That is why the syllabus groups it with wireless technologies.
+
+## How it worked
+
+<FlowDiagram
+  nodes={[
+    { label: "Laptop", sub: "Captures and compresses the screen", icon: Laptop, tone: "u2" },
+    { label: "Direct Wi-Fi link", sub: "Peer to peer, no router", icon: Wifi, tone: "neutral" },
+    { label: "TV or receiver", sub: "Decodes and displays", icon: Monitor, tone: "u3" },
+  ]}
+  links={["Compressed video", "Video to the screen"]}
+  caption="WiDi and Miracast mirror the screen over a direct Wi-Fi link."
+/>
+
+1. The laptop captures what is on its screen many times a second.
+2. It compresses the pictures and sound into a video stream (H.264).
+3. The stream travels over a direct Wi-Fi link to the receiver.
+4. The receiver decodes the stream and shows it on the TV.
+
+Compression and decoding add a little delay, so mirroring suits slides and videos better than fast games.
+
+## What happened to WiDi
+
+Later versions of WiDi also supported **<Term id="miracast">Miracast</Term>**, an open standard certified by the Wi-Fi Alliance in 2012 and built on <Term id="wifi-direct">Wi-Fi Direct</Term>. Once Windows, Android phones and TVs supported Miracast directly, a separate Intel-only system was no longer needed, and Intel stopped WiDi around 2016.
+
+## Screen sharing today
+
+<CompareTable
+  caption="WiDi and its successors"
+  columns={["", "Intel WiDi", "Miracast", "Google Cast", "Apple AirPlay"]}
+  rows={[
+    ["Who", "Intel", "Wi-Fi Alliance (open standard)", "Google", "Apple"],
+    ["Network path", "Direct Wi-Fi link", "Wi-Fi Direct, no router needed", "Through the home Wi-Fi", "Through the home Wi-Fi"],
+    ["How it works", "Mirrors the screen", "Mirrors the screen", "The TV fetches the video from the internet itself; the phone acts as a remote", "Mirrors the screen or sends the video"],
+    ["Status", "Ended about 2016", "Built into Windows, many Android phones and TVs", "Built into Google TV and many smart TVs", "Built into Apple devices and some TVs"],
+  ]}
+/>
+
+Google Cast works differently from mirroring: the phone only tells the TV what to play, and the TV streams it straight from the internet, so the phone can be used for other things or even switched off. Google stopped selling Chromecast dongles in 2024, but Cast lives on inside TVs.
+
+<Callout kind="example" title="Presenting in a classroom">
+A teacher wants to show slides from a laptop on the classroom TV without hunting for an HDMI cable. With Miracast (on Windows: press Windows + K), the laptop finds the TV and mirrors the screen over a direct Wi-Fi link. Ten years ago, an Intel WiDi receiver box would have done the same job.
+</Callout>
+
+## Why it matters for IoT
+
+- Smart TVs and streaming devices are among the most common IoT devices at home.
+- WiDi and Miracast show **peer-to-peer Wi-Fi**: two devices linking directly, with no access point.
+- The story shows how a single company's technology gives way to an open standard that everyone supports.
+
+## Advantages and limitations
+
+**Advantages (of wireless display in general)**
+
+- No cables: present from anywhere in the room.
+- Direct link (WiDi and Miracast) works even without a router or internet.
+
+**Limitations**
+
+- Compression adds delay, so fast games and some video can stutter.
+- Uses a lot of Wi-Fi bandwidth and power.
+- WiDi needed Intel hardware and is now discontinued; Miracast support varies between devices.
+
+<KeyPoints
+  points={[
+    "WiDi (Intel Wireless Display, 2010) mirrored a laptop screen to a TV over a direct Wi-Fi link.",
+    "It needed Intel processors and Wi-Fi, plus a WiDi TV or receiver; Intel ended it around 2016.",
+    "Miracast (Wi-Fi Alliance, 2012) is the open standard that replaced it, built on Wi-Fi Direct.",
+    "Google Cast lets the TV fetch the stream itself; AirPlay is Apple's equivalent.",
+    "Screen mirroring compresses the screen into a video stream, which adds a small delay.",
+  ]}
+/>
+
+<ExamTip
+  question="Write a short note on WiDi."
+  short="WiDi (Intel Wireless Display) was Intel's 2010 technology for mirroring a laptop's screen and sound on a TV without cables. The laptop compressed the screen into a video stream and sent it over a direct Wi-Fi link to a WiDi TV or receiver. It needed Intel hardware and was discontinued around 2016 in favour of the open Miracast standard, which works over Wi-Fi Direct."
+  long={[
+    "Define WiDi and when and why it was introduced.",
+    "Explain how it worked, with a simple block diagram (laptop → direct Wi-Fi link → receiver → TV).",
+    "Explain why it was discontinued and how Miracast replaced it.",
+    "Compare WiDi, Miracast, Google Cast and AirPlay in a table.",
+    "Note its relevance to IoT (smart TVs, peer-to-peer Wi-Fi).",
+  ]}
+/>

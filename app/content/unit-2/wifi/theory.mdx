@@ -1,0 +1,120 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Wi-Fi (IEEE 802.11) gives devices fast wireless IP connections through an access point; it is ideal for cameras and plugged-in devices, but its power use makes it harder for battery sensors.
+</Callout>
+
+## What Wi-Fi is
+
+<Term id="wifi">Wi-Fi</Term> is the brand name for wireless networks built on the IEEE 802.11 standards. Devices connect to an <Term id="access-point">access point</Term> (usually inside the home router), which joins them to the wired network and the internet. Every device gets an IP address, so it can talk to cloud services directly.
+
+## Generations of Wi-Fi
+
+<CompareTable
+  caption="IEEE 802.11 generations"
+  columns={["Standard", "Name", "Year", "Bands", "Top speed (theory)", "Note"]}
+  rows={[
+    ["802.11b", "—", "1999", "2.4 GHz", "11 Mbps", "First widely used Wi-Fi"],
+    ["802.11a", "—", "1999", "5 GHz", "54 Mbps", "Less crowded band, shorter range"],
+    ["802.11g", "—", "2003", "2.4 GHz", "54 Mbps", "Faster 2.4 GHz"],
+    ["802.11n", "Wi-Fi 4", "2009", "2.4 and 5 GHz", "600 Mbps", "Several antennas (MIMO)"],
+    ["802.11ac", "Wi-Fi 5", "2013", "5 GHz only", "About 3.5 Gbps", "Wider channels"],
+    ["802.11ax", "Wi-Fi 6 / 6E", "2019", "2.4 and 5 GHz (6E adds 6 GHz)", "About 9.6 Gbps", "Shares airtime better; Target Wake Time saves battery"],
+    ["802.11be", "Wi-Fi 7", "2024", "2.4, 5 and 6 GHz", "Over 40 Gbps", "Uses several bands at once"],
+    ["802.11ah", "Wi-Fi HaLow", "2016", "Below 1 GHz", "Up to tens of Mbps", "Made for IoT: about 1 km, low power"],
+  ]}
+/>
+
+<Term id="wifi-halow">Wi-Fi HaLow</Term> brings Wi-Fi to IoT: its lower frequency reaches about a kilometre and passes walls better, at lower data rates and power.
+
+## Bands and channels
+
+- **2.4 GHz:** longer range and better through walls, but crowded. Microwave ovens, Bluetooth and Zigbee use it too.
+- **5 GHz:** many more channels and faster, but shorter range.
+- **6 GHz:** the newest band (Wi-Fi 6E and Wi-Fi 7), with plenty of clean channels, being opened for Wi-Fi in more and more countries.
+
+In the 2.4 GHz band, India allows channels 1 to 13. Channel centres are only **5 MHz apart**, but each channel is about **20–22 MHz wide**, so neighbouring channels overlap. Only channels **1, 6 and 11** are far enough apart not to overlap.
+
+<CompareTable
+  caption="Two kinds of interference"
+  columns={["Situation", "What happens", "How bad"]}
+  rows={[
+    ["Two access points on the same channel", "They hear each other and take turns, sharing the airtime", "Slower, but orderly"],
+    ["Access points on partly overlapping channels (for example 1 and 3)", "They cannot decode each other, so they do not wait, and their signals corrupt each other", "Worse: retries and errors"],
+    ["Access points on 1, 6 and 11", "No overlap", "Best"],
+  ]}
+/>
+
+This is called <Term id="co-channel">co-channel and adjacent-channel interference</Term>. The Visualize tab lets you place access points on channels and see the clashes.
+
+<Callout kind="remember" title="1, 6 and 11">
+In 2.4 GHz, use channels 1, 6 and 11. Some guides suggest 1, 5, 9 and 13, but that works only when every device uses 20 MHz-wide channels, so 1, 6 and 11 is the safe rule. Bluetooth Low Energy places its advertising channels in the gaps between Wi-Fi channels 1, 6 and 11.
+</Callout>
+
+## Infrastructure and ad-hoc modes
+
+<CompareTable
+  caption="Ways to build a Wi-Fi network"
+  columns={["Mode", "How it works", "Example"]}
+  rows={[
+    ["Infrastructure", "Every device connects through an access point", "Home and office Wi-Fi"],
+    ["Ad-hoc (IBSS)", "Devices connect directly to each other with no access point", "Rare today"],
+    ["Wi-Fi Direct", "Two devices link directly, one acting as a mini access point", "Phone to printer or TV, screen mirroring"],
+  ]}
+/>
+
+## Wi-Fi and power in IoT
+
+Wi-Fi was built for speed, not batteries. Joining a network and staying connected costs a lot of energy, so most Wi-Fi IoT devices are plugged in. Battery Wi-Fi devices use tricks:
+
+- **Power-save mode:** the device sleeps between beacons from the access point.
+- **Target Wake Time (Wi-Fi 6):** with <Term id="twt">TWT</Term>, the device agrees with the access point when it will next wake, then sleeps until then.
+- **Deep sleep:** the device wakes, connects, sends a reading and powers down. It works, but connecting takes time and energy.
+- **HaLow:** a lower-power, longer-range version of Wi-Fi for sensors.
+
+Cheap Wi-Fi microcontrollers such as the ESP8266 and ESP32 made Wi-Fi the easiest way for hobbyists and start-ups to connect a device to the internet.
+
+## Security
+
+Wi-Fi networks should use **WPA2** or, better, **WPA3** encryption. IoT devices are often the weakest link, so change default passwords and keep firmware up to date.
+
+<Callout kind="example" title="A smart plug and a CCTV camera">
+A smart plug at home uses an ESP8266 to join the Wi-Fi and talk to its maker's cloud, so you can switch it from anywhere. It is always plugged in, so Wi-Fi's power use does not matter. A CCTV camera needs several Mbps for video, which only Wi-Fi among IoT radios can carry.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- High data rates: video, firmware updates and large files.
+- Devices speak IP directly, with no special gateway.
+- Already present in almost every home, office and phone.
+
+**Limitations**
+
+- High power use: hard for small batteries.
+- The 2.4 GHz band is crowded and has only three non-overlapping channels.
+- Range is limited to tens of metres indoors (except HaLow).
+- Each access point can handle only so many devices well.
+
+<KeyPoints
+  points={[
+    "Wi-Fi is IEEE 802.11: infrastructure mode through an access point, ad-hoc, or Wi-Fi Direct.",
+    "Generations: b, a, g, n (Wi-Fi 4), ac (Wi-Fi 5, 5 GHz only), ax (Wi-Fi 6/6E), be (Wi-Fi 7).",
+    "2.4 GHz reaches farther but is crowded; only channels 1, 6 and 11 do not overlap.",
+    "Same channel means sharing; partly overlapping channels clash, which is worse.",
+    "Wi-Fi uses a lot of power; IoT uses power save, Target Wake Time (Wi-Fi 6) and HaLow (802.11ah).",
+  ]}
+/>
+
+<ExamTip
+  question="Explain Wi-Fi standards and the role of Wi-Fi in IoT."
+  short="Wi-Fi is the IEEE 802.11 family of wireless LAN standards, from 802.11b to Wi-Fi 6 and 7, working at 2.4, 5 and 6 GHz. In IoT it suits devices that need high data rates and are mains-powered, such as cameras and smart plugs, because it gives direct IP access but uses more power than BLE or Zigbee. HaLow (802.11ah) and Target Wake Time help battery devices."
+  long={[
+    "Introduce IEEE 802.11 and the access point.",
+    "Give a table of the 802.11 generations with bands and speeds.",
+    "Explain the 2.4 GHz channels, overlap and why 1, 6 and 11 are used.",
+    "Compare infrastructure and ad-hoc modes (and Wi-Fi Direct).",
+    "Discuss Wi-Fi for IoT: power problems and solutions (power save, TWT, HaLow), with examples.",
+  ]}
+/>

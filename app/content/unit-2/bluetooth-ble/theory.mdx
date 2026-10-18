@@ -1,0 +1,143 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term, Timeline } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Bluetooth is a short-range 2.4 GHz radio in two forms: Bluetooth Classic streams data such as audio, while Bluetooth Low Energy (BLE) sends small amounts of data at very low power, which suits most IoT devices.
+</Callout>
+
+## The Bluetooth SIG
+
+The <Term id="bluetooth-sig">Bluetooth Special Interest Group (SIG)</Term> was founded in 1998 by Ericsson, IBM, Intel, Nokia and Toshiba. Today it has thousands of member companies. The SIG:
+
+- writes and updates the **Bluetooth Core Specification**;
+- defines **profiles** (for example, how headsets or heart-rate monitors behave);
+- assigns **UUIDs**, such as 0x180D for the Heart Rate service;
+- runs **qualification**, so only tested products may use the Bluetooth name and logo.
+
+The IEEE once published early Bluetooth as IEEE 802.15.1, but that standard is no longer maintained; the SIG owns Bluetooth now. The name comes from Harald "Bluetooth", a Danish king who united tribes, just as Bluetooth unites devices.
+
+<Timeline
+  caption="Bluetooth versions"
+  items={[
+    { when: "1999", title: "Bluetooth 1.0", text: "Wireless replacement for cables." },
+    { when: "2004", title: "2.0 + EDR", text: "Enhanced Data Rate: up to 3 Mbps for Classic." },
+    { when: "2010", title: "4.0: Bluetooth Low Energy", text: "BLE arrives for small, battery-powered devices." },
+    { when: "2016", title: "Bluetooth 5", text: "2 Mbps and long-range modes for BLE, bigger advertisements." },
+    { when: "2017", title: "Bluetooth Mesh", text: "Many-to-many networks for lighting and buildings." },
+    { when: "2024", title: "Bluetooth 6.0", text: "Channel Sounding measures distance accurately, unlike signal strength." },
+  ]}
+/>
+
+## Bluetooth Classic
+
+- Works at 2.4 GHz on **79 channels**, each 1 MHz wide.
+- Uses <Term id="frequency-hopping">frequency hopping</Term>: it changes channel **1600 times a second**, so interference on one channel does little harm.
+- Devices form a <Term id="piconet">piconet</Term>: one **central** device and up to **seven active peripherals**. Piconets that share a device form a **scatternet**.
+- Data rate 1 Mbps (Basic Rate), up to 3 Mbps with Enhanced Data Rate.
+- Typical uses: wireless earbuds and speakers, car hands-free kits, and older serial links.
+
+## Bluetooth Low Energy (BLE)
+
+<Term id="ble">BLE</Term> is not just a lower-power Classic: it is a different radio protocol that shares the name and the band.
+
+### Channels and advertising
+
+BLE uses **40 channels**, each 2 MHz wide. Three of them, **37, 38 and 39**, are for <Term id="advertising">advertising</Term>. They sit at 2402, 2426 and 2480 MHz, in the gaps between Wi-Fi channels 1, 6 and 11, to avoid Wi-Fi. The other 37 carry data after a connection.
+
+A BLE device that wants to be found sends a short advertisement on all three advertising channels, every few tens or hundreds of milliseconds. A phone scanning nearby hears it and can connect.
+
+### Roles
+
+<CompareTable
+  caption="BLE roles"
+  columns={["Role", "What it does", "Example"]}
+  rows={[
+    ["Peripheral", "Advertises and accepts a connection", "Fitness band, sensor"],
+    ["Central", "Scans and starts connections", "Phone, gateway"],
+    ["Broadcaster", "Only advertises, never connects", "Beacon"],
+    ["Observer", "Only listens to advertisements", "A gateway collecting beacon data"],
+  ]}
+/>
+
+### GATT: services and characteristics
+
+Once connected, a BLE device shows its data through <Term id="gatt">GATT</Term> (Generic Attribute Profile):
+
+- A **service** groups related data, such as Heart Rate (UUID 0x180D) or Battery (0x180F).
+- A <Term id="characteristic">characteristic</Term> is one value inside a service, such as Heart Rate Measurement (0x2A37) or Battery Level (0x2A19).
+- Each characteristic has **properties**: read, write and notify.
+- To receive updates automatically, the phone writes `01 00` to the characteristic's <Term id="cccd">CCCD</Term>; the device then **notifies** it whenever the value changes.
+
+<CompareTable
+  caption="A heart-rate band's GATT table"
+  columns={["Service", "Characteristic", "Properties", "Example value"]}
+  rows={[
+    ["Heart Rate (0x180D)", "Heart Rate Measurement (0x2A37)", "Notify", "72 bpm"],
+    ["Heart Rate (0x180D)", "Body Sensor Location (0x2A38)", "Read", "Wrist"],
+    ["Battery (0x180F)", "Battery Level (0x2A19)", "Read, notify", "87 %"],
+  ]}
+/>
+
+### Beacons
+
+A <Term id="beacon">beacon</Term> is a BLE device that only advertises a short ID, such as Apple's iBeacon or Google's Eddystone. A phone that hears the ID knows it is near a certain shop shelf or museum exhibit. Phones estimate the distance from the signal strength (<Term id="rssi">RSSI</Term>), which is only rough: walls and bodies weaken the signal. Lab L17 shows how big the error can be.
+
+## Bluetooth Mesh
+
+Bluetooth Mesh (2017) connects hundreds of BLE devices, mostly for lighting. It uses **managed flooding**: a message is rebroadcast by relay nodes until its hop limit runs out, rather than following a fixed route as in Zigbee.
+
+## Classic and BLE compared
+
+<CompareTable
+  caption="Bluetooth Classic vs BLE"
+  columns={["", "Bluetooth Classic", "Bluetooth Low Energy"]}
+  rows={[
+    ["Purpose", "Continuous streams (audio)", "Small, infrequent data"],
+    ["Channels", "79 × 1 MHz", "40 × 2 MHz (3 for advertising)"],
+    ["Data rate", "1–3 Mbps", "1 Mbps (2 Mbps or long-range in Bluetooth 5)"],
+    ["Power", "Medium: hours to days", "Very low: months to years on a coin cell"],
+    ["Connection setup", "Seconds", "A few milliseconds"],
+    ["Network", "Piconet: 1 central + 7 active peripherals", "Star, broadcast (beacons) or Bluetooth Mesh"],
+    ["Typical uses", "Earbuds, speakers, car kits", "Fitness bands, sensors, beacons, smart locks"],
+  ]}
+/>
+
+<Callout kind="example" title="A fitness band and earbuds">
+A fitness band uses BLE: it advertises, the phone connects, and the band notifies heart-rate readings every second while lasting a week on a tiny battery. Wireless earbuds use Bluetooth Classic (or the newer LE Audio) because audio needs a continuous stream.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Built into every smartphone, so no extra gateway is needed for personal devices.
+- BLE uses very little power and connects in milliseconds.
+- Standard profiles and SIG qualification help devices work together.
+
+**Limitations**
+
+- Short range: usually 10–30 m indoors.
+- Shares the crowded 2.4 GHz band.
+- Distance estimates from RSSI are rough.
+- Needs a phone or gateway to reach the internet.
+
+<KeyPoints
+  points={[
+    "The Bluetooth SIG (founded 1998) writes the specification, profiles and assigned UUIDs, and qualifies products.",
+    "Classic: 79 × 1 MHz channels, frequency hopping 1600 times a second, piconet of one central and up to seven active peripherals.",
+    "BLE: 40 × 2 MHz channels; advertising on 37, 38 and 39; roles central, peripheral, broadcaster and observer.",
+    "GATT organises data as services and characteristics with read, write and notify properties; writing 01 00 to the CCCD turns on notifications.",
+    "Beacons only advertise an ID; Bluetooth Mesh uses managed flooding.",
+  ]}
+/>
+
+<ExamTip
+  question="Compare Bluetooth Classic and Bluetooth Low Energy. What is the role of the Bluetooth SIG?"
+  short="Bluetooth Classic streams data such as audio over 79 hopping channels in piconets of one central and up to seven peripherals. BLE sends small data at very low power over 40 channels, advertising on channels 37, 38 and 39 and exposing data through GATT services and characteristics. The Bluetooth SIG writes the specifications, assigns UUIDs and qualifies products."
+  long={[
+    "Introduce Bluetooth and the Bluetooth SIG (history, role, qualification).",
+    "Explain Bluetooth Classic: frequency hopping, piconet and scatternet, uses.",
+    "Explain BLE: channels, advertising, roles, GATT services and characteristics, beacons.",
+    "Mention Bluetooth Mesh and the newer versions.",
+    "Give a comparison table of Classic and BLE and IoT examples.",
+  ]}
+/>
