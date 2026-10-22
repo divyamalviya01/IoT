@@ -1,0 +1,117 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { BarChart3, Cpu, Database, Radio, Workflow } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+Open-source IoT platforms are free software you can download, run on your own computer or server and change, so you are not tied to one cloud provider.
+</Callout>
+
+## Why open source for IoT?
+
+Commercial clouds (topic 3.3) are easy to start with, but you pay per message and depend on one company. Open-source platforms give another choice:
+
+- **No licence fee:** download and use them freely.
+- **Run anywhere:** a Raspberry Pi in a lab, a college server, a private cloud or a public cloud.
+- **Your data stays with you:** useful for privacy, data-protection laws and places with poor internet.
+- **Change the code:** add a protocol or feature you need.
+- **No lock-in:** if one tool stops being maintained, you or the community can carry on.
+
+The catch: **you** must install, secure, back up and update the platform.
+
+## Licences in brief
+
+"Free to download" is not always "open source". The <Term id="open-source-licence">licence</Term> decides what you may do.
+
+<CompareTable
+  caption="Common licence types"
+  columns={["Type", "Examples", "What it means"]}
+  rows={[
+    ["Permissive", "Apache 2.0, EPL-2.0, MIT", "Use, change and even sell it; keep the copyright notice"],
+    ["Strong copyleft", "AGPL-3.0", "If you change it and offer it to users, even as a web service, you must share your changes"],
+    ["Source-available", "Business Source License (BUSL)", "You can read the code, but use is limited; not open source"],
+    ["Proprietary (free tier)", "ThingSpeak", "Free to use within limits; the code is not open"],
+  ]}
+/>
+
+## The main platforms
+
+<CompareTable
+  caption="Open-source IoT platforms (licences checked October 2026)"
+  columns={["Platform", "Best at", "Licence", "Notes"]}
+  rows={[
+    ["Node-RED", "Wiring devices and services together by drawing flows", "Apache 2.0", "Started at IBM in 2013; now an OpenJS Foundation project. Runs well on a Raspberry Pi."],
+    ["ThingsBoard", "Device management, rules and dashboards in one product", "Apache 2.0 up to version 4.3; BUSL 1.1 from version 4.4 (2026)", "From 4.4 it is source-available, free only for small use. Older releases stay Apache 2.0, and each release becomes Apache 2.0 four years after it ships."],
+    ["Eclipse Kura", "Gateway software: collects data at the edge and sends it on", "EPL-2.0", "Part of the Eclipse IoT projects"],
+    ["Eclipse Hono", "Connecting very many devices over MQTT, HTTP and AMQP", "EPL-2.0", "The connectivity layer of a platform"],
+    ["Eclipse Ditto", "Digital twins: the live state of each device in the cloud", "EPL-2.0", "Works with Hono"],
+    ["Kaa", "Device management and data collection", "Community Edition: Apache 2.0", "The older Community Edition is open source; today's Kaa platform is commercial"],
+    ["Home Assistant", "Smart-home hub that runs locally, without the cloud", "Apache 2.0", "Thousands of device integrations"],
+    ["OpenRemote", "Devices, rules, maps and dashboards for cities and energy", "AGPL-3.0", "Changes you offer as a service must be shared"],
+  ]}
+  note="ThingSpeak (MathWorks) is often listed with these, but it is a free-to-start service, not open source."
+/>
+
+<Term id="node-red">Node-RED</Term> uses <Term id="flow-based-programming">flow-based programming</Term>: you drag nodes onto a canvas and wire them together. Lab L20 lets you build Node-RED-style flows in the browser.
+
+<Callout kind="remember" title="Licences can change">
+ThingsBoard was Apache 2.0 for years, then moved to the Business Source License from version 4.4. Before choosing a platform, read its current licence, and prefer standard protocols so you can move later.
+</Callout>
+
+## A typical open-source IoT stack
+
+Many projects combine small open-source tools, each doing one job well:
+
+<FlowDiagram
+  nodes={[
+    { label: "ESP32 sensors", sub: "Publish readings", icon: Cpu, tone: "u1" },
+    { label: "Mosquitto", sub: "MQTT broker", icon: Radio, tone: "u2" },
+    { label: "Node-RED", sub: "Rules and flows", icon: Workflow, tone: "u3" },
+    { label: "Time-series database", sub: "Stores readings", icon: Database, tone: "neutral" },
+    { label: "Grafana", sub: "Dashboards and alerts", icon: BarChart3, tone: "brand" },
+  ]}
+  links={["MQTT", "Subscribe", "Write", "Query"]}
+  caption="A common do-it-yourself stack: every part can run on one Raspberry Pi."
+/>
+
+The Visualize tab shows which jobs each platform covers, and what this stack leaves out.
+
+<Callout kind="example" title="Campus energy monitor">
+A college fits energy meters in its labs. An ESP32 in each lab publishes readings to Mosquitto on a Raspberry Pi. Node-RED turns off idle air conditioners at 6 pm and sends an alert if a lab uses power at night. Grafana shows each lab's use on the notice-board screen. Everything runs on campus, and the software cost is zero.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- No licence fee and no per-message bill.
+- Full control of data; can run without the internet.
+- Code can be studied and changed; large communities share help and add-ons.
+- No lock-in to one provider.
+
+**Limitations**
+
+- You must host, secure, monitor, back up and update it yourself.
+- Help comes from forums, unless you buy support.
+- Scaling to millions of devices takes skill.
+- Licence duties (for example AGPL) and licence changes must be watched.
+
+<KeyPoints
+  points={[
+    "Open-source platforms can be run anywhere, changed freely and keep data under your control; you take on hosting and security.",
+    "Node-RED (Apache 2.0, OpenJS Foundation): flow-based wiring of devices and services.",
+    "Eclipse IoT (EPL-2.0): Kura for gateways, Hono for device connectivity, Ditto for digital twins.",
+    "Home Assistant (Apache 2.0) for local smart homes; OpenRemote (AGPL-3.0) for cities and energy; Kaa Community Edition (Apache 2.0).",
+    "ThingsBoard moved from Apache 2.0 to BUSL 1.1 at version 4.4; ThingSpeak is free to start but not open source.",
+  ]}
+/>
+
+<ExamTip
+  question="What are open-source IoT platforms? Describe any three with their features."
+  short="Open-source IoT platforms are freely available software for connecting devices, processing their data and showing it, which anyone can run and modify. Examples: Node-RED (flow-based programming, Apache 2.0), Eclipse IoT projects such as Kura, Hono and Ditto (EPL-2.0), Home Assistant (local smart-home hub) and OpenRemote (AGPL-3.0)."
+  long={[
+    "Define open-source IoT platforms and why they are used (cost, control, privacy, no lock-in).",
+    "Explain licence types: permissive, copyleft, source-available.",
+    "Describe three or four platforms with features and licences in a table.",
+    "Draw a typical stack: sensors → MQTT broker → Node-RED → database → dashboard.",
+    "Give advantages and limitations, and contrast with commercial clouds.",
+  ]}
+/>

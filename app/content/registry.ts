@@ -885,7 +885,7 @@ export const labs: Lab[] = [
     topic: "3.5",
     phase: 5,
     aim: "To build a cloud dashboard that shows live sensor data and controls an actuator.",
-    tech: ["Recharts"],
+    tech: ["Recharts", "SVG"],
   },
   {
     id: "L22",
@@ -903,7 +903,7 @@ export const labs: Lab[] = [
     topic: "3.7",
     phase: 5,
     aim: "To observe how HDFS stores replicated blocks and how MapReduce computes results from IoT logs.",
-    tech: ["three.js", "Motion"],
+    tech: ["SVG", "Motion"],
   },
   {
     id: "L24",

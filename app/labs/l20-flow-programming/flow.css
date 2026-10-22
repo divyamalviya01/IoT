@@ -1,0 +1,78 @@
+/* React Flow inside lab L20: app colour tokens in both themes, and ports big
+   enough to tap with a finger. */
+.l20-flow .react-flow {
+  --xy-background-color: var(--surface);
+  --xy-background-pattern-color: var(--line-strong);
+  --xy-edge-stroke: var(--ink-3);
+  --xy-edge-stroke-selected: var(--brand);
+  --xy-edge-stroke-width: 2;
+  --xy-connectionline-stroke: var(--brand);
+  --xy-connectionline-stroke-width: 2.5;
+  --xy-handle-background-color: var(--surface);
+  --xy-handle-border-color: var(--ink-3);
+  --xy-controls-button-background-color: var(--surface);
+  --xy-controls-button-background-color-hover: var(--surface-2);
+  --xy-controls-button-color: var(--ink);
+  --xy-controls-button-color-hover: var(--ink);
+  --xy-controls-button-border-color: var(--line);
+  --xy-controls-box-shadow: 0 0 0 1px var(--line-strong);
+  --xy-attribution-background-color: color-mix(in srgb, var(--surface) 80%, transparent);
+  --xy-selection-background-color: color-mix(in srgb, var(--brand) 10%, transparent);
+  --xy-selection-border: 1px dotted var(--brand);
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+.l20-flow .react-flow__attribution a {
+  color: var(--ink-3);
+}
+
+/* Node-RED style square ports */
+.l20-flow .react-flow__handle {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border-width: 2px;
+}
+
+/* An invisible ring round each port makes a 26 px target for fingers. */
+.l20-flow .react-flow__handle::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 8px;
+}
+
+.l20-flow .react-flow__handle.connectionindicator:hover,
+.l20-flow .react-flow__handle.connectingto,
+.l20-flow .react-flow__handle.valid {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+/* A port picked by a tap waits for the second tap: make that obvious. */
+.l20-flow .react-flow__handle.clickconnecting,
+.l20-flow .react-flow__handle.connectingfrom {
+  border-color: var(--brand);
+  background: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+.l20-flow .react-flow__node:focus-visible {
+  outline: none;
+}
+
+.l20-flow .react-flow__node:focus-visible .l20-node {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.l20-flow .react-flow__edge:focus-visible .react-flow__edge-path {
+  stroke: var(--focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .l20-flow .react-flow__viewport {
+    transition: none !important;
+  }
+}

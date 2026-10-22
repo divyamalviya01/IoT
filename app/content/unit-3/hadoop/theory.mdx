@@ -1,0 +1,146 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { FileText, GitMerge, Shuffle, Sigma, SplitSquareHorizontal } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+Hadoop is an open-source Apache framework that stores huge files across many ordinary computers and processes them in parallel, right where the data is stored.
+</Callout>
+
+## Why Hadoop?
+
+Years of IoT readings can fill terabytes. One computer cannot hold that much, and reading it from one disk would take days. Disks also fail: in a cluster of a thousand machines, some break every week.
+
+<Term id="hadoop">Hadoop</Term> solves both problems:
+
+- It splits files into large blocks and spreads **copies** of each block over many cheap machines, so a failed disk loses nothing.
+- It sends the **program to the data**, so each machine processes the blocks it already holds, all at the same time.
+
+Hadoop was created by Doug Cutting and Mike Cafarella around 2006, based on two Google papers (the Google File System, 2003, and MapReduce, 2004). It became a top-level Apache project in 2008, and is named after a toy elephant.
+
+## The core parts
+
+<CompareTable
+  caption="Hadoop's core"
+  columns={["Part", "Job"]}
+  rows={[
+    ["HDFS", "Stores files as replicated blocks across the cluster"],
+    ["YARN", "Shares the cluster's CPU and memory between jobs"],
+    ["MapReduce", "Processes data in parallel: map, shuffle, reduce"],
+    ["Hadoop Common", "Shared libraries the other parts use"],
+  ]}
+/>
+
+## HDFS: storing huge files
+
+<Term id="hdfs">HDFS</Term> (Hadoop Distributed File System) has one master and many workers.
+
+- **<Term id="namenode">NameNode</Term> (master):** keeps the index: which blocks make up each file and which machines hold them. It stores no file data.
+- **<Term id="datanode">DataNodes</Term> (workers):** store the blocks and send the NameNode a **heartbeat every 3 seconds**.
+- **Secondary NameNode:** despite its name, it is *not* a backup. It only merges the NameNode's change log into a fresh checkpoint. For real fail-over, clusters run a **Standby NameNode** (high availability).
+
+**Blocks and copies**
+
+- A file is cut into <Term id="hdfs-block">blocks</Term> of **128 MB** by default (64 MB in Hadoop 1). Only the last block may be smaller.
+- Each block is stored **3 times** by default: the <Term id="replication-factor">replication factor</Term>.
+- Copies are placed **rack-aware**: the first on the writer's node, the second on a node in a **different rack**, the third on another node in that **same remote rack**. A whole rack can lose power without losing data.
+
+<Callout kind="remember" title="Worked example">
+A 500 MB file with 128 MB blocks becomes 4 blocks: 128 + 128 + 128 + 116 MB. With replication factor 3 there are 12 block copies, using 1500 MB of disk.
+</Callout>
+
+**When a DataNode fails**, its heartbeats stop. After about 10 minutes without a heartbeat, the NameNode treats it as dead. It then makes new copies of every block that now has fewer than 3, from the surviving copies. Lab L23 and the Visualize tab show this. If **every** copy of a block is lost, that part of the file is gone, which is why a replication factor of 1 is risky.
+
+HDFS is built for **write once, read many**: large files written once and read in big sequential sweeps, not small files edited often. Hadoop 3 adds **erasure coding**, which protects data with about 1.5 times the space instead of 3 times.
+
+## MapReduce: processing in parallel
+
+<Term id="mapreduce">MapReduce</Term> splits a job into steps that run on many machines at once. Example: find the average temperature of each sensor from log lines such as `S1,08:00,24.3`.
+
+<FlowDiagram
+  nodes={[
+    { label: "Input splits", sub: "Usually one per block", icon: FileText, tone: "neutral" },
+    { label: "Map", sub: "Each line → (S1, 24.3)", icon: SplitSquareHorizontal, tone: "u1" },
+    { label: "Shuffle and sort", sub: "Group pairs by key", icon: Shuffle, tone: "u2" },
+    { label: "Reduce", sub: "Average each group", icon: Sigma, tone: "u3" },
+    { label: "Output", sub: "S1 → 24.1 °C …", icon: GitMerge, tone: "brand" },
+  ]}
+  links={["Lines", "Key–value pairs", "Grouped by key", "Results"]}
+  caption="MapReduce: every mapper and reducer runs in parallel on a different machine."
+/>
+
+1. **Map:** each mapper reads its split and emits a key–value pair per line, here (sensor, temperature).
+2. **<Term id="shuffle">Shuffle and sort</Term>:** every pair travels to the reducer responsible for its key, so all S1 values meet at one reducer.
+3. **Reduce:** each reducer combines its groups, here into an average.
+
+A <Term id="combiner">combiner</Term> is a mini-reduce on each mapper. It sends (S1, sum, count) instead of every single reading, so far less data crosses the network in the shuffle.
+
+## YARN: sharing the cluster
+
+<Term id="yarn">YARN</Term> (Yet Another Resource Negotiator) decides which job gets which machines.
+
+- **ResourceManager:** one per cluster; hands out resources.
+- **NodeManager:** one per machine; runs and watches the tasks there.
+- **ApplicationMaster:** one per job; asks for resources and tracks the job's tasks.
+
+Because of YARN, other engines such as Spark can run on the same Hadoop cluster.
+
+## The Hadoop ecosystem
+
+<CompareTable
+  caption="Tools around Hadoop (status checked October 2026)"
+  columns={["Tool", "Job", "Status"]}
+  rows={[
+    ["Hive", "SQL-style queries on data in HDFS", "Active"],
+    ["HBase", "A NoSQL database on HDFS for fast reads and writes by key", "Active"],
+    ["Spark", "Fast in-memory processing for batch and streams", "Active; often replaces MapReduce"],
+    ["Kafka", "Collecting streams of messages for processing", "Active (a separate Apache project, often used with Hadoop)"],
+    ["ZooKeeper", "Keeps the cluster's services co-ordinated", "Active"],
+    ["Pig", "A scripting language that turns into MapReduce jobs", "Older; little new use"],
+    ["Flume", "Collecting log data into HDFS", "Dormant since 2024"],
+    ["Sqoop", "Moving data between databases and HDFS", "Retired in 2021"],
+  ]}
+  note="Syllabi often still ask about Pig, Flume and Sqoop, so know their jobs, but expect Spark and Kafka in new systems."
+/>
+
+<Term id="spark">Apache Spark</Term> keeps data in memory between steps, so it is usually much faster than MapReduce, and it can also process streams.
+
+<Callout kind="example" title="Finding power theft">
+An electricity company stores five years of smart-meter readings in HDFS. Every night, a batch job compares the energy entering each feeder with the total of its meters. Feeders where too much energy goes missing are listed for inspection the next morning.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Runs on cheap, ordinary computers and grows by adding more.
+- Survives disk, machine and even rack failures through replication.
+- Moves the program to the data, avoiding huge transfers.
+- Open source, with a large ecosystem.
+
+**Limitations**
+
+- MapReduce is batch-only and slow for real-time answers.
+- Poor with very many small files (each one costs NameNode memory).
+- Complex to set up and run.
+- Three copies use three times the disk (erasure coding helps).
+
+<KeyPoints
+  points={[
+    "Hadoop stores huge data across many cheap machines and processes it in parallel where it is stored.",
+    "HDFS: NameNode (index) and DataNodes (blocks, heartbeat every 3 s). Blocks are 128 MB by default and stored 3 times, rack-aware.",
+    "A dead DataNode's blocks are re-replicated from surviving copies; the Secondary NameNode is a checkpoint helper, not a backup.",
+    "MapReduce: map → shuffle and sort → reduce; a combiner cuts shuffle traffic. YARN shares cluster resources.",
+    "Ecosystem: Hive, HBase, Spark, Kafka, ZooKeeper; Pig is older, Flume dormant, Sqoop retired.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the architecture of Hadoop: HDFS and MapReduce."
+  short="Hadoop is an open-source framework for storing and processing big data on clusters of ordinary computers. HDFS splits files into 128 MB blocks, stores three copies of each on DataNodes across racks, and keeps the index in the NameNode. MapReduce processes data in parallel: mappers emit key–value pairs, the shuffle groups them by key, and reducers combine each group. YARN manages the cluster's resources."
+  long={[
+    "Explain why Hadoop is needed (volume, failures, moving computation to data).",
+    "Draw HDFS: NameNode, DataNodes, blocks, replication and rack-aware placement; explain failure handling.",
+    "Explain MapReduce phases with a worked example and the role of the combiner.",
+    "Explain YARN: ResourceManager, NodeManager, ApplicationMaster.",
+    "List ecosystem tools in a table and give advantages and limitations.",
+  ]}
+/>

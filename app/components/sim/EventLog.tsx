@@ -29,6 +29,8 @@ interface EventLogProps {
   height?: number;
   emptyText?: string;
   className?: string;
+  /** Formats each event time; defaults to simulated time since the start, e.g. "12.5 s" */
+  formatTime?: (t: number) => string;
 }
 
 /** A scrolling, timestamped log of what the simulation did. */
@@ -39,6 +41,7 @@ export function EventLog({
   height = 220,
   emptyText = "Nothing has happened yet. Press Play to start the simulation.",
   className,
+  formatTime = formatSimTime,
 }: EventLogProps) {
   const [active, setActive] = useState<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -93,8 +96,8 @@ export function EventLog({
           <ol className="grid gap-1">
             {shown.map((e) => (
               <li key={e.id} className="flex items-baseline gap-2.5">
-                <span className="w-16 shrink-0 text-right font-mono text-xs tabular-nums text-ink-3">
-                  {formatSimTime(e.t)}
+                <span className="w-20 shrink-0 whitespace-nowrap text-right font-mono text-xs tabular-nums text-ink-3">
+                  {formatTime(e.t)}
                 </span>
                 <span
                   className={cn("size-2 shrink-0 translate-y-[-1px] rounded-full", dot[e.tone ?? "info"])}

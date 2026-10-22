@@ -1,0 +1,142 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Cpu, Database, Filter, Radio, Smartphone } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+The big cloud providers sell ready-made IoT platforms that connect, identify and manage millions of devices and route their data to storage, analytics and apps.
+</Callout>
+
+## What a cloud IoT platform does
+
+Connecting one sensor to a server is easy. Connecting a lakh of sensors securely, keeping track of each one and acting on their data in real time is hard. A cloud IoT platform does this work as a service (PaaS).
+
+<FlowDiagram
+  nodes={[
+    { label: "Devices", sub: "Sensors, meters, machines", icon: Cpu, tone: "u1" },
+    { label: "Device gateway", sub: "MQTT, HTTPS; checks identity", icon: Radio, tone: "u2" },
+    { label: "Rules engine", sub: "Filter, route, act", icon: Filter, tone: "u3" },
+    { label: "Storage and analytics", sub: "Databases, data lake, ML", icon: Database, tone: "neutral" },
+    { label: "Apps", sub: "Dashboards, alerts", icon: Smartphone, tone: "brand" },
+  ]}
+  links={["Internet", "Messages", "Routed data", "Results"]}
+  caption="The common building blocks of every commercial IoT cloud."
+/>
+
+The features they all share:
+
+- **<Term id="device-registry">Device registry</Term>:** a list of every device with its identity and credentials, usually an X.509 certificate.
+- **Device gateway:** accepts connections over MQTT, HTTPS and sometimes AMQP, at very large scale.
+- **<Term id="rules-engine">Rules engine</Term>:** checks each message and sends it on, for example "if temperature > 40, store it and send an alert".
+- **<Term id="device-shadow">Device shadow or twin</Term>:** the device's last known state and the state the app wants, kept in the cloud.
+- **Edge runtime:** software that runs the same rules on a local gateway when the internet is slow or down.
+- **Security and provisioning:** encryption, certificates and a way to register thousands of new devices automatically.
+
+## The main platforms
+
+<CompareTable
+  caption="Commercial IoT platforms compared (status checked October 2026)"
+  columns={["Feature", "AWS IoT Core", "Azure IoT Hub", "Alibaba Cloud IoT Platform", "ThingSpeak (MathWorks)"]}
+  rows={[
+    ["Device identity", "Thing registry, X.509 certificates", "Identity registry; Device Provisioning Service (DPS)", "Products and devices with device certificates", "Channels with API keys"],
+    ["Protocols", "MQTT, HTTPS, MQTT over WebSocket; LoRaWAN option", "MQTT, AMQP, HTTPS (also over WebSocket)", "MQTT, CoAP, HTTPS", "HTTP (REST), MQTT"],
+    ["Rules and routing", "Rules engine with SQL-like rules", "Message routing to other Azure services", "Rules engine data forwarding", "React and TimeControl apps"],
+    ["Shadow or twin", "Device Shadow (classic and named)", "Device twins", "Device shadow", "No"],
+    ["Edge software", "AWS IoT Greengrass (version 2)", "Azure IoT Edge", "Not compared here", "No"],
+    ["Analytics", "Sends data to AWS storage, stream and machine-learning services", "Sends data to Azure analytics services and Microsoft Fabric", "Sends data to Alibaba databases and analytics services", "Built-in MATLAB analysis and charts"],
+    ["Pricing basis", "Connection minutes and messages", "Tier and number of messages per day", "Messages and devices", "Free tier with limits; paid licences"],
+  ]}
+  note="Prices and limits change often, so always check the provider's current pricing page. ThingSpeak is free to start but is not open source."
+/>
+
+## Platforms that were retired
+
+Cloud IoT services are not permanent. Several well-known ones have closed, so projects had to move.
+
+<CompareTable
+  caption="Retired or retiring IoT services (checked October 2026)"
+  columns={["Service", "What happened"]}
+  rows={[
+    ["Google Cloud IoT Core", "Retired on 16 August 2023. Google pointed customers to partner platforms."],
+    ["IBM Watson IoT Platform", "Retired on 1 December 2023, with no direct replacement."],
+    ["AWS IoT Analytics", "Support ended on 15 December 2025."],
+    ["AWS IoT Events", "Support ended on 20 May 2026."],
+    ["AWS IoT Greengrass version 1", "Support ended on 7 October 2026; version 2 continues."],
+    ["Azure IoT Central", "No new applications since 23 September 2026. Existing applications run until 20 September 2029; Microsoft points users to IoT Hub, DPS, Azure Device Registry and Fabric."],
+  ]}
+/>
+
+<Callout kind="remember" title="The lesson: avoid lock-in">
+Use standard protocols such as MQTT, keep your data in formats you can export, and keep device firmware able to change its server address. Then moving to another platform is a project, not a disaster.
+</Callout>
+
+## Device shadow and device twin
+
+Devices are often offline: asleep to save battery, or out of signal. An app cannot wait for them. So the cloud keeps a **shadow** (AWS and Alibaba call it this) or **twin** (Azure) for each device.
+
+- **Desired:** the state the app wants, such as `"power": "on"`.
+- **Reported:** the state the device last said it is in.
+- **Delta:** the difference. The device reads it when it next connects, applies it and reports back.
+- **Version:** goes up on every change, so old updates can be ignored.
+
+```json
+{
+  "state": {
+    "desired":  { "power": "on" },
+    "reported": { "power": "off" },
+    "delta":    { "power": "on" }
+  },
+  "version": 7
+}
+```
+
+The Visualize tab lets you switch a bulb while it is offline and watch the delta wait in the cloud.
+
+A <Term id="digital-twin">digital twin</Term> is a bigger idea: a live model of a whole machine, building or city that is kept up to date with sensor data and used to test "what if" changes. A device shadow is the simplest kind of twin.
+
+<Callout kind="example" title="Smart street lights">
+A city fits 20,000 street lights with controllers that report over mobile data. A rule in the cloud turns on the lights at sunset by setting each shadow's desired state to "on". Lights that are offline that evening pick up the change the moment they reconnect. All three big providers have data centres in India, so the city can keep its data inside the country.
+</Callout>
+
+## Choosing a platform
+
+- Which protocols and device types it supports.
+- Where its data centres are, for speed and data-protection laws.
+- What you pay as the number of devices and messages grows.
+- How easy it is to export your data and devices if you leave.
+- The skills your team already has.
+
+## Advantages and limitations
+
+**Advantages**
+
+- Scales from ten devices to millions without new hardware.
+- Security, certificates and provisioning are built in.
+- Joins easily with the provider's storage, analytics and AI services.
+
+**Limitations**
+
+- Lock-in: each platform's rules, shadows and SDKs are different.
+- Services can be retired, forcing a move.
+- Message-based billing can become costly at scale.
+- Needs internet access, unless an edge runtime is used.
+
+<KeyPoints
+  points={[
+    "A cloud IoT platform gives a device registry, a device gateway (MQTT, HTTPS), a rules engine, device shadows or twins, edge software and security.",
+    "Main platforms: AWS IoT Core, Azure IoT Hub and Alibaba Cloud IoT Platform; ThingSpeak is a free-to-start analytics service, not open source.",
+    "A device shadow or twin holds desired and reported state; the delta is applied when the device reconnects.",
+    "Services retire: Google Cloud IoT Core (2023), IBM Watson IoT (2023), AWS IoT Analytics (2025), AWS IoT Events (2026); Azure IoT Central takes no new apps from September 2026.",
+    "Avoid lock-in with standard protocols and exportable data.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the features of commercial cloud IoT platforms with examples."
+  short="Commercial IoT clouds such as AWS IoT Core, Azure IoT Hub and Alibaba Cloud IoT Platform provide a device registry with certificates, a device gateway for MQTT and HTTPS, a rules engine that routes messages to storage and apps, device shadows or twins for offline devices, edge software and security. They are paid per use and connect to the provider's analytics services."
+  long={[
+    "Explain why a platform is needed for thousands of devices.",
+    "Draw the block diagram: devices → gateway → rules engine → storage/analytics → apps.",
+    "Explain each feature: registry, protocols, rules engine, shadow/twin, edge, security.",
+    "Compare AWS IoT Core, Azure IoT Hub, Alibaba Cloud IoT and ThingSpeak in a table.",
+    "Explain the device shadow with desired, reported and delta, and mention retired services and lock-in.",
+  ]}
+/>

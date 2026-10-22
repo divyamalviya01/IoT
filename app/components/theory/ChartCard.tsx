@@ -180,6 +180,7 @@ export function ChartTooltip({
   label,
   labelPrefix,
   units,
+  formatLabel,
 }: {
   active?: boolean;
   payload?: TooltipPayloadItem[];
@@ -187,13 +188,15 @@ export function ChartTooltip({
   labelPrefix?: string;
   /** Unit per dataKey, e.g. { latency: "ms" } */
   units?: Record<string, string>;
+  /** Turns a numeric x value into text, e.g. a minute index into "09:15" */
+  formatLabel?: (label: string | number) => string;
 }) {
   if (!active || !payload || payload.length === 0) return null;
   return (
     <div className="rounded-md border border-line-strong bg-surface px-3 py-2 text-sm shadow-sm">
       <p className="font-bold text-ink">
         {labelPrefix}
-        {label}
+        {formatLabel && label !== undefined ? formatLabel(label) : label}
       </p>
       <ul className="mt-1 grid gap-0.5">
         {payload.map((item) => (

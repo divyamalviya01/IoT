@@ -1,0 +1,135 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { BarChart3, Cpu, Database, Radio, Zap } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+Big data is data too large, too fast or too varied for ordinary databases and single computers; big data analytics finds useful patterns and decisions in it.
+</Callout>
+
+## Why IoT creates big data
+
+One sensor sending one reading a minute is small. But IoT systems have very many devices, all sending all the time.
+
+<Callout kind="example" title="Smart meters add up">
+Suppose 10 lakh (1 million) smart meters each send a reading every 15 minutes: 96 readings a day. That is 9.6 crore (96 million) readings a day. At about 100 bytes each, it is roughly 9.6 GB a day, or about 3.5 TB a year, from meter readings alone. India is installing crores of smart meters, so the real numbers are far larger.
+</Callout>
+
+Data at this scale needs special tools to store and process it. That is <Term id="big-data">big data</Term>.
+
+## The 5 Vs of big data
+
+The idea began with three Vs (volume, velocity, variety), described by analyst Doug Laney in 2001. Veracity and value were added later. Together they are the <Term id="five-vs">5 Vs</Term>.
+
+<CompareTable
+  caption="The 5 Vs, with IoT examples"
+  columns={["V", "Meaning", "IoT example"]}
+  rows={[
+    ["Volume", "How much data", "Terabytes of meter readings every year"],
+    ["Velocity", "How fast it arrives and must be handled", "Thousands of messages a second; a fire alarm must act within seconds"],
+    ["Variety", "How many kinds of data", "Numbers, JSON messages, GPS tracks, CCTV video, audio"],
+    ["Veracity", "How trustworthy it is", "A faulty sensor stuck at one value, missing readings, wrong clocks"],
+    ["Value", "How useful it is", "Catching electricity theft or predicting a pump failure"],
+  ]}
+/>
+
+## Kinds of data
+
+<CompareTable
+  caption="Structured, semi-structured and unstructured data"
+  columns={["Type", "What it looks like", "IoT example", "Stored in"]}
+  rows={[
+    ["Structured", "Fixed rows and columns", "Meter ID, time, kWh", "Relational or time-series databases"],
+    ["Semi-structured", "Tagged, but no fixed table", "A JSON message: {\"temp\": 31.2, \"door\": \"open\"}", "Document stores, data lakes"],
+    ["Unstructured", "No set format", "CCTV video, engine sounds, photos of crops", "Object storage, data lakes"],
+  ]}
+/>
+
+Most IoT data starts as <Term id="structured-data">structured</Term> or semi-structured messages, but cameras and microphones add large amounts of unstructured data.
+
+## Four kinds of analytics
+
+<CompareTable
+  caption="From hindsight to foresight"
+  columns={["Kind", "Question", "Smart-meter example", "Difficulty"]}
+  rows={[
+    ["Descriptive", "What happened?", "Monthly use for each home", "Easiest"],
+    ["Diagnostic", "Why did it happen?", "The bill rose because the AC ran every night", "Moderate"],
+    ["Predictive", "What will happen?", "Tomorrow's peak demand for the city", "Harder"],
+    ["Prescriptive", "What should we do?", "Offer cheaper night tariffs to move washing-machine use off the peak", "Hardest"],
+  ]}
+/>
+
+Each step gives more value but needs more data, better models and more skill.
+
+## Batch and stream processing
+
+<CompareTable
+  caption="Batch vs stream"
+  columns={["", "Batch processing", "Stream processing"]}
+  rows={[
+    ["How", "Collect data, then process it all in one big job", "Process each reading as it arrives"],
+    ["Answer arrives", "Hours or days later", "Within seconds"],
+    ["Good for", "Bills, monthly reports, training models", "Alarms, fault detection, live dashboards"],
+    ["Tools", "Hadoop MapReduce, Spark (batch)", "Spark Streaming, Apache Flink, Kafka Streams"],
+  ]}
+/>
+
+<Term id="batch-processing">Batch processing</Term> is efficient for large, slow questions. <Term id="stream-processing">Stream processing</Term> is needed when a late answer is useless, such as a gas-leak alarm. Many systems do both.
+
+## The IoT data pipeline
+
+<FlowDiagram
+  nodes={[
+    { label: "Devices", sub: "Readings and events", icon: Cpu, tone: "u1" },
+    { label: "Ingest", sub: "MQTT broker, Kafka", icon: Radio, tone: "u2" },
+    { label: "Store", sub: "Data lake, time-series DB", icon: Database, tone: "neutral" },
+    { label: "Process", sub: "Batch and stream analytics", icon: Zap, tone: "u3" },
+    { label: "Visualize and act", sub: "Dashboards, alerts, control", icon: BarChart3, tone: "brand" },
+  ]}
+  links={["Messages", "Raw data", "Datasets", "Results"]}
+  caption="Every IoT analytics system follows these stages. The Visualize tab animates batch and stream through them."
+/>
+
+A <Term id="data-lake">data lake</Term> keeps raw data of every kind cheaply until it is needed. <Term id="kafka">Apache Kafka</Term> is often used at the ingest stage to collect millions of messages in order.
+
+## Simple stream analytics
+
+Two simple tools catch many problems in sensor streams. Lab L22 lets you try both.
+
+- **<Term id="moving-average">Moving average</Term>:** the average of the last N readings. It smooths out noise, but trails real changes by about half the window.
+- **<Term id="z-score">Z-score</Term>:** how unusual a reading is compared with recent ones:
+
+  z = (reading − average of recent readings) ÷ standard deviation of recent readings
+
+  If the last 20 readings average 28 °C with a standard deviation of 0.3 °C, a reading of 36 °C has z ≈ 27, far above the usual limit of 3. It is an <Term id="anomaly">anomaly</Term>.
+
+A z-score catches sudden spikes, but misses a slow drift, because the average drifts too. A stuck sensor gives the same value again and again, so it needs its own rule.
+
+## Challenges
+
+- **Cost:** storing and processing terabytes costs money.
+- **Quality (veracity):** faulty sensors and gaps give wrong answers.
+- **Privacy:** meter data can reveal when a family is at home.
+- **Speed:** some answers are only useful within seconds.
+- **Skills:** analytics needs people who understand both data and the domain.
+
+<KeyPoints
+  points={[
+    "Big data: too large, fast or varied for ordinary tools. IoT creates it because many devices report all the time.",
+    "5 Vs: volume, velocity, variety, veracity, value (Laney's original three plus two).",
+    "Data types: structured (tables), semi-structured (JSON), unstructured (video, audio).",
+    "Analytics: descriptive (what happened), diagnostic (why), predictive (what will happen), prescriptive (what to do).",
+    "Batch processes stored data later; stream processes each reading at once. Pipeline: ingest → store → process → visualize.",
+  ]}
+/>
+
+<ExamTip
+  question="What is big data? Explain the 5 Vs and the types of big data analytics with IoT examples."
+  short="Big data is data so large, fast or varied that ordinary tools cannot handle it. Its 5 Vs are volume, velocity, variety, veracity and value. Analytics can be descriptive (what happened), diagnostic (why), predictive (what will happen) or prescriptive (what to do), done in batches or on live streams."
+  long={[
+    "Define big data and show how IoT produces it with a calculation (for example smart meters).",
+    "Explain the 5 Vs with an IoT example each.",
+    "Compare structured, semi-structured and unstructured data.",
+    "Explain the four types of analytics with one running example.",
+    "Compare batch and stream processing, draw the IoT data pipeline and list challenges.",
+  ]}
+/>

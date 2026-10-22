@@ -176,9 +176,9 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 | L18 | NFC Tap Lab (2D; the 3D phone tap is in the 2.9 Visualize tab) | 2.9 | SVG, Motion |
 | L19 | LoRa Airtime and Range Calculator | 2.10 | Recharts |
 | L20 | Flow-Based IoT Programming (Node-RED style) | 3.4 | @xyflow/react |
-| L21 | IoT Dashboard Builder | 3.5 | Recharts |
+| L21 | IoT Dashboard Builder (widgets, alerts, push vs polling, 2D bulb through a device shadow) | 3.5 | Recharts, SVG |
 | L22 | Stream Analytics (moving average, anomaly detection) | 3.6 | Recharts |
-| L23 | Hadoop: HDFS Blocks and MapReduce | 3.7 | three.js, Motion |
+| L23 | Hadoop: HDFS Blocks and MapReduce (2D racks and pipeline; the 3D cluster is in the 3.7 Visualize tab) | 3.7 | SVG, Motion |
 | L24 | Smart Home Security Audit | 3.8 | three.js |
 | L25 | Packet Sniffer: Plaintext vs Encrypted | 3.9 | Motion |
 | L26 | Crypto Workbench (AES, SHA-256, RSA toy, Diffie–Hellman) | 3.10 | Web Crypto |
@@ -404,37 +404,39 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 **Syllabus:** Introduction to cloud computation and big data analytics, evolution of cloud computation, commercial clouds and their features, open-source IoT platforms, cloud dashboards, introduction to big data analytics and Hadoop.
 
 **3.1 Introduction to cloud computing**
-- [ ] Theory: NIST definition and 5 essential characteristics, IaaS/PaaS/SaaS ("pizza as a service" table), public/private/hybrid/community, why IoT needs the cloud
-- [ ] Visualize (2D): "who manages what" stack that animates as students toggle on-premises / IaaS / PaaS / SaaS
+- [x] Theory: NIST definition and 5 essential characteristics, IaaS/PaaS/SaaS ("pizza as a service" table), public/private/hybrid/community, why IoT needs the cloud
+- [x] Visualize (2D): "who manages what" stack that animates as students toggle on-premises / IaaS / PaaS / SaaS
 
 **3.2 Evolution of cloud computing**
-- [ ] Theory and visualize (2D): scroll-animated timeline (mainframe time-sharing → client–server → grid → utility computing → virtualization → SaaS → public cloud (AWS 2006) → containers/serverless → edge)
+- [x] Theory and visualize (2D): timeline in the theory plus an era-by-era stepper with a drawing of each era and who owns the computers and how people pay (mainframe time-sharing → client–server → grid → utility computing → virtualization → SaaS → public cloud (AWS 2006) → containers/serverless → edge)
 
 **3.3 Commercial clouds and their features**
-- [ ] Theory: AWS IoT Core, Azure IoT Hub and others in a feature table (device registry, MQTT support, rules engine, device shadow/twin, analytics, pricing model); retired services (for example Google Cloud IoT Core, 2023) shown as history
-- [ ] Visualize (2D): device shadow / digital twin sync (desired vs reported state)
+- [x] Theory: AWS IoT Core, Azure IoT Hub and others in a feature table (device registry, MQTT support, rules engine, device shadow/twin, analytics, pricing model); retired services (for example Google Cloud IoT Core, 2023) shown as history
+- [x] Visualize (2D): device shadow / digital twin sync (desired vs reported state)
 
 **3.4 Open-source IoT platforms**
-- [ ] Theory: ThingsBoard, Node-RED, Eclipse IoT (Kura, Ditto, Hono), Kaa, Home Assistant, OpenRemote (licence and features table), with ThingSpeak noted as free but not open source
-- [ ] Lab **L20 Flow-Based IoT Programming**: Node-RED-style editor. Wire sensor → function (threshold/convert) → MQTT out / dashboard / alert nodes, deploy, and watch messages flow along the wires.
+- [x] Theory: ThingsBoard, Node-RED, Eclipse IoT (Kura, Ditto, Hono), Kaa, Home Assistant, OpenRemote (licence and features table), with ThingSpeak noted as free but not open source. ThingsBoard moved from Apache 2.0 to BUSL 1.1 at version 4.4, so it is flagged as source-available
+- [x] Visualize (2D): platform map showing which jobs (connect, registry, rules, storage, dashboards, edge, twin) each platform covers
+- [x] Lab **L20 Flow-Based IoT Programming**: Node-RED-style editor. Wire sensor → function (threshold/convert) → MQTT out / dashboard / alert nodes, deploy, and watch messages flow along the wires.
 
 **3.5 Cloud dashboards**
-- [ ] Theory: widget types (gauge, line chart, map, switch, alert), real-time updates, good dashboard design
-- [ ] Lab **L21 IoT Dashboard Builder**: place widgets on a grid, bind them to simulated sensor streams, set alert thresholds, and use a switch widget to control a virtual 3D bulb
+- [x] Theory: widget types (gauge, line chart, map, switch, alert), real-time updates, good dashboard design
+- [x] Visualize: live widget gallery with "use it for" captions, a cluttered vs clean dashboard with design tips, and the door stream under push vs polling
+- [x] Lab **L21 IoT Dashboard Builder**: place widgets on a grid, bind them to simulated sensor streams, set alert thresholds, compare push and polling, and use a switch widget to control a virtual bulb through its device shadow
 
 **3.6 Introduction to big data analytics**
-- [ ] Theory: 5 Vs (volume, velocity, variety, veracity, value), structured/semi-structured/unstructured data, descriptive/diagnostic/predictive/prescriptive analytics, batch vs stream, IoT data pipeline
-- [ ] Visualize (2D): animated pipeline (ingest → store → process → visualize)
-- [ ] Lab **L22 Stream Analytics**: a live sensor stream with moving average, min/max and z-score anomaly flags. Changing the window size shows its effect.
+- [x] Theory: 5 Vs (volume, velocity, variety, veracity, value), structured/semi-structured/unstructured data, descriptive/diagnostic/predictive/prescriptive analytics, batch vs stream, IoT data pipeline
+- [x] Visualize (2D): animated pipeline (ingest → store → process → visualize)
+- [x] Lab **L22 Stream Analytics**: a live sensor stream with moving average, min/max and z-score anomaly flags. Changing the window size shows its effect.
 
 **3.7 Hadoop**
-- [ ] Theory: HDFS (NameNode, DataNodes, 128 MB blocks, replication factor 3), MapReduce (map → shuffle/sort → reduce), YARN, ecosystem table (Hive, Pig, HBase, Spark, Kafka, Flume, Sqoop)
-- [ ] Visualize (3D): cluster racks with file blocks replicated across nodes. Killing a DataNode triggers re-replication.
-- [ ] Lab **L23 Hadoop Simulator**: IoT log lines go through mappers emitting key–value pairs, a shuffle, and reducers producing average temperature per sensor. Students can change mapper/reducer counts and the replication factor.
+- [x] Theory: HDFS (NameNode, DataNodes, 128 MB blocks, replication factor 3), MapReduce (map → shuffle/sort → reduce), YARN, ecosystem table (Hive, Pig, HBase, Spark, Kafka, Flume, Sqoop)
+- [x] Visualize (3D): cluster racks with file blocks replicated across nodes. Killing a DataNode triggers re-replication.
+- [x] Lab **L23 Hadoop Simulator**: IoT log lines go through mappers emitting key–value pairs, a shuffle, and reducers producing average temperature per sensor. Students can change mapper/reducer counts and the replication factor.
 
 **Assessment and exit**
-- [ ] Quiz and viva for 3.1–3.7, lab records for L20–L23
-- [ ] Engine unit tests: flow execution, analytics math, MapReduce output, HDFS block placement
+- [x] Quiz and viva for 3.1–3.7, lab records for L20–L23
+- [x] Engine unit tests: flow execution, analytics math, MapReduce output, HDFS block placement
 
 ---
 
@@ -585,7 +587,7 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 - **"Widi":** Intel Wireless Display. It is discontinued, so it is theory only and covered alongside Miracast and Wi-Fi Direct.
 - **"Quadruple Trust Model for IoT-A":** protection, security, privacy and safety (IEEE P2413, as presented in Raj Kamal's textbook). To be verified against the textbook when Phase 6 is written.
 - **"Threat analysis and model for IoT-A":** taught with the IoT-A security perspective plus STRIDE and a risk matrix.
-- **Commercial clouds:** services that have been retired are shown as history, and the current status of each service is checked when Phase 5 is written.
+- **Commercial clouds:** services that have been retired are shown as history. Status checked on 22 October 2026 for Phase 5 (Google Cloud IoT Core, IBM Watson IoT, AWS IoT Analytics and IoT Events retired; Azure IoT Central closed to new apps; ThingsBoard moved to BUSL 1.1 at v4.4). Re-check before each release.
 
 ## 10. References
 - Raj Kamal, *Internet of Things: Architecture and Design Principles*, McGraw Hill. This is the primary reference, and the syllabus wording mirrors it.

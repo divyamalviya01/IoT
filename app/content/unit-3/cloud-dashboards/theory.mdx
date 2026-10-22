@@ -1,0 +1,113 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+A cloud dashboard is a screen of widgets that shows live IoT data at a glance, raises alerts when something goes wrong and lets people control devices.
+</Callout>
+
+## What a dashboard is for
+
+Raw sensor data is a long list of numbers. Nobody can watch it. A <Term id="dashboard">dashboard</Term> turns it into pictures that answer questions quickly: *Is the cold room cold enough? Where is the van? Did the pump turn on?*
+
+Each block on the screen is a <Term id="widget">widget</Term>, bound to one data stream.
+
+## Widget types
+
+<CompareTable
+  caption="Choosing the right widget"
+  columns={["Widget", "Shows", "Use it for", "Example"]}
+  rows={[
+    ["Gauge", "One number on a scale with a known range", "Reading a value at a glance", "Tank level 0–100 %"],
+    ["Line chart", "A number over time", "Trends, patterns and when something changed", "Room temperature today"],
+    ["Value card", "The latest value or state, shown big", "A single important figure", "Power now: 1.8 kW; Door: Open"],
+    ["Map", "Positions of things", "Vehicles, field sensors, street lights", "Delivery vans across the city"],
+    ["Switch or button", "A control", "Sending a command to a device", "Turn the porch light on"],
+    ["Alert or status", "OK or ALERT against a threshold", "Problems that need action, even when nobody is watching", "Freezer above −15 °C"],
+    ["Table", "Many values in rows", "Exact figures and lists", "Last 20 readings of each meter"],
+  ]}
+/>
+
+## Getting live data to the screen
+
+A dashboard must show the newest data. There are two ways to get it.
+
+<CompareTable
+  caption="Polling vs push"
+  columns={["", "Polling", "Push"]}
+  rows={[
+    ["How", "The browser asks the server every few seconds: \"anything new?\"", "The server sends new data the moment it arrives"],
+    ["Technology", "Repeated HTTP requests", "WebSocket, MQTT over WebSocket, server-sent events"],
+    ["Freshness", "Up to one interval old (5 s, 30 s …)", "Within a fraction of a second"],
+    ["Messages", "One per interval, even when nothing changed", "Only when something changes"],
+    ["Best for", "Slow data, simple systems", "Live monitoring and control"],
+  ]}
+/>
+
+<Term id="polling">Polling</Term> is simple but wasteful: 100 widgets polling every 5 seconds make 20 requests a second, even on a quiet night. A <Term id="websocket">WebSocket</Term> keeps one connection open, so the server can push only real changes. Lab L21 counts the messages both ways.
+
+## Controlling devices from a dashboard
+
+A switch widget does not reach the device directly. It sets the **desired** state in the device's shadow (topic 3.3). The widget should show "turning on…" until the device **reports** that it is on. If the device is offline, the command waits.
+
+## Good dashboard design
+
+- **Know the question.** A factory manager and a maintenance engineer need different dashboards.
+- **Most important at the top left,** where people look first: usually alerts and key figures.
+- **Fewer widgets.** About 8 per screen; more and the important ones get lost.
+- **The right widget for the data:** a map for locations, a line chart for trends, not gauges for everything.
+- **Titles and units on everything:** "32 °C", not "32".
+- **Colour only for meaning:** red, amber and green for status, always with an icon or word as well, so colour-blind users can read it.
+- **Alerts with sensible limits:** add <Term id="hysteresis">hysteresis</Term> so an alert does not flash on and off as a value wobbles around the limit.
+- **Show freshness:** "updated 5 s ago" tells people whether to trust the screen.
+- **Works on a phone:** widgets stack into one column.
+
+<Callout kind="remember" title="Hysteresis in one example">
+An alert turns on above 35 °C. Without hysteresis, a room at 34.9, 35.1, 34.9, 35.1 °C sends four alerts in four minutes. With 0.5 °C hysteresis, it turns on above 35 °C and only turns off below 34.5 °C, so it sends one.
+</Callout>
+
+## Dashboard tools
+
+- **Grafana** (open source, AGPL-3.0): popular for time-series charts and alerts.
+- **ThingsBoard** and **Node-RED Dashboard:** dashboards built into IoT platforms and flow tools.
+- **ThingSpeak:** quick charts of channel data, with MATLAB analysis.
+- **Business tools** such as Microsoft Power BI, for reports that mix IoT data with other company data.
+
+<Callout kind="example" title="City command and control centres">
+Under the Smart Cities Mission, many Indian cities run an Integrated Command and Control Centre. Large dashboards show traffic cameras, bus locations, water supply, streetlight faults and air quality on maps and charts. Alerts send staff to fix problems quickly.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- Turns huge data into quick understanding.
+- Spots problems early through alerts.
+- Lets people control devices from anywhere.
+
+**Limitations**
+
+- A cluttered dashboard hides what matters.
+- Polling dashboards waste data and show stale values.
+- Too many alerts make people ignore them (alert fatigue).
+- A dashboard is only as good as the data behind it.
+
+<KeyPoints
+  points={[
+    "A dashboard is a screen of widgets bound to data streams: gauge, line chart, value card, map, switch, alert, table.",
+    "Pick the widget for the job: line charts for trends, maps for location, switches for control, alerts for limits.",
+    "Live updates: polling asks every few seconds; push (WebSocket, MQTT over WebSocket) sends only changes, faster and with fewer messages.",
+    "Switches set the device shadow's desired state and show pending until the device reports back.",
+    "Good design: key items top left, about 8 widgets, units and titles, colour only for meaning, alerts with hysteresis, show freshness.",
+  ]}
+/>
+
+<ExamTip
+  question="What is an IoT cloud dashboard? Explain its widgets and good design practices."
+  short="An IoT cloud dashboard is a web screen of widgets bound to live data streams that shows device data, raises alerts and sends commands. Widgets include gauges, line charts, value cards, maps, switches and alerts. Data arrives by polling or push (WebSocket/MQTT). Good dashboards put key items top left, use few widgets, show units, use colour only for meaning and set alerts with hysteresis."
+  long={[
+    "Define a dashboard and why IoT needs it.",
+    "Explain each widget type with an example in a table.",
+    "Compare polling and push for real-time updates.",
+    "Explain control through device shadows and the pending state.",
+    "List good design rules with a bad-versus-good example, and mention tools such as Grafana and ThingsBoard.",
+  ]}
+/>

@@ -12,6 +12,8 @@ export default defineConfig({
     { enforce: "pre", ...mdx({ remarkPlugins: [remarkGfm] }) },
     reactRouter(),
   ],
+  // Pre-bundle React Flow up front; otherwise the first dev visit to L20 re-bundles it and reloads with hook errors.
+  optimizeDeps: { include: ["@xyflow/react"] },
   resolve: {
     tsconfigPaths: true,
     // tsconfig paths only cover TypeScript importers; MDX files need the alias too.

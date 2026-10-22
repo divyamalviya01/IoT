@@ -1,0 +1,139 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Cloud, Cpu, Router, Smartphone } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+Cloud computing means renting computing power, storage and software over the internet, when you need it, and paying only for what you use.
+</Callout>
+
+## What is cloud computing?
+
+Before the cloud, a company that wanted a website or a database bought its own servers. It needed a room, power, cooling and staff to look after them. If demand grew, it had to buy more servers and wait weeks.
+
+With the <Term id="cloud">cloud</Term>, a provider such as Amazon, Microsoft or Google runs huge data centres. Customers rent a slice of them over the internet in minutes, and hand it back when they no longer need it.
+
+The standard definition comes from the US National Institute of Standards and Technology (**NIST SP 800-145**, 2011). In simple words: cloud computing gives on-demand network access to a shared pool of computing resources that can be set up and released quickly, with very little effort from the provider.
+
+## The five essential characteristics (NIST)
+
+<CompareTable
+  caption="NIST's five essential characteristics, with IoT examples"
+  columns={["Characteristic", "Meaning", "IoT example"]}
+  rows={[
+    ["On-demand self-service", "You set up servers or storage yourself from a web console, with no phone call to the provider", "A student creates an IoT hub for a project in five minutes"],
+    ["Broad network access", "Services are reached over the internet from phones, laptops and devices", "A farmer checks soil moisture on a phone from anywhere"],
+    ["Resource pooling", "Many customers share the same physical servers, kept separate (multi-tenancy)", "Thousands of companies' sensors share one provider's MQTT service"],
+    ["Rapid elasticity", "Resources grow or shrink within minutes as demand changes", "A smart-meter platform adds servers when every meter reports at midnight"],
+    ["Measured service", "Use is metered and billed, like electricity", "The bill counts messages, devices and gigabytes stored"],
+  ]}
+/>
+
+<Term id="elasticity">Rapid elasticity</Term> and <Term id="multi-tenancy">multi-tenancy</Term> are the two ideas that make the cloud cheap: nobody pays for servers that sit idle.
+
+## Service models: IaaS, PaaS and SaaS
+
+The service models differ in **how much the provider manages for you**. The Visualize tab shows this as a stack of layers that changes owner as you switch models.
+
+<CompareTable
+  caption="The three service models"
+  columns={["Model", "You get", "You manage", "The provider manages", "Examples"]}
+  rows={[
+    ["IaaS", "Virtual machines, storage, networks", "Operating system, runtime, app, data", "Servers, storage, networking, virtualization", "Amazon EC2, Azure Virtual Machines"],
+    ["PaaS", "A platform to run your code", "Your app and data", "Everything below the app", "Google App Engine, Azure App Service, most IoT platforms"],
+    ["SaaS", "Finished software", "Only your settings and data", "Everything", "Gmail, Microsoft 365, a ready IoT dashboard service"],
+  ]}
+/>
+
+- <Term id="iaas">IaaS</Term> is like renting an empty flat: you bring the furniture.
+- <Term id="paas">PaaS</Term> is like a furnished flat: you just move in with your things.
+- <Term id="saas">SaaS</Term> is like a hotel room: everything is done for you.
+
+<CompareTable
+  caption={`"Pizza as a service": the same idea with pizza`}
+  columns={["Model", "Pizza version", "You do", "Someone else does"]}
+  rows={[
+    ["On-premises", "Made at home", "Dough, sauce, toppings, oven, table", "Nothing"],
+    ["IaaS", "Take and bake", "Oven, table, drinks", "Makes the pizza"],
+    ["PaaS", "Pizza delivered", "Table and drinks", "Makes and bakes it"],
+    ["SaaS", "Dining out", "Just eat", "Everything"],
+  ]}
+  note="The pizza comparison is a popular teaching analogy (Albert Barron, 2014)."
+/>
+
+## Deployment models
+
+<CompareTable
+  caption="Who the cloud is for"
+  columns={["Model", "Used by", "Strength", "Example"]}
+  rows={[
+    ["Public cloud", "Any customer, over the internet", "Cheapest, scales almost without limit", "A startup's smart-plug app on AWS"],
+    ["Private cloud", "One organisation only", "Most control and privacy", "A bank or hospital running its own cloud"],
+    ["Community cloud", "Several organisations with shared needs", "Shared cost, shared rules", "MeghRaj, the Government of India's cloud initiative for departments"],
+    ["Hybrid cloud", "A mix of private and public", "Keep sensitive data private, use public cloud for the rest", "A smart city keeps citizen data private and runs traffic analytics in public cloud"],
+  ]}
+/>
+
+<Term id="public-cloud">Public</Term>, <Term id="private-cloud">private</Term>, <Term id="community-cloud">community</Term> and <Term id="hybrid-cloud">hybrid</Term> clouds all offer the same five characteristics; they differ in who shares the hardware.
+
+## Why IoT needs the cloud
+
+<FlowDiagram
+  nodes={[
+    { label: "Devices", sub: "Sensors and actuators", icon: Cpu, tone: "u1" },
+    { label: "Gateway", sub: "Collects and forwards", icon: Router, tone: "u2" },
+    { label: "Cloud", sub: "Store, analyse, decide", icon: Cloud, tone: "u3" },
+    { label: "Apps", sub: "Dashboards and alerts", icon: Smartphone, tone: "brand" },
+  ]}
+  links={["Radio", "Internet", "Internet"]}
+  caption="A typical IoT system: the cloud sits between the devices and the people who use the data."
+/>
+
+- **Scale:** a city may have lakhs of smart meters. The cloud can accept all their messages without the city buying servers.
+- **Storage:** years of readings are needed for bills, trends and audits.
+- **Analytics:** finding patterns, predicting faults and training machine-learning models needs a lot of computing power.
+- **Access from anywhere:** users, apps and other systems reach the data over the internet.
+- **Pay as you go:** a project can start small and grow without a large up-front cost.
+
+The cloud is far away, so a round trip takes tens or hundreds of milliseconds. Jobs that must react in a few milliseconds, such as stopping a machine, run at the edge instead (topic 1.4).
+
+<Callout kind="example" title="Smart electricity meters">
+An electricity distribution company in India installs smart meters that report every 15 minutes. The readings go through mobile data to a cloud platform. The cloud stores them, works out each bill, spots meters that may be tampered with, and lets each family see its use in an app. The company did not have to build a data centre for this.
+</Callout>
+
+## Advantages and limitations
+
+**Advantages**
+
+- No large up-front cost for servers; pay only for what you use.
+- Scale up or down within minutes.
+- The provider handles hardware, power, cooling and backups.
+- Services are reachable from anywhere.
+
+**Limitations**
+
+- Needs a reliable internet connection.
+- Latency is too high for very fast control loops.
+- Running costs grow with use and can surprise you.
+- Vendor lock-in: moving to another provider can be hard.
+- Data privacy and location: personal data must follow laws such as India's Digital Personal Data Protection Act, 2023.
+
+<KeyPoints
+  points={[
+    "Cloud computing: renting computing, storage and software over the internet on demand, paying per use (NIST SP 800-145).",
+    "Five characteristics: on-demand self-service, broad network access, resource pooling, rapid elasticity, measured service.",
+    "Service models: IaaS (you manage the OS and up), PaaS (you manage only the app and data), SaaS (you just use the software).",
+    "Deployment models: public, private, community and hybrid.",
+    "IoT uses the cloud for scale, storage, analytics and access from anywhere; time-critical work stays at the edge.",
+  ]}
+/>
+
+<ExamTip
+  question="Define cloud computing. Explain its characteristics, service models and deployment models."
+  short="Cloud computing is on-demand access over the internet to a shared pool of computing resources that can be set up and released quickly, paid for by use. NIST lists five characteristics (on-demand self-service, broad network access, resource pooling, rapid elasticity, measured service), three service models (IaaS, PaaS, SaaS) and four deployment models (public, private, community, hybrid)."
+  long={[
+    "Give the definition and the problem it solves (no need to buy and run your own servers).",
+    "Explain the five essential characteristics with an example each.",
+    "Compare IaaS, PaaS and SaaS in a table: what you manage and what the provider manages, with examples.",
+    "Explain public, private, community and hybrid clouds with examples.",
+    "Explain why IoT needs the cloud, and end with advantages and limitations.",
+  ]}
+/>

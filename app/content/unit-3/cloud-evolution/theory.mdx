@@ -1,0 +1,109 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term, Timeline } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Computing moved from one shared mainframe, to every company running its own servers, to renting from huge shared data centres, and now partly back towards the devices at the edge.
+</Callout>
+
+## Why study the history?
+
+Cloud computing did not appear suddenly. Each step solved a problem left by the one before. Knowing the steps explains why today's cloud has virtual machines, containers and pay-per-use bills.
+
+## From mainframes to the edge
+
+<Timeline
+  caption="Key steps in the evolution of cloud computing"
+  items={[
+    { when: "1961", title: "Computing as a utility", text: "John McCarthy suggests that computing could one day be sold like electricity or water. This is utility computing." },
+    { when: "1960s", title: "Mainframes and time-sharing", text: "One huge, costly computer is shared by many users at terminals, each getting a slice of its time. IBM's CP-40 and CP-67 (1967–68) run the first virtual machines." },
+    { when: "1969", title: "ARPANET", text: "The network that grew into the internet links its first computers." },
+    { when: "1980s–90s", title: "PCs and client–server", text: "Cheap personal computers arrive. Every company buys and runs its own servers, which sit idle much of the time." },
+    { when: "Late 1990s", title: "Grid computing", text: "Universities join many computers in different places to work on one large job, such as analysing physics data." },
+    { when: "1999", title: "Software over the web and virtualization", text: "Salesforce sells its software through a web browser (SaaS). VMware brings virtual machines to ordinary servers." },
+    { when: "2006", title: "The public cloud", text: "Amazon Web Services launches S3 storage (March) and EC2 virtual servers (August), rented by the hour. The term \"cloud computing\" becomes popular." },
+    { when: "2008–2010", title: "Platforms", text: "Google App Engine (2008) offers a platform to run code without managing servers (PaaS). Microsoft Azure opens in 2010." },
+    { when: "2013–2014", title: "Containers and serverless", text: "Docker (2013) makes lightweight containers popular. AWS Lambda (2014) runs small functions only when an event arrives, billed per run." },
+    { when: "2015–2016", title: "Cloud IoT platforms", text: "AWS IoT (2015) and Azure IoT Hub (2016) offer device registries, MQTT and rules for millions of devices." },
+    { when: "2012 onwards", title: "Fog and edge computing", text: "Cisco names \"fog computing\" in 2012. Some processing moves back near the devices, because the cloud is too far for fast decisions." },
+  ]}
+/>
+
+## Each era at a glance
+
+<CompareTable
+  caption="How owning and paying for computers changed"
+  columns={["Era", "Who owns the hardware", "How you pay", "Problem left behind"]}
+  rows={[
+    ["Mainframe", "One organisation owns one huge machine", "Share its time", "Very costly; only big organisations could afford it"],
+    ["Client–server", "Each company owns its servers", "Buy hardware up front", "Servers sit idle; slow to grow"],
+    ["Grid", "Many institutes pool their machines", "Shared for research", "Hard to use for ordinary business apps"],
+    ["Public cloud", "The provider owns giant data centres", "Pay per hour or per use", "Far from devices; needs the internet"],
+    ["Edge and fog", "Devices, gateways and local servers, plus the cloud", "Mixed", "More places to manage and secure"],
+  ]}
+/>
+
+## What made the cloud possible
+
+- **Fast, cheap internet:** customers can reach a distant data centre quickly.
+- **<Term id="virtualization">Virtualization</Term>:** one physical server can run many separate <Term id="virtual-machine">virtual machines</Term>, controlled by a <Term id="hypervisor">hypervisor</Term>. A provider can share its servers safely between customers.
+- **Cheap, standard hardware:** data centres are built from thousands of ordinary servers.
+- **Web standards and open source:** browsers, HTTP and free software such as Linux made services easy to build and use.
+
+## Virtual machines, containers and serverless
+
+<CompareTable
+  caption="Three ways to run code in the cloud"
+  columns={["", "Virtual machine", "Container", "Serverless function"]}
+  rows={[
+    ["What you get", "A whole computer in software, with its own operating system", "An app packed with its libraries, sharing the host's kernel", "Just your function; no server to see"],
+    ["Starts in", "Minutes", "Seconds", "Milliseconds to a second"],
+    ["You pay for", "Every hour it runs", "Every hour it runs", "Each run (per request and time)"],
+    ["IoT example", "A VM running an MQTT broker", "A container running a Node-RED flow", "A function that saves each sensor message"],
+  ]}
+/>
+
+A <Term id="container">container</Term> is much lighter than a virtual machine. <Term id="serverless">Serverless</Term> goes one step further: code runs only when a message arrives, which suits IoT devices that report now and then.
+
+## Related ideas
+
+- <Term id="utility-computing">Utility computing</Term>: paying for computing like a utility bill. The cloud made McCarthy's 1961 idea real.
+- <Term id="grid-computing">Grid computing</Term>: many computers in different places working on one job. Cloud data centres instead keep thousands of computers in one place, run by one provider.
+
+<Callout kind="example" title="Starting an IoT company in 2005 and in 2025">
+In 2005, a Bengaluru startup building a smart water meter had to buy servers, rent space in a data centre and hire staff before its first customer. In 2025, the same team opens a cloud account, uses an IoT platform for its devices and pays a few hundred rupees a month while it has only a hundred meters. When it grows to a lakh of meters, the cloud grows with it.
+</Callout>
+
+## What changed for IoT
+
+**Gains**
+
+- Anyone can collect and store data from millions of devices without building a data centre.
+- Serverless and containers make it cheap to process occasional sensor messages.
+- Ready IoT platforms handle device identity, MQTT and rules.
+
+**New challenges**
+
+- Dependence on the internet and on one provider.
+- Latency for fast control, which brought computing back to the edge.
+- Data privacy, because data now leaves the building.
+
+<KeyPoints
+  points={[
+    "1961: John McCarthy suggests utility computing; 1960s mainframes share time between users.",
+    "1980s–90s: client–server, every company runs its own idle servers; late 1990s: grid computing.",
+    "1999: Salesforce SaaS and VMware virtualization; 2006: AWS S3 and EC2 start the public cloud.",
+    "2008–2014: PaaS (App Engine, Azure), containers (Docker 2013) and serverless (Lambda 2014).",
+    "2015 onwards: IoT clouds (AWS IoT, Azure IoT Hub) plus fog and edge computing near the devices.",
+  ]}
+/>
+
+<ExamTip
+  question="Describe the evolution of cloud computing."
+  short="Computing began with shared mainframes (1960s time-sharing), moved to each company's own client–server systems (1980s–90s), then grid computing (late 1990s). Virtualization and web software (1999) led to the public cloud, started by AWS S3 and EC2 in 2006. Platforms, containers (2013) and serverless (2014) followed, and fog and edge computing now bring processing back near IoT devices."
+  long={[
+    "Start with McCarthy's utility computing idea and mainframe time-sharing.",
+    "Explain client–server and grid computing, and the problems each left.",
+    "Explain the enablers: internet, virtualization, cheap hardware, open source.",
+    "Describe the public cloud (AWS 2006), PaaS, containers and serverless with dates.",
+    "End with IoT platforms and edge/fog computing; a timeline diagram earns marks.",
+  ]}
+/>
