@@ -1,0 +1,101 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Cloud security protects the data, accounts, services and device connections an IoT system keeps in the cloud. The provider secures the cloud itself; the customer must secure everything they put in it.
+</Callout>
+
+## Why the cloud is a high-value target
+
+An IoT cloud holds every device's readings and can send commands to all of them. One stolen admin password or one wrongly shared storage folder can expose a whole fleet at once, far more than a single hacked device.
+
+## The shared responsibility model
+
+The <Term id="shared-responsibility">shared responsibility model</Term> splits the work. The provider always secures the physical data centres, the hardware and the services it runs for you. What the customer must secure depends on the service model (topic 3.1).
+
+<CompareTable
+  caption="Who secures what"
+  columns={["Layer", "IaaS", "PaaS (e.g. an IoT platform)", "SaaS"]}
+  rows={[
+    ["Data and its classification", "Customer", "Customer", "Customer"],
+    ["Identities, access and device credentials", "Customer", "Customer", "Customer"],
+    ["Settings and configuration", "Customer", "Customer", "Customer (fewer)"],
+    ["Application code", "Customer", "Customer", "Provider"],
+    ["Operating system and runtime", "Customer", "Provider", "Provider"],
+    ["Network controls", "Shared", "Provider (customer sets rules)", "Provider"],
+    ["Physical data centre and hardware", "Provider", "Provider", "Provider"],
+  ]}
+/>
+
+**Data, identities and configuration are always the customer's job.** The Visualize tab shows the split layer by layer.
+
+## Identity and access management (IAM)
+
+<Term id="iam">IAM</Term> decides who and what can do which actions.
+
+- **Least privilege:** each person, app and device gets only the permissions it needs. A temperature sensor may publish to its own topic, nothing else.
+- **Multi-factor login** for every human account, especially administrators.
+- **Roles instead of shared passwords:** apps and services get temporary credentials through roles, not keys pasted into code.
+- **Separate duties:** no single account can both change security rules and delete logs.
+- **Review and remove:** delete accounts and keys that are no longer used.
+
+## Encryption and key management
+
+- **In transit:** TLS for every connection: devices (MQTT on 8883), apps (HTTPS) and service-to-service traffic.
+- **At rest:** databases, storage and backups are encrypted.
+- **<Term id="key-management">Key management</Term>:** keys are created, stored, rotated and destroyed by a key management service (KMS). The most valuable keys live in a hardware security module (HSM). Data is usually encrypted with a data key, which is itself encrypted by a master key that never leaves the KMS.
+
+## Device identity: every device proves who it is
+
+Each device should have its **own** identity, never a password shared by all devices.
+
+- **X.509 certificate and private key:** the device's identity card. The private key is best kept in a <Term id="secure-element">secure element</Term> or TPM chip, where it can be used but never read out.
+- **<Term id="mutual-tls">Mutual TLS</Term>:** the server proves itself to the device with its certificate, and the device proves itself to the server with its own. AWS IoT Core, for example, uses X.509 client certificates over mutual TLS for device connections.
+- **Provisioning:** certificates are loaded at the factory or issued automatically when a device first connects (for example Azure's Device Provisioning Service).
+- **Revocation:** a stolen or retired device's certificate is cancelled, so it can no longer connect.
+
+## Top cloud threats
+
+The Cloud Security Alliance's *Top Threats to Cloud Computing* (2024 edition) lists eleven. The top three matter most for IoT:
+
+<CompareTable
+  caption="Leading cloud threats (CSA 2024), with IoT examples"
+  columns={["Threat", "IoT example", "Defence"]}
+  rows={[
+    ["Identity and access management weaknesses", "An admin account without multi-factor login is taken over", "MFA, least privilege, regular access reviews"],
+    ["Insecure interfaces and APIs", "An API returns other customers' device data", "Strong authentication on every API, input checks, testing"],
+    ["Misconfiguration", "A storage folder of camera clips is left public", "Secure defaults, automatic configuration checks, change control"],
+    ["Others on the list", "Weak security strategy, insecure software development, third-party risks, system flaws, accidental data disclosure, poor visibility, advanced persistent threats, unauthenticated resource sharing", "Planning, secure development, monitoring"],
+  ]}
+/>
+
+## Watch and respond
+
+- Turn on **audit logs** for every account and service, and keep them where attackers cannot delete them.
+- **Alert** on unusual events: a device connecting from a new country, thousands of failed logins, a key used at 3 a.m.
+- Have an **incident plan**. In India, CERT-In's 2022 directions require many organisations to report cyber incidents within 6 hours.
+
+<Callout kind="example" title="An open storage folder">
+A start-up stores clips from its doorbell cameras in cloud storage. A developer makes one folder public "just for a test" and forgets it. Months later, anyone with the link can watch thousands of clips. The provider's data centre was perfectly secure; the configuration was the customer's job. Automatic configuration checks would have flagged the public folder on the first day.
+</Callout>
+
+<KeyPoints
+  points={[
+    "Shared responsibility: the provider secures the cloud; the customer always secures data, identities and configuration.",
+    "IAM: least privilege, multi-factor login, roles instead of shared keys, regular reviews.",
+    "Encrypt in transit (TLS) and at rest; manage keys with a KMS or HSM and rotate them.",
+    "Device identity: a unique X.509 certificate per device, private key in a secure element, mutual TLS, revocation.",
+    "Top cloud threats (CSA 2024): IAM weaknesses, insecure APIs and misconfiguration; monitor logs and plan for incidents.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain cloud security for IoT, including the shared responsibility model and device identity."
+  short="In the shared responsibility model the cloud provider secures the physical infrastructure and its services, while the customer secures data, identities, access and configuration. IoT clouds use IAM with least privilege and multi-factor login, encryption in transit and at rest with managed keys, and a unique X.509 certificate per device with mutual TLS. Major threats are IAM weaknesses, insecure APIs and misconfiguration."
+  long={[
+    "Explain why the cloud is a high-value target in IoT.",
+    "Explain the shared responsibility model with a table for IaaS, PaaS and SaaS.",
+    "Describe IAM practices, encryption and key management (KMS, HSM).",
+    "Explain device identity: X.509 certificates, secure elements, mutual TLS, provisioning and revocation.",
+    "List the top cloud threats (CSA 2024) with IoT examples, and monitoring and incident response.",
+  ]}
+/>

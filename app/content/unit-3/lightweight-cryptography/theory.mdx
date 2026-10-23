@@ -1,0 +1,109 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Lightweight cryptography is encryption designed to run on tiny devices, with little memory, a slow processor and a small battery, while still being strong enough to trust.
+</Callout>
+
+## Why ordinary cryptography can be too heavy
+
+Laptops and phones have fast processors and AES built into the chip. Many IoT devices do not.
+
+<CompareTable
+  caption="How small IoT devices can be"
+  columns={["Device", "Processor", "RAM", "Power"]}
+  rows={[
+    ["RFID tag or smart card", "A few thousand logic gates, no CPU", "Bytes", "Powered by the reader's field"],
+    ["Arduino Uno (ATmega328P)", "8-bit, 16 MHz", "2 KB", "Batteries or USB"],
+    ["Soil sensor node", "16- or 32-bit, a few MHz", "8–64 KB", "Two AA cells for years"],
+    ["ESP32", "32-bit, 240 MHz, AES hardware", "520 KB", "Mains or a large battery"],
+  ]}
+/>
+
+On the smallest devices, a standard cipher may use too much memory, take too long or drain the battery. <Term id="lightweight-cryptography">Lightweight cryptography</Term> is designed for them.
+
+## What makes a cipher lightweight
+
+- **Small code and RAM:** fits in a few kilobytes.
+- **Few logic gates:** cheap to build into a chip or tag.
+- **Simple operations:** additions, rotations and XORs that small processors do quickly.
+- **Smaller blocks:** some use 64-bit blocks instead of 128.
+- **One pass does two jobs:** authenticated encryption (<Term id="aead">AEAD</Term>) encrypts and adds an integrity tag together.
+
+## The main lightweight algorithms
+
+<CompareTable
+  caption="Lightweight and IoT-friendly ciphers"
+  columns={["Algorithm", "Type", "Sizes", "Where it shines", "Status"]}
+  rows={[
+    ["PRESENT (2007)", "Block cipher", "64-bit block, 80- or 128-bit key, 31 rounds", "Hardware: about 1,600 logic gates, ideal for RFID tags", "ISO/IEC 29192-2"],
+    ["SIMON and SPECK (2013)", "Block ciphers", "Blocks of 32–128 bits", "SPECK is very fast in software; SIMON in hardware", "Published by the US NSA; ISO declined them in 2018"],
+    ["ChaCha20-Poly1305", "Stream cipher + authentication", "256-bit key", "Fast in software on chips without AES hardware", "RFC 8439; used in TLS 1.3"],
+    ["Ascon", "Authenticated encryption and hashing", "128-bit key, 320-bit state", "Small and efficient in both software and hardware", "NIST standard SP 800-232 (August 2025)"],
+    ["AES with hardware support", "Block cipher", "128-bit block", "Very fast when the chip has an AES engine (for example ESP32)", "FIPS 197"],
+  ]}
+/>
+
+- <Term id="present-cipher">PRESENT</Term> was one of the first ciphers built for very small chips.
+- <Term id="speck">SIMON and SPECK</Term> are efficient, but many experts did not trust their origin, so ISO did not standardise them.
+- <Term id="chacha20">ChaCha20</Term> is why many phones and Raspberry Pi 4 boards (no AES instructions) use it instead of AES.
+- <Term id="ascon">Ascon</Term> won NIST's lightweight cryptography competition in February 2023. NIST SP 800-232 (August 2025) standardises Ascon-AEAD128 for encryption, Ascon-Hash256 for hashing, and two extendable-output functions.
+
+## Public keys on small devices: ECC beats RSA
+
+Public-key cryptography is the heaviest part, so key size matters. <Term id="ecc">Elliptic-curve cryptography</Term> needs far smaller keys than RSA for the same strength.
+
+<CompareTable
+  caption="Key sizes with equal security (NIST SP 800-57)"
+  columns={["Security strength", "RSA key", "ECC key"]}
+  rows={[
+    ["80 bits (no longer allowed)", "1024 bits", "160 bits"],
+    ["112 bits (today's minimum)", "2048 bits", "224 bits"],
+    ["128 bits (common choice)", "3072 bits", "256 bits"],
+    ["192 bits", "7680 bits", "384 bits"],
+    ["256 bits", "15360 bits", "512 bits"],
+  ]}
+/>
+
+On an 8-bit microcontroller, an ECC key exchange takes about a second or two, while the equivalent RSA private-key operation can take a minute or more. That is why IoT protocols prefer ECC (for example X25519 and ECDSA).
+
+## How much does it cost?
+
+Lab L27 estimates time and energy per message for each algorithm on an Arduino Uno, an ESP32 and a Raspberry Pi 4. Its figures are illustrative, but they show the real patterns:
+
+- On the 8-bit Uno, SPECK and Ascon are much cheaper than AES-GCM in software.
+- On the ESP32, AES-GCM wins because the chip has AES hardware.
+- On the Pi 4, ChaCha20 beats AES, because its CPU lacks AES instructions.
+- Encrypting a short message costs far less energy than **sending** it by radio, so skipping encryption saves almost nothing.
+
+## Choosing a cipher for an IoT device
+
+1. Prefer **authenticated encryption** (Ascon, AES-GCM, ChaCha20-Poly1305), never encryption alone.
+2. Use **AES** if the chip has AES hardware; otherwise consider **Ascon** or **ChaCha20**.
+3. Use **ECC**, not RSA, for keys and signatures.
+4. Use standardised algorithms and tested libraries; never invent your own cipher.
+
+<Callout kind="example" title="A soil sensor on two AA cells">
+A farm sensor with an 8-bit microcontroller sends 20 bytes every 15 minutes over LoRaWAN. Protecting each message with Ascon takes well under a millisecond and about 0.02 millijoules, while sending it by radio takes around 10 millijoules or more. Strong encryption barely changes the battery life.
+</Callout>
+
+<KeyPoints
+  points={[
+    "Lightweight cryptography fits devices with tiny memory, slow processors, few gates and small batteries.",
+    "PRESENT (ISO/IEC 29192-2) suits hardware; SIMON/SPECK (NSA, 2013) are fast but ISO declined them; ChaCha20 is fast without AES hardware.",
+    "Ascon is the NIST lightweight standard (SP 800-232, August 2025) for authenticated encryption and hashing.",
+    "ECC gives RSA-level security with much smaller keys: 256-bit ECC ≈ 3072-bit RSA.",
+    "Encrypting costs far less energy than radio transmission; choose authenticated, standard algorithms.",
+  ]}
+/>
+
+<ExamTip
+  question="What is lightweight cryptography? Why is it needed in IoT? Describe any two lightweight algorithms."
+  short="Lightweight cryptography is encryption designed for constrained devices with little memory, processing power and energy. IoT needs it because sensors and tags cannot always run standard algorithms efficiently. Examples: PRESENT, a 64-bit block cipher for tiny hardware (ISO/IEC 29192-2), and Ascon, the NIST lightweight standard (SP 800-232, 2025) for authenticated encryption and hashing."
+  long={[
+    "Describe the constraints of IoT devices with a table.",
+    "Explain what makes an algorithm lightweight.",
+    "Describe PRESENT, SIMON/SPECK, ChaCha20 and Ascon in a comparison table.",
+    "Compare ECC and RSA key sizes for equal security.",
+    "Discuss cost versus radio energy and give guidance for choosing a cipher.",
+  ]}
+/>

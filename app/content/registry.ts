@@ -912,7 +912,7 @@ export const labs: Lab[] = [
     topic: "3.8",
     phase: 6,
     aim: "To find and fix common security weaknesses in a simulated smart home.",
-    tech: ["three.js"],
+    tech: ["SVG", "Motion"],
   },
   {
     id: "L25",

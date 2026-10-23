@@ -1,0 +1,102 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Cpu, Server, UserX } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+Encryption scrambles data with a secret key so that anyone who intercepts it sees only meaningless bytes; IoT needs it because its messages travel over radios and networks that anyone nearby can listen to.
+</Callout>
+
+## Messages travel through open air
+
+A Wi-Fi, Bluetooth or LoRa message is a radio signal. Anyone within range with a cheap receiver can record it. On the internet, a message also passes through many routers owned by other people.
+
+<FlowDiagram
+  nodes={[
+    { label: "Sensor or phone", sub: "Sends a message", icon: Cpu, tone: "u1" },
+    { label: "Attacker in range", sub: "Listens, changes, replays", icon: UserX, tone: "neutral" },
+    { label: "Broker or cloud", sub: "Receives it", icon: Server, tone: "u3" },
+  ]}
+  links={["Radio or network", "Radio or network"]}
+  caption="Without encryption, the attacker in the middle can do all three things below."
+/>
+
+## What can go wrong without encryption
+
+<CompareTable
+  caption="Threats to data in transit"
+  columns={["Threat", "What the attacker does", "IoT example"]}
+  rows={[
+    ["Eavesdropping", "Reads the traffic", "Sees the MQTT password and every door-lock message"],
+    ["Man-in-the-middle", "Sits between two sides, reading and changing messages", "Changes \"lock\" to \"unlock\" on the way to the door"],
+    ["Replay", "Records a valid message and sends it again later", "Plays back a recorded \"open gate\" command at night"],
+    ["Data theft at rest", "Copies stored data from a stolen device or server", "Reads Wi-Fi passwords from a discarded smart bulb"],
+  ]}
+/>
+
+<Term id="eavesdropping">Eavesdropping</Term>, the <Term id="mitm">man-in-the-middle</Term> attack and the <Term id="replay-attack">replay attack</Term> all work easily on unencrypted IoT traffic. Lab L25 shows a sniffer reading plain MQTT, including passwords.
+
+## How encryption helps
+
+Encryption turns <Term id="plaintext">plaintext</Term> into ciphertext using a key. Without the key, the ciphertext is useless.
+
+- **Confidentiality:** eavesdroppers see only random-looking bytes.
+- **Integrity:** modern encryption adds an authentication tag (for example AES-GCM). If even one bit changes, the receiver rejects the message.
+- **Authentication:** certificates, used in TLS, prove that the server, and sometimes the device, is genuine.
+- **Freshness:** sequence numbers inside the protocol make replayed messages fail.
+
+<CompareTable
+  caption="Two places to encrypt"
+  columns={["", "In transit", "At rest"]}
+  rows={[
+    ["Protects", "Data moving over Wi-Fi, BLE, LoRa or the internet", "Data stored on devices, phones and servers"],
+    ["Typical tools", "TLS (MQTT on port 8883, HTTPS), DTLS for CoAP, link-layer encryption in BLE, Zigbee and LoRaWAN", "Encrypted storage, encrypted databases, keys in a secure element"],
+    ["Stops", "Eavesdropping, tampering on the way", "Theft of a lost device or a copied disk"],
+  ]}
+/>
+
+## What encryption does not hide
+
+- **Metadata:** who talks to whom, when and how much. A burst of traffic at 7 a.m. can still show that someone woke up.
+- **A hacked device:** if the attacker controls the device, they see the data before it is encrypted.
+- **Weak passwords and keys:** encryption with a key everyone knows protects nothing.
+- **Bad certificate checks:** if a device accepts any certificate, a man-in-the-middle can still read everything.
+
+## Privacy laws
+
+Much IoT data is personal: location, health readings, voices and daily routines. Laws require it to be protected.
+
+- **India: Digital Personal Data Protection Act, 2023.** Personal data needs consent for a clear purpose and "reasonable security safeguards". Breaches must be reported to the Data Protection Board and to the people affected. Failing to protect data can cost up to ₹250 crore. The DPDP Rules were notified in November 2025 and apply in stages until May 2027.
+- **European Union: GDPR (2018).** Similar duties, with fines up to €20 million or 4 % of worldwide turnover.
+
+Encryption is one of the clearest "reasonable safeguards" a company can show.
+
+<Callout kind="example" title="What a smart meter reveals">
+A smart electricity meter reports every 15 minutes. Without encryption, anyone listening can see when the family wakes up, when the house is empty and even which appliances they use. Encrypting the readings keeps this private; collecting only what the bill needs reduces the risk further.
+</Callout>
+
+## Why IoT encryption is harder
+
+- Small devices have little CPU, memory and battery (topic 3.11 covers lightweight ciphers).
+- Every device needs its own keys, delivered and stored safely (topics 3.10 and 3.14).
+- Devices last for years, so the encryption must stay strong and be updatable.
+
+<KeyPoints
+  points={[
+    "IoT messages travel over radios and shared networks, so anyone nearby can capture them.",
+    "Without encryption: eavesdropping, man-in-the-middle tampering, replay, and theft of stored data.",
+    "Encryption gives confidentiality; authenticated encryption and certificates add integrity and authentication.",
+    "Encrypt in transit (TLS, DTLS, link-layer) and at rest; metadata stays visible either way.",
+    "Privacy law (India's DPDP Act 2023, the EU's GDPR) requires reasonable security safeguards for personal data.",
+  ]}
+/>
+
+<ExamTip
+  question="Why is encryption needed in IoT? Explain with threats and examples."
+  short="IoT data travels over radio and shared networks, where anyone can capture it. Without encryption, attackers can eavesdrop on passwords and readings, change commands (man-in-the-middle) or replay them. Encryption keeps data confidential, and with authentication tags and certificates it also protects integrity and identity. Laws such as India's DPDP Act 2023 require such safeguards."
+  long={[
+    "Explain why IoT traffic is easy to intercept (radio, shared networks).",
+    "Describe eavesdropping, man-in-the-middle, replay and theft at rest with IoT examples.",
+    "Explain plaintext, ciphertext and keys, and what encryption provides.",
+    "Compare encryption in transit and at rest, and what it does not hide (metadata).",
+    "Link to privacy law (DPDP Act 2023, GDPR) and the extra difficulty on small devices.",
+  ]}
+/>

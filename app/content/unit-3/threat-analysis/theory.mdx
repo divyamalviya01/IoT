@@ -1,0 +1,139 @@
+import { Callout, CompareTable, ExamTip, FlowDiagram, KeyPoints, Term } from "~/components/theory";
+import { Bug, Gem, Gauge, ShieldCheck, Swords } from "lucide-react";
+
+<Callout kind="definition" title="In one line">
+Threat analysis is a step-by-step way to find what could go wrong in an IoT system, decide how serious each problem is, and choose defences before attackers find the weak spots.
+</Callout>
+
+## The chain of ideas
+
+<FlowDiagram
+  nodes={[
+    { label: "Asset", sub: "What we protect", icon: Gem, tone: "u3" },
+    { label: "Threat", sub: "What could harm it", icon: Swords, tone: "neutral" },
+    { label: "Vulnerability", sub: "The weakness it uses", icon: Bug, tone: "u1" },
+    { label: "Risk", sub: "Likelihood × impact", icon: Gauge, tone: "u2" },
+    { label: "Countermeasure", sub: "What we do about it", icon: ShieldCheck, tone: "brand" },
+  ]}
+  links={["is exposed to", "through", "gives", "reduced by"]}
+  caption="Threat analysis connects what we value to what we do about it."
+/>
+
+<CompareTable
+  caption="The terms, with a smart door lock"
+  columns={["Term", "Meaning", "Smart-lock example"]}
+  rows={[
+    ["Asset", "Something of value to protect", "The home, the unlock command, the access log"],
+    ["Threat", "Something that could cause harm", "Someone replays a recorded unlock command"],
+    ["Vulnerability", "A weakness a threat can use", "Bluetooth commands carry no counter or timestamp"],
+    ["Risk", "How likely and how harmful", "Likely 3 × impact 5 = 15, high"],
+    ["Countermeasure", "A control that reduces the risk", "Add counters so old commands are rejected"],
+  ]}
+/>
+
+## Four questions of threat modelling
+
+A <Term id="threat-model">threat model</Term> answers four questions:
+
+1. **What are we working on?** Draw the system.
+2. **What can go wrong?** List threats, for example with STRIDE.
+3. **What are we going to do about it?** Rate each risk and choose defences.
+4. **Did we do a good job?** Check, test and update the model when the system changes.
+
+## Step 1: draw a data-flow diagram
+
+A <Term id="dfd">data-flow diagram</Term> shows four kinds of element:
+
+<CompareTable
+  caption="DFD elements"
+  columns={["Element", "Drawn as", "Smart-lock example"]}
+  rows={[
+    ["External entity", "Rectangle", "The resident using the phone"],
+    ["Process", "Circle", "Mobile app, cloud API, home hub, the lock itself"],
+    ["Data store", "Two parallel lines", "Device registry, access log"],
+    ["Data flow", "Arrow", "App → cloud (HTTPS), hub → lock (Bluetooth)"],
+  ]}
+/>
+
+A <Term id="trust-boundary">trust boundary</Term> is drawn as a dashed line where data passes between areas trusted differently: phone to internet, internet to home network, home network to the Bluetooth link. Threats gather at these crossings.
+
+## Step 2: list threats with STRIDE
+
+<Term id="stride">STRIDE</Term> was created at Microsoft in 1999. Each letter is a kind of threat, and each attacks one security property.
+
+<CompareTable
+  caption="STRIDE and IoT"
+  columns={["Threat", "Property attacked", "IoT example", "Typical defence"]}
+  rows={[
+    ["Spoofing", "Authentication", "A fake sensor pretends to be a real one", "Device certificates, strong login"],
+    ["Tampering", "Integrity", "A command or firmware is changed", "Signed firmware, authenticated messages"],
+    ["Repudiation", "Non-repudiation", "A user denies opening the door", "Tamper-proof, time-stamped logs"],
+    ["Information disclosure", "Confidentiality", "Readings are sniffed on the Wi-Fi", "Encryption"],
+    ["Denial of service", "Availability", "A jammer stops the lock receiving commands", "Rate limits, redundancy, local fallback"],
+    ["Elevation of privilege", "Authorisation", "A guest account gains admin rights", "Least privilege, input checks"],
+  ]}
+/>
+
+**STRIDE per element:** not every threat applies to every element.
+
+<CompareTable
+  caption="Which STRIDE threats apply to which element"
+  columns={["Element", "S", "T", "R", "I", "D", "E"]}
+  rows={[
+    ["External entity", "✓", "", "✓", "", "", ""],
+    ["Process", "✓", "✓", "✓", "✓", "✓", "✓"],
+    ["Data store", "", "✓", "✓ (logs)", "✓", "✓", ""],
+    ["Data flow", "", "✓", "", "✓", "✓", ""],
+  ]}
+/>
+
+For the smart-lock system this gives 42 threats to consider. Lab L28 lists them all.
+
+## Step 3: rate each risk
+
+Rate likelihood and impact from 1 (very low) to 5 (very high). **Risk = likelihood × impact**, placed on a <Term id="risk-matrix">risk matrix</Term>.
+
+<CompareTable
+  caption="Risk bands on a 5 × 5 matrix"
+  columns={["Risk score", "Band", "What to do"]}
+  rows={[
+    ["1–4", "Low", "Accept, or fix when convenient"],
+    ["5–9", "Medium", "Plan a fix"],
+    ["10–16", "High", "Fix before release"],
+    ["20–25", "Critical", "Fix immediately; do not launch"],
+  ]}
+/>
+
+## Step 4: choose countermeasures
+
+For each risk you can **reduce** it (add a control), **avoid** it (remove the feature), **transfer** it (for example insurance) or **accept** it (if it is low). A control must match the threat: encryption stops information disclosure, but does nothing against spoofing, which needs authentication.
+
+## Threat analysis in IoT-A
+
+The IoT-A reference model includes a threat analysis. It lists threats to each part of its architecture (devices, communication, services and users) and maps them to its security functions: authentication, authorisation, identity management, key exchange, and trust and reputation. STRIDE is a widely used method for carrying out such an analysis on a real design.
+
+<Callout kind="example" title="Smart lock: the top risk">
+The highest risk in the smart-lock model is someone signing in as the resident with a stolen password (likelihood 4 × impact 5 = 20, critical). Two-factor login cuts the likelihood to 2, giving 10 (high). A second authentication control lowers it to 5 (medium). The Visualize tab and lab L28 let you try this.
+</Callout>
+
+<KeyPoints
+  points={[
+    "Asset → threat → vulnerability → risk (likelihood × impact) → countermeasure.",
+    "Draw a DFD: external entities, processes, data stores, data flows, with trust boundaries.",
+    "STRIDE: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege; each attacks one security property.",
+    "Rate risks on a 5 × 5 matrix: low 1–4, medium 5–9, high 10–16, critical 20–25.",
+    "Reduce, avoid, transfer or accept each risk; the control must match the threat category.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain threat analysis for IoT using STRIDE and a risk matrix."
+  short="Threat analysis identifies assets, the threats to them and the vulnerabilities they exploit, rates risk as likelihood × impact, and chooses countermeasures. The system is drawn as a data-flow diagram with trust boundaries, and STRIDE (Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege) is applied to each element. Risks are ranked on a 5 × 5 matrix and the highest are reduced first."
+  long={[
+    "Define asset, threat, vulnerability, risk and countermeasure with an IoT example.",
+    "Explain the four questions of threat modelling and draw a DFD with trust boundaries.",
+    "Explain STRIDE with the property each attacks and IoT examples; show STRIDE per element.",
+    "Explain the risk matrix and risk bands with a worked example.",
+    "Explain risk treatment (reduce, avoid, transfer, accept) and link to the IoT-A threat analysis.",
+  ]}
+/>

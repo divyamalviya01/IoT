@@ -1,0 +1,130 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term, Timeline } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+IoT security means protecting connected devices, their networks, data and cloud services so that only the right people and devices can use them, and nothing is read, changed or stopped without permission.
+</Callout>
+
+## Why IoT security matters
+
+A hacked laptop leaks data. A hacked IoT device can also act in the real world: unlock a door, switch off a factory pump or flood a website with traffic. And there are billions of IoT devices, many of them cheap and rarely updated.
+
+## The goals of security
+
+The classic goals are the <Term id="cia-triad">CIA triad</Term>. IoT systems need three more.
+
+<CompareTable
+  caption="Security goals with IoT examples"
+  columns={["Goal", "Meaning", "IoT example of it failing"]}
+  rows={[
+    ["Confidentiality", "Only the right people can read the data", "A neighbour reads the smart lock's messages on the Wi-Fi"],
+    ["Integrity", "Data cannot be changed without it being noticed", "A \"lock\" command is changed to \"unlock\" on the way"],
+    ["Availability", "The system works when it is needed", "A flood of traffic stops the alarm reaching the cloud"],
+    ["Authentication", "Proving who or what is talking", "A fake sensor sends false readings to the gateway"],
+    ["Authorisation", "Allowing each user or device only what it needs", "A guest account can add new users to the lock"],
+    ["Non-repudiation", "Proof of who did what, so it cannot be denied", "Nobody can show who opened the door at 2 a.m."],
+  ]}
+/>
+
+<Term id="authentication">Authentication</Term> asks "who are you?"; <Term id="authorisation">authorisation</Term> asks "what may you do?"; <Term id="non-repudiation">non-repudiation</Term> keeps proof of what was done.
+
+## Why IoT devices are easy targets
+
+- **Weak defaults:** many devices ship with the same factory password, such as admin / admin.
+- **Small and cheap:** little memory and CPU leave less room for strong security.
+- **Rarely updated:** devices run for 10 years or more, often with no automatic updates.
+- **Physically reachable:** a sensor on a pole or a lock on a door can be opened and tampered with.
+- **Huge numbers of identical devices:** one flaw works on every copy at once.
+- **Many makers and protocols:** devices, gateways, apps and clouds from different companies must all be secure.
+
+Together these make a large <Term id="attack-surface">attack surface</Term>: every device, radio, port, app and account is a possible way in. The Visualize tab shows it on a 3D smart home, layer by layer.
+
+## Attacks at each layer
+
+<CompareTable
+  caption="Common threats by layer (3-layer model from topic 2.3)"
+  columns={["Layer", "Threats", "Example", "Defences"]}
+  rows={[
+    ["Perception (devices)", "Physical tampering, node capture, sensor spoofing, open debug ports", "Someone opens a street-light controller and copies its keys", "Tamper-resistant cases, secure elements, locked debug ports"],
+    ["Network", "Eavesdropping, man-in-the-middle, replay, jamming, denial of service", "A recorded \"unlock\" radio command is played back later", "Encryption, message counters, authenticated links"],
+    ["Application and cloud", "Weak or default passwords, insecure APIs, outdated software, account takeover, data breaches", "A leaked password opens the cloud account of a home camera", "Unique passwords, two-factor login, updates, secure APIs"],
+  ]}
+/>
+
+## Famous incidents
+
+<Timeline
+  caption="Incidents that changed how people think about connected devices"
+  items={[
+    { when: "2010", title: "Stuxnet", text: "Malware is discovered that changed the programs of industrial controllers (PLCs) and damaged uranium centrifuges in Iran. It showed that code can cause physical damage." },
+    { when: "2013", title: "Retail breach through a heating contractor", text: "Attackers stole a heating and air-conditioning contractor's login and used it to reach a large US retailer's network, stealing about 40 million card numbers. A supplier's access became the way in." },
+    { when: "2015", title: "Remote car hack", text: "Researchers showed they could control a Jeep Cherokee's brakes and steering over the mobile network. Chrysler recalled about 1.4 million vehicles to fix the software." },
+    { when: "2016", title: "Mirai botnet", text: "Malware logged in to cameras and routers using factory passwords over Telnet and built a huge botnet. On 21 October it flooded the DNS company Dyn, and many popular websites went down." },
+    { when: "2021", title: "Cloud camera breach", text: "Attackers used an exposed administrator account to view about 150,000 security cameras run by one cloud camera company, including in hospitals and schools." },
+  ]}
+/>
+
+<Term id="botnet">Botnets</Term> such as Mirai turn many weak devices into one weapon for a <Term id="ddos">DDoS attack</Term>.
+
+## OWASP IoT Top 10 (2018)
+
+The Open Worldwide Application Security Project (OWASP) lists the ten most common IoT weaknesses. The 2018 list is still the latest IoT edition.
+
+<CompareTable
+  caption="OWASP IoT Top 10 (2018) and the fix for each"
+  columns={["No.", "Weakness", "What to do"]}
+  rows={[
+    ["I1", "Weak, guessable or hardcoded passwords", "A unique password per device; no hidden backdoor logins"],
+    ["I2", "Insecure network services", "Close ports and services that are not needed, such as Telnet"],
+    ["I3", "Insecure ecosystem interfaces (web, cloud, mobile)", "Strong login and two-factor authentication for apps and APIs"],
+    ["I4", "Lack of a secure update mechanism", "Signed, automatic firmware updates"],
+    ["I5", "Use of insecure or outdated components", "Keep libraries and parts up to date"],
+    ["I6", "Insufficient privacy protection", "Collect less personal data; ask before sharing"],
+    ["I7", "Insecure data transfer and storage", "Encrypt data in transit (TLS) and at rest"],
+    ["I8", "Lack of device management", "Keep a list of every device; monitor and retire old ones"],
+    ["I9", "Insecure default settings", "Secure settings out of the box, such as UPnP off"],
+    ["I10", "Lack of physical hardening", "Tamper-resistant cases and locked debug ports"],
+  ]}
+/>
+
+Lab L24 is a security audit of a smart home with one weakness from each row.
+
+## Laws and guidelines
+
+- **India:** the Telecommunication Engineering Centre published a *Code of Practice for Securing Consumer IoT* (TEC 31318:2021) in August 2021, based on the European standard ETSI EN 303 645. It asks for unique passwords, a way to report flaws, and secure updates. CERT-In is India's agency for reporting cyber incidents.
+- **United Kingdom:** since 29 April 2024 smart devices may not be sold with guessable default passwords (the PSTI Act).
+- **European Union:** under the Cyber Resilience Act, makers must report actively exploited flaws from 11 September 2026, and meet all its security rules from 11 December 2027.
+- **United States:** the Cyber Trust Mark is a voluntary label for smart products that meet security criteria.
+
+<Callout kind="example" title="A housing society's cameras">
+A housing society in Pune installs 32 CCTV cameras and a video recorder, and nobody changes the default password. The recorder is reachable from the internet through the router. Within weeks it is found by automated scanners and joins a botnet. Changing the password, turning off remote access through the router and updating the firmware would have stopped it.
+</Callout>
+
+## Building security in
+
+- **Security by design:** plan security from the first day, not after a breach.
+- **Defence in depth:** several layers, so one failure does not open everything.
+- **Least privilege:** each user, device and app gets only the access it needs.
+- **Secure by default:** safe settings out of the box.
+- **Update for life:** signed updates for as long as the device is in use.
+
+<KeyPoints
+  points={[
+    "Security goals: confidentiality, integrity, availability (CIA), plus authentication, authorisation and non-repudiation.",
+    "IoT is vulnerable because of default passwords, weak hardware, few updates, physical access, huge numbers and many makers.",
+    "Threats exist at every layer: perception (tampering), network (eavesdropping, MITM, replay, DoS) and application/cloud (weak passwords, insecure APIs).",
+    "Incidents: Stuxnet (2010), Jeep hack (2015), Mirai botnet using default passwords (2016).",
+    "OWASP IoT Top 10 (2018): passwords, network services, ecosystem interfaces, updates, components, privacy, data transfer, device management, defaults, physical hardening.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain IoT security: its goals, why IoT is vulnerable, and common attacks."
+  short="IoT security protects devices, networks, data and cloud services. Its goals are confidentiality, integrity and availability, plus authentication, authorisation and non-repudiation. IoT is vulnerable because of default passwords, limited hardware, rare updates, physical exposure and scale. Attacks occur at every layer, as the Mirai botnet (2016) showed by hijacking devices with factory passwords."
+  long={[
+    "Define IoT security and explain why it matters more than in ordinary IT (physical effects, scale).",
+    "Explain the CIA triad and the three extra goals with IoT examples in a table.",
+    "List the reasons IoT devices are vulnerable.",
+    "Describe attacks at the perception, network and application layers with defences.",
+    "Give case studies (Stuxnet, Jeep, Mirai) and the OWASP IoT Top 10; end with security by design.",
+  ]}
+/>

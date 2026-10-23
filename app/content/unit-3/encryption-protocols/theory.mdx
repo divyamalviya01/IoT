@@ -1,0 +1,132 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+Standard encryption protocols combine a few proven building blocks (symmetric ciphers such as AES, public-key methods such as RSA, ECC and Diffie–Hellman, hash functions such as SHA-256 and digital signatures) into protocols such as TLS that protect IoT traffic.
+</Callout>
+
+## Two families of encryption
+
+<CompareTable
+  caption="Symmetric vs asymmetric encryption"
+  columns={["", "Symmetric", "Asymmetric (public key)"]}
+  rows={[
+    ["Keys", "One shared secret key locks and unlocks", "A key pair: a public key anyone may have, a private key kept secret"],
+    ["Speed", "Very fast", "Hundreds to thousands of times slower"],
+    ["Typical key size", "128 or 256 bits", "RSA 2048–3072 bits; ECC 256 bits"],
+    ["Main problem", "How do both sides get the same key safely?", "Too slow to encrypt lots of data"],
+    ["Examples", "AES, ChaCha20", "RSA, elliptic-curve cryptography (ECC)"],
+    ["Used for", "Encrypting the actual data", "Agreeing keys and making signatures"],
+  ]}
+/>
+
+Real protocols use **both**: public-key methods to agree on a key and prove identity, then fast <Term id="symmetric-encryption">symmetric encryption</Term> for the data. That is called hybrid encryption.
+
+## AES: the standard symmetric cipher
+
+<Term id="aes">AES</Term> (the Advanced Encryption Standard, FIPS 197, 2001) encrypts data in 128-bit blocks with a 128-, 192- or 256-bit key, using 10, 12 or 14 rounds of mixing.
+
+AES needs a **mode** to encrypt long messages. **AES-GCM** is the usual choice: it encrypts and also adds a 16-byte authentication tag, so any change to the ciphertext is detected. Lab L26 runs real AES-GCM in your browser.
+
+## RSA: public-key encryption and signatures
+
+<Term id="rsa">RSA</Term> (Rivest, Shamir and Adleman, 1977) is safe because multiplying two large primes is easy, but splitting the product back into them is extremely hard.
+
+<CompareTable
+  caption="Toy RSA with small primes (real keys use primes hundreds of digits long)"
+  columns={["Step", "Working", "Result"]}
+  rows={[
+    ["Pick two primes", "p = 61, q = 53", ""],
+    ["Modulus", "n = p × q", "n = 3233"],
+    ["φ(n)", "(p − 1) × (q − 1)", "3120"],
+    ["Public exponent", "e must share no factor with 3120", "e = 17"],
+    ["Private exponent", "d × e ≡ 1 (mod 3120)", "d = 2753"],
+    ["Encrypt m = 65", "c = 65¹⁷ mod 3233", "c = 2790"],
+    ["Decrypt", "m = 2790²⁷⁵³ mod 3233", "m = 65"],
+  ]}
+/>
+
+The public key is (e, n); the private key is d. Anyone can encrypt for you, but only you can decrypt. <Term id="asymmetric-encryption">Asymmetric encryption</Term> also works the other way round, for signatures.
+
+**ECC** (elliptic-curve cryptography) gives the same security with far smaller keys: a 256-bit ECC key is about as strong as a 3072-bit RSA key, which suits small IoT devices.
+
+## Diffie–Hellman: agreeing a secret in public
+
+<Term id="diffie-hellman">Diffie–Hellman</Term> (1976) lets two devices agree on a shared secret over a network that anyone can watch, without ever sending the secret.
+
+- Both use a public prime p and base g. Example: p = 23, g = 5.
+- Alice picks a secret a = 6 and sends A = 5⁶ mod 23 = 8.
+- Bob picks a secret b = 15 and sends B = 5¹⁵ mod 23 = 19.
+- Alice computes 19⁶ mod 23 = 2; Bob computes 8¹⁵ mod 23 = 2. Both have the secret **2**.
+- An eavesdropper sees 23, 5, 8 and 19, but cannot work out 2 when the numbers are huge.
+
+The Visualize tab shows the same idea with paint mixing. TLS uses the elliptic-curve version (ECDHE), with fresh keys for every connection.
+
+## Hash functions
+
+A <Term id="hash-function">hash function</Term> turns any data into a short fixed-size fingerprint. SHA-256 (FIPS 180-4) gives 256 bits, written as 64 hex digits.
+
+- **One-way:** you cannot get the input back from the hash.
+- **Same input, same hash:** "abc" always gives ba7816bf…20015ad.
+- **<Term id="avalanche-effect">Avalanche effect</Term>:** changing one letter changes about half the bits.
+- **Collision-resistant:** finding two inputs with the same hash is practically impossible.
+
+Hashes check that firmware or files have not changed. MD5 and SHA-1 are broken and must not be used for security.
+
+## Digital signatures and certificates
+
+A <Term id="digital-signature">digital signature</Term> is made by hashing a message and signing the hash with a private key. Anyone with the public key can check it. If the message changes, the check fails.
+
+- **Signed firmware:** a device installs an update only if the maker's signature is valid.
+- **Certificates:** an <Term id="x509-certificate">X.509 certificate</Term> links a public key to a name (a website or a device ID). It is signed by a <Term id="certificate-authority">certificate authority</Term> that both sides trust.
+
+## TLS: putting it all together
+
+<Term id="tls">TLS</Term> 1.3 (RFC 8446, 2018) secures HTTPS (port 443) and MQTT (port 8883). Its handshake takes one round trip:
+
+1. **Client Hello:** the device offers ciphers and sends its half of an ECDHE key exchange.
+2. **Server Hello:** the server sends its half, then (already encrypted) its certificate, a signature proving it owns the certificate, and "Finished".
+3. The device **checks the certificate** against the authorities it trusts, then sends "Finished".
+4. Both now share keys and send data with AES-GCM or ChaCha20-Poly1305.
+
+<CompareTable
+  caption="Which building block does which job in TLS 1.3"
+  columns={["Job", "Building block"]}
+  rows={[
+    ["Agree a fresh shared key", "Elliptic-curve Diffie–Hellman (ECDHE)"],
+    ["Prove the server is genuine", "X.509 certificate and a digital signature (RSA or ECDSA)"],
+    ["Encrypt and protect the data", "AES-GCM or ChaCha20-Poly1305"],
+    ["Check the handshake was not altered", "Hashes (SHA-256 or SHA-384)"],
+  ]}
+/>
+
+**DTLS** does the same over UDP, so it secures CoAP (port 5684); DTLS 1.3 is RFC 9147 (2022), and topic 1.11 shows CoAP. The Visualize tab steps through the TLS 1.3 handshake.
+
+<Callout kind="note" title="Looking ahead: quantum computers">
+A large quantum computer could break RSA and ECC. In August 2024 NIST published new post-quantum standards (FIPS 203, 204 and 205), and TLS is starting to combine them with today's key exchange. AES and SHA-256 remain safe with long enough keys.
+</Callout>
+
+<Callout kind="example" title="A signed firmware update">
+A smart-meter maker in India signs every firmware file with its private key, kept in a hardware security module. Each meter stores the maker's public key. When an update arrives over the network, the meter checks the signature and installs the file only if it is valid, so a fake update is refused.
+</Callout>
+
+<KeyPoints
+  points={[
+    "Symmetric encryption (AES, ChaCha20) is fast but needs a shared key; asymmetric (RSA, ECC) uses public and private keys but is slow.",
+    "AES: 128-bit blocks, 128/192/256-bit keys; AES-GCM adds an authentication tag. RSA rests on the difficulty of factoring.",
+    "Diffie–Hellman agrees a shared secret in public; TLS uses its elliptic-curve form (ECDHE).",
+    "SHA-256 makes a one-way 256-bit fingerprint; signatures sign a hash with a private key; certificates bind keys to names.",
+    "TLS 1.3 (RFC 8446) combines them in a one-round-trip handshake; DTLS secures UDP and CoAP.",
+  ]}
+/>
+
+<ExamTip
+  question="Compare symmetric and asymmetric encryption and explain how TLS uses AES, RSA/ECC, Diffie–Hellman and SHA-256."
+  short="Symmetric encryption such as AES uses one shared key and is fast; asymmetric encryption such as RSA or ECC uses a public/private key pair and is slow but solves key sharing and allows signatures. TLS 1.3 agrees a key with elliptic-curve Diffie–Hellman, proves the server's identity with a certificate and signature, protects the handshake with SHA-256 hashes, and encrypts data with AES-GCM."
+  long={[
+    "Compare symmetric and asymmetric encryption in a table.",
+    "Explain AES and the role of AES-GCM's authentication tag.",
+    "Explain RSA with the toy example (p = 61, q = 53, e = 17) and mention ECC key sizes.",
+    "Explain Diffie–Hellman with numbers (p = 23, g = 5) and hashing (SHA-256 properties).",
+    "Describe signatures, certificates and the TLS 1.3 handshake; mention DTLS for CoAP.",
+  ]}
+/>

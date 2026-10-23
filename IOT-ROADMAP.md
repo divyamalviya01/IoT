@@ -179,7 +179,7 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 | L21 | IoT Dashboard Builder (widgets, alerts, push vs polling, 2D bulb through a device shadow) | 3.5 | Recharts, SVG |
 | L22 | Stream Analytics (moving average, anomaly detection) | 3.6 | Recharts |
 | L23 | Hadoop: HDFS Blocks and MapReduce (2D racks and pipeline; the 3D cluster is in the 3.7 Visualize tab) | 3.7 | SVG, Motion |
-| L24 | Smart Home Security Audit | 3.8 | three.js |
+| L24 | Smart Home Security Audit (2D floor plan; the 3D attack surface is in the 3.8 Visualize tab) | 3.8 | SVG, Motion |
 | L25 | Packet Sniffer: Plaintext vs Encrypted | 3.9 | Motion |
 | L26 | Crypto Workbench (AES, SHA-256, RSA toy, Diffie–Hellman) | 3.10 | Web Crypto |
 | L27 | Lightweight Crypto Cost Estimator | 3.11 | Recharts |
@@ -585,7 +585,7 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 - **"Publish–subscribe modes":** covered as QoS levels, retained and persistent sessions, and topic-based vs content-based filtering.
 - **"SIG":** treated as the **Bluetooth SIG** (standards body, profiles, Bluetooth Mesh), as in comparable university syllabi. Sigfox gets a short LPWAN sidebar under LoRa in case that was the intended meaning.
 - **"Widi":** Intel Wireless Display. It is discontinued, so it is theory only and covered alongside Miracast and Wi-Fi Direct.
-- **"Quadruple Trust Model for IoT-A":** protection, security, privacy and safety (IEEE P2413, as presented in Raj Kamal's textbook). To be verified against the textbook when Phase 6 is written.
+- **"Quadruple Trust Model for IoT-A":** protection, security, privacy and safety. Checked on 23 October 2026: IEEE P2413 (now IEEE 2413-2019) names this "quadruple trust" but does not define each term; the theory gives plain-word meanings and asks students to check Raj Kamal's exact wording.
 - **"Threat analysis and model for IoT-A":** taught with the IoT-A security perspective plus STRIDE and a risk matrix.
 - **Commercial clouds:** services that have been retired are shown as history. Status checked on 22 October 2026 for Phase 5 (Google Cloud IoT Core, IBM Watson IoT, AWS IoT Analytics and IoT Events retired; Azure IoT Central closed to new apps; ThingsBoard moved to BUSL 1.1 at v4.4). Re-check before each release.
 

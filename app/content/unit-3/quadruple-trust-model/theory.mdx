@@ -1,0 +1,79 @@
+import { Callout, CompareTable, ExamTip, KeyPoints, Term } from "~/components/theory";
+
+<Callout kind="definition" title="In one line">
+The Quadruple Trust Model says that people can trust an IoT system only when four qualities hold together: protection, security, privacy and safety.
+</Callout>
+
+## Where the idea comes from
+
+**IoT-A** (Internet of Things Architecture) was a European research project (2010–2013). It produced an *Architectural Reference Model*: a common way to describe any IoT system, with models of its devices, information, functions and communication. One of its functional groups is security: authentication, authorisation, identity management, key exchange, and trust and reputation. It also asks designers to look at every system from a "trust, security and privacy" point of view. The <Term id="iot-a">IoT-A</Term> model was introduced in topic 2.3.
+
+The **IEEE 2413** standard (approved in 2019, published in 2020; developed as IEEE P2413) defines an architecture framework for IoT. Its working group named a quality goal it called **"quadruple" trust**: protection, security, privacy and safety. Textbooks teach this as the <Term id="quadruple-trust">Quadruple Trust Model</Term> for IoT-A style architectures.
+
+## The four pillars
+
+<CompareTable
+  caption="The four parts of quadruple trust"
+  columns={["Pillar", "Meaning", "Question to ask", "Typical measures"]}
+  rows={[
+    ["Protection", "Keeping devices, data and services from damage, loss or misuse of any kind, including accidents, faults and weather", "What if something breaks, fails or is damaged?", "Enclosures, surge protection, backups, spare gateways, tamper-resistant cases"],
+    ["Security", "Defending against deliberate attacks so only the right people and devices get in, and data stays secret, unchanged and available", "What if someone attacks it on purpose?", "Authentication, encryption, signed updates, closing unused ports"],
+    ["Privacy", "Using personal data only as the person agreed, and keeping it no longer than needed", "Is personal data used only as the person agreed?", "Consent, collecting less, anonymising, deleting old data"],
+    ["Safety", "Making sure the system cannot harm people, property or the environment, even when it fails", "Could anyone get hurt?", "Fail-safe design, emergency stops, safe default states, testing"],
+  ]}
+/>
+
+The Visualize tab has twelve real-world scenarios to sort into the four pillars.
+
+## They overlap, and sometimes pull against each other
+
+- **Safety against security:** a smart lock that opens when its battery dies keeps people safe in a fire, but is less secure.
+- **Security against privacy:** keeping detailed logs helps investigate attacks, but logs about people are personal data.
+- **Security against safety:** encryption adds delay; a safety stop on a machine must act instantly, so it may use a separate, simpler channel.
+- **Protection and security overlap:** availability is part of security, but a power cut or flood is not an attack. Protection covers the accidents too.
+
+A good design names these trade-offs and decides each one deliberately.
+
+## Trust between people and between devices
+
+- **People** trust a system when it keeps them safe, keeps their data private and keeps working.
+- **Devices** must also trust each other: a gateway should accept data only from devices it has authenticated, and may track each device's reputation, ignoring one that keeps sending impossible readings.
+
+## Applying the model: a health wearable
+
+<CompareTable
+  caption="Quadruple trust for a heart-rate band that alerts a doctor"
+  columns={["Pillar", "What it means here"]}
+  rows={[
+    ["Protection", "Water-resistant case; readings are stored on the phone if the network is down and sent later"],
+    ["Security", "Paired, encrypted Bluetooth; the cloud API needs strong login; firmware updates are signed"],
+    ["Privacy", "The patient chooses who sees the data; it is not sold; old data is deleted (DPDP Act 2023)"],
+    ["Safety", "If the band fails, it warns the patient instead of silently showing \"normal\"; alerts are tested"],
+  ]}
+/>
+
+<Callout kind="note" title="A note on sources">
+IEEE 2413 names the four parts of quadruple trust but does not define each one separately. The meanings above are the standard meanings of the words in IoT design. Check your textbook (Raj Kamal) for its exact wording before the exam.
+</Callout>
+
+<KeyPoints
+  points={[
+    "IoT-A (EU, 2010–2013) produced an Architectural Reference Model with a security functional group and a trust, security and privacy perspective.",
+    "IEEE 2413 names 'quadruple trust': protection, security, privacy and safety.",
+    "Protection: guard against damage and faults. Security: guard against attacks. Privacy: use personal data only as agreed. Safety: never harm people.",
+    "The pillars overlap and can conflict, as with a lock that opens in a fire; designers must choose deliberately.",
+    "Trust is needed both between people and the system, and between devices.",
+  ]}
+/>
+
+<ExamTip
+  question="Explain the Quadruple Trust Model for IoT."
+  short="The Quadruple Trust Model, from the IEEE 2413 architecture framework and taught with the IoT-A reference model, says an IoT system is trustworthy only when four qualities hold: protection (from damage and faults), security (from deliberate attacks), privacy (personal data used only as agreed) and safety (no harm to people). They overlap and sometimes conflict, so designers must balance them."
+  long={[
+    "Introduce IoT-A's Architectural Reference Model and IEEE 2413.",
+    "Explain each of the four pillars with a meaning and an example in a table.",
+    "Show how the pillars overlap and conflict with examples.",
+    "Explain trust between people and devices (authentication, reputation).",
+    "Apply the model to a system such as a health wearable or smart lock.",
+  ]}
+/>
