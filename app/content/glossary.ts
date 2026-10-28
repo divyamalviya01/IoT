@@ -556,6 +556,13 @@ export const glossary: GlossaryTerm[] = [
     topic: "sensor-nodes",
   },
   {
+    id: "adc-resolution",
+    term: "ADC resolution",
+    definition:
+      "The number of bits an ADC uses. An n-bit ADC has 2ⁿ steps, so a 10-bit ADC has 1024 steps.",
+    topic: "sensor-nodes",
+  },
+  {
     id: "analog-signal",
     term: "Analog signal",
     definition:
@@ -587,6 +594,13 @@ export const glossary: GlossaryTerm[] = [
     term: "Energy harvesting",
     definition:
       "Collecting small amounts of energy from the surroundings, such as light, heat or vibration, to power or recharge a device.",
+    topic: "sensor-nodes",
+  },
+  {
+    id: "fault-tolerance",
+    term: "Fault tolerance",
+    definition:
+      "The ability of a network to keep working when some of its parts fail. If one sensor node dies, the others carry on.",
     topic: "sensor-nodes",
   },
   {
@@ -642,7 +656,7 @@ export const glossary: GlossaryTerm[] = [
     id: "quantisation",
     term: "Quantisation",
     definition:
-      "Rounding a smooth value to the nearest step an ADC can represent. The small difference is called quantisation error.",
+      "Rounding a measured value down to the step just below it, so an ADC can store it as a whole number. The small difference is called quantisation error.",
     topic: "sensor-nodes",
   },
   {
@@ -665,6 +679,13 @@ export const glossary: GlossaryTerm[] = [
     definition:
       "The ability of a system to keep working well as it grows from a few devices to thousands or millions.",
     topic: "iot-characteristics",
+  },
+  {
+    id: "self-organising",
+    term: "Self-organising network",
+    definition:
+      "A network whose nodes find their neighbours and set up the links on their own, with no person configuring each one.",
+    topic: "sensor-nodes",
   },
   {
     id: "sbc",
@@ -706,6 +727,13 @@ export const glossary: GlossaryTerm[] = [
     definition:
       "A small IoT device worn on the body, such as a fitness band or smartwatch, that tracks things like steps and heart rate.",
     topic: "iot-infrastructure",
+  },
+  {
+    id: "wireless-sensor-network",
+    term: "Wireless sensor network (WSN)",
+    definition:
+      "Many small sensor nodes spread over an area that measure things and send their readings by radio to a gateway.",
+    topic: "sensor-nodes",
   },
   {
     id: "actuator",

@@ -101,7 +101,7 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 |---|---|---|---|---|---|
 | 1.1 | Introduction to IoT and IoT components | 1 | ✔ | 3D | L01 |
 | 1.2 | Characteristics of IoT | 1 | ✔ | 2D | — |
-| 1.3 | IoT sensor nodes | 1 | ✔ | 3D | L02 |
+| 1.3 | IoT sensor nodes and their characteristics | 1 | ✔ | 3D | L02 |
 | 1.4 | Edge computer, cloud and peripheral cloud | 1 | ✔ | 3D | L03 |
 | 1.5 | Single board computers and open-source hardware | 1 | ✔ | 3D | L04 |
 | 1.6 | Examples of IoT infrastructure | 1 | ✔ | 2D | — |
@@ -255,8 +255,8 @@ T = Theory · V = Visualization (2D/3D) · L = Lab · "—" = not applicable, so
 - [x] Theory: dynamic and self-adapting, self-configuring, interoperable protocols, unique identity, integrated into the information network, scalability, heterogeneity, intelligence, energy limits, security (table with examples)
 - [x] Visualize (2D): animated card per characteristic (for example, scalability shows nodes multiplying, unique identity shows IP/ID tags)
 
-**1.3 IoT sensor nodes**
-- [x] Theory: node anatomy (sensing unit + ADC, processing unit, transceiver, power unit/energy harvesting), sensor and actuator table (DHT11, LM35, PIR, HC-SR04, LDR, MQ-2, soil moisture, accelerometer), analog vs digital, sampling, duty cycling
+**1.3 IoT sensor nodes and their characteristics**
+- [x] Theory: node anatomy (sensing unit + ADC, processing unit, transceiver, power unit/energy harvesting), characteristics of sensor nodes (small, low-cost, low-power, limited resources, short-range wireless, self-organising, unattended, fault-tolerant, scalable, dynamic topology, harsh environments, in-network processing), sensor and actuator table (DHT11, LM35, PIR, HC-SR04, LDR, MQ-2, soil moisture, accelerometer), analog vs digital, simplified ADC (sample → quantise → encode, with a 3-bit worked example and an interactive ADC widget), duty cycling (with an interactive duty-cycle strip)
 - [x] Visualize (3D): exploded sensor node (battery, sensor + ADC, microcontroller, radio) with a "Separate the layers" slider; a packet climbs from the heat signal through the ADC and MCU to the antenna
 - [x] Lab **L02 Sensor Node Simulator**: pick a sensor and change the environment, see the analog waveform become ADC samples (8/10/12-bit, sampling rate) that trigger an actuator at a threshold, plus a battery-life vs duty-cycle chart
 

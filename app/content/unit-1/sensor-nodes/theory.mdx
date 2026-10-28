@@ -1,6 +1,8 @@
 import { Callout, ChartCard, ChartTooltip, CompareTable, ExamTip, FlowDiagram, KeyPoints, LayerStack, Term, chartStyle, seriesColor } from "~/components/theory";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
-import { Binary, Cpu, Radio, Thermometer, Waves } from "lucide-react";
+import { Binary, Camera, ChartNoAxesColumnIncreasing, Cpu, Radio, Thermometer, Waves } from "lucide-react";
+import AdcSteps from "./AdcSteps";
+import DutyCycleStrip from "./DutyCycleStrip";
 
 export const adcDemo = Array.from({ length: 25 }, (_, i) => {
   const volts = 2.5 + 2 * Math.sin((i / 24) * 2 * Math.PI);
@@ -13,12 +15,12 @@ export const adcDemo = Array.from({ length: 25 }, (_, i) => {
 });
 
 <Callout kind="definition" title="In one line">
-A sensor node is a small, self-contained device that senses its surroundings, processes the reading and sends it over a wireless link, usually on battery power.
+A sensor node is a small, battery-powered device that senses its surroundings, processes the reading and sends it by radio.
 </Callout>
 
 ## What is a sensor node?
 
-A sensor node is the basic building block of a wireless sensor network (WSN). Many nodes are spread over an area, such as a farm, a forest or a factory floor.
+A sensor node is the basic building block of a <Term id="wireless-sensor-network">wireless sensor network (WSN)</Term>. Many nodes are spread over an area, such as a farm, a forest or a factory floor.
 
 Each node measures something, such as temperature or soil moisture. It then sends the reading by radio to a gateway, which forwards it to the cloud.
 
@@ -55,6 +57,51 @@ Every sensor node has four units. Select a unit to see what it does.
   ]}
   caption="Inside a node, a physical quantity becomes a voltage, then a number, then a radio packet."
 />
+
+## Characteristics of IoT sensor nodes
+
+Topic 1.2, [Characteristics of IoT](/learn/iot-characteristics), lists the features of a whole IoT system. This section is about one part only: the sensor node.
+
+Some features belong to each node. Others appear when many nodes work together as a network.
+
+<CompareTable
+  caption="Characteristics of IoT sensor nodes"
+  columns={["Characteristic", "What it means", "Example"]}
+  rows={[
+    ["Small size", "Small enough to fit in a palm, so it can be placed almost anywhere", "A soil sensor pushed into the ground beside a sugarcane plant"],
+    ["Low cost", "Each node is cheap, so hundreds can be used in one project", "Hundreds of nodes spread across a tea garden in Assam"],
+    ["Low power, battery-powered", "Runs for months or years on a small battery", "A water-meter node that lasts five years on one battery"],
+    ["Limited processing, memory and storage", "A slow microcontroller with only a few kilobytes of memory", "The Arduino Uno has just 2 KB of RAM"],
+    ["Short-range wireless", "A low-power radio that reaches only a short distance", "A Zigbee node reaches the next node about 10–100 m away"],
+    ["Self-organising", "Nodes find each other and form the network on their own", "Nodes dropped from a drone over a forest link up with no set-up"],
+    ["Unattended operation", "Works for long periods with nobody nearby", "A rain gauge in a remote village reports through the whole monsoon"],
+    ["Fault tolerance", "The network keeps working when some nodes fail", "If one forest node burns, the fire alert travels through its neighbours"],
+    ["Scalability and dense deployment", "Many nodes can sit close together, and more can be added later", "A smart city adds hundreds of parking sensors to a busy market street"],
+    ["Dynamic topology", "The pattern of links changes as nodes join, move or fail", "Collars on cows send data while the cows walk around a dairy farm"],
+    ["Works in harsh conditions", "Survives heat, rain, dust and shaking", "A sensor on a bridge checks for cracks through monsoon rain and traffic"],
+    ["In-network processing", "Nodes filter or average readings before sending, to save energy", "A node reads every second but sends one 15-minute average, not 900 readings"],
+  ]}
+/>
+
+The five below come up most often in exams.
+
+**Low power.** Most nodes run on a small battery that nobody changes for months. So every part is chosen to use very little energy. The radio is switched off whenever possible.
+
+**Limited resources.** A node has a slow microcontroller and very little memory. An Arduino Uno has just 2 KB of RAM, while a phone has several gigabytes. So a node's programs must be small and simple.
+
+**Self-organising.** Nodes are often scattered with no fixed plan. A <Term id="self-organising">self-organising</Term> network builds itself: each node finds its neighbours and a path to the gateway. Nobody sets up the links by hand.
+
+**Fault tolerance.** Nodes fail when batteries die, animals chew them or rain gets in. <Term id="fault-tolerance">Fault tolerance</Term> means the network keeps working when some nodes stop. Data simply takes another path through working neighbours.
+
+**Scalability.** A network may start with ten nodes and grow to thousands. <Term id="scalability">Scalability</Term> means new nodes can join without redesigning the network.
+
+<Callout kind="remember" title="Easy way to remember">
+Split the list in two. Each **node** is small, cheap, low-power and limited. Together, the **network** organises itself, survives failures and grows.
+</Callout>
+
+<Callout kind="exam" title="2-mark answer: List the characteristics of an IoT sensor node">
+An IoT sensor node is small, low-cost and battery-powered, with limited processing, memory and a short-range radio. Nodes work unattended, organise themselves into a network and keep working when some nodes fail. The network can grow to thousands of nodes, and nodes often filter data before sending it.
+</Callout>
 
 ## Sensors and actuators you will meet
 
@@ -104,13 +151,85 @@ Sensors give one of two kinds of signal.
 
 An <Term id="analog-signal">analog signal</Term> can take any value. A <Term id="digital-signal">digital signal</Term> has only a few fixed values.
 
-## From voltage to number: sampling and quantisation
+## From voltage to number
 
-A microcontroller cannot store a smooth curve. It measures the voltage at regular moments. This is called sampling, and how often it happens is the <Term id="sampling-rate">sampling rate</Term>.
+A microcontroller understands only numbers, not voltages. The <Term id="adc">ADC</Term> is the translator between the two.
 
-Each sample is rounded to the nearest step the ADC can show. This rounding is called <Term id="quantisation">quantisation</Term>.
+It does this in three steps.
 
-An ADC with **n bits** has **2ⁿ steps**. The size of one step is the reference voltage divided by 2ⁿ.
+<FlowDiagram
+  nodes={[
+    { label: "Sample", sub: "Measure at fixed moments", icon: Camera, tone: "u1" },
+    { label: "Quantise", sub: "Round down to a step", icon: ChartNoAxesColumnIncreasing, tone: "u2" },
+    { label: "Encode", sub: "Write the step in binary", icon: Binary, tone: "u3" },
+  ]}
+  caption="Inside the ADC: each voltage is sampled, rounded down to a step, then written as a binary number."
+/>
+
+### Step 1: Sampling
+
+Sampling means measuring the voltage at fixed moments, not all the time. Each measurement is called a sample.
+
+It is like taking a photo every few seconds instead of recording a video.
+
+The <Term id="sampling-rate">sampling rate</Term> is the number of samples per second. It is measured in hertz (Hz). So 10 samples per second is 10 Hz.
+
+Slow things, like room temperature, need only a few samples, such as one a minute. Fast things, like a heartbeat or machine vibration, need many samples every second.
+
+**Rule of thumb:** sample at least twice as fast as the fastest change in the signal.
+
+### Step 2: Quantisation
+
+An ADC cannot show every possible voltage. It has only a fixed number of levels, called steps. So a smooth ramp of voltage becomes a staircase.
+
+Each sample is rounded down to the step just below it. It is like telling your age: at 19 years and 11 months, you still say 19.
+
+This rounding to a step is called <Term id="quantisation">quantisation</Term>. The small amount lost in rounding is called the quantisation error.
+
+The number of steps depends on the ADC's <Term id="adc-resolution">resolution</Term>, which is the number of bits it uses.
+
+- An ADC with **n bits** has **2ⁿ steps**.
+- **Step size = reference voltage ÷ 2ⁿ**
+
+The reference voltage is the top of the ADC's range, for example 5 V on an Arduino Uno.
+
+<Callout kind="example" title="Worked example: a 3-bit ADC">
+An ADC measures 0–5 V using 3 bits. A sensor gives 2.0 V. Which number does the ADC give?
+
+**1.** Number of steps: 2³ = 8.
+
+**2.** Step size: 5 ÷ 8 = 0.625 V.
+
+**3.** Divide the reading by the step size: 2.0 ÷ 0.625 = 3.2.
+
+**4.** Round down: 3.2 becomes step number **3**.
+
+**5.** Write 3 as a 3-bit binary number: **011**.
+
+So the microcontroller gets 3. It stands for 3 × 0.625 = 1.875 V, a little below the real 2.0 V.
+</Callout>
+
+### Step 3: Encoding
+
+Finally, the ADC writes the step number in binary, the language of computers. A 3-bit ADC uses codes from 000 (step 0) to 111 (step 7).
+
+### Why more bits are better
+
+More bits give more steps, so each step is smaller. Smaller steps give a number closer to the real voltage.
+
+<CompareTable
+  caption="More bits = smaller steps"
+  columns={["ADC", "Steps", "Step size at 5 V"]}
+  rows={[
+    ["3-bit", "2³ = 8", "0.625 V"],
+    ["8-bit", "2⁸ = 256", "≈ 19.5 mV"],
+    ["10-bit (Arduino Uno)", "2¹⁰ = 1024", "≈ 4.9 mV"],
+    ["12-bit (ESP32)", "2¹² = 4096", "≈ 1.2 mV"],
+  ]}
+  note="1 mV = 0.001 V. Every row uses a 5 V reference so the rows compare fairly. A real ESP32 uses 3.3 V, so its steps are about 0.8 mV."
+/>
+
+The chart shows the staircase. The 3-bit value always sits on or just below the smooth curve, because the ADC rounds down.
 
 <ChartCard
   title="A smooth signal and its 3-bit version"
@@ -134,21 +253,58 @@ An ADC with **n bits** has **2ⁿ steps**. The size of one step is the reference
   </LineChart>
 </ChartCard>
 
+Try it: move the slider and change the number of bits. Watch the step, the number and the binary code change.
+
+<AdcSteps />
+
 <Callout kind="example" title="Worked example: Arduino Uno and LM35">
-The Arduino Uno has a 10-bit ADC with a 5 V reference. It has 2¹⁰ = 1024 steps, so one step is 5 V ÷ 1024 ≈ 4.9 mV. The LM35 gives 10 mV per °C, so one ADC step is about 0.49 °C. The Uno cannot tell apart two temperatures closer than about half a degree.
+The Arduino Uno has a 10-bit ADC with a 5 V reference. The LM35 gives 10 mV for every °C.
+
+**1.** Number of steps: 2¹⁰ = 1024.
+
+**2.** Step size: 5 V ÷ 1024 ≈ 4.9 mV.
+
+**3.** Temperature per step: 4.9 mV ÷ 10 mV per °C ≈ 0.49 °C.
+
+**4.** So the Uno cannot tell apart two temperatures closer than about half a degree.
 </Callout>
 
 ## Saving energy: duty cycling
 
-The radio uses far more power than anything else. So a node spends most of its time asleep. It wakes up, takes a reading, sends it and sleeps again.
+Picture a watchman who naps and wakes every few minutes to check the gate. He still guards the gate, but rests most of the time.
 
-The share of time a node is awake is its <Term id="duty-cycle">duty cycle</Term>. The average current is:
+A sensor node does the same. Its radio uses the most power, so the node sleeps most of the time. It wakes, takes a reading, sends it and sleeps again.
 
-**average current = duty cycle × awake current + (1 − duty cycle) × sleep current**
+The <Term id="duty-cycle">duty cycle</Term> is the share of time the node is awake.
 
-<Callout kind="example" title="Worked example: battery life">
-A node draws 20 mA when awake and 0.01 mA when asleep. It runs on a 2000 mAh battery. Always awake, it lasts 2000 ÷ 20 = 100 hours, about 4 days. With a 1% duty cycle, the average current is 0.01 × 20 + 0.99 × 0.01 ≈ 0.21 mA. It now lasts about 2000 ÷ 0.21 ≈ 9,500 hours, more than a year.
+**Duty cycle = awake time ÷ total time**
+
+A node awake 1 second in every 100 seconds has a duty cycle of 1 ÷ 100 = 1%.
+
+Current is measured in milliamps (mA). Battery size is measured in milliamp-hours (mAh). Battery life in hours is the battery size divided by the average current.
+
+Take a node that draws 20 mA awake and 0.01 mA asleep, on a 2000 mAh battery.
+
+<CompareTable
+  caption="Duty cycling and battery life"
+  columns={["Mode", "Average current", "Battery life on 2000 mAh"]}
+  rows={[
+    ["Always awake", "20 mA", "2000 ÷ 20 = 100 hours, about 4 days"],
+    ["1% duty cycle (awake 20 mA, asleep 0.01 mA)", "≈ 0.21 mA", "2000 ÷ 0.21 ≈ 9,500 hours, more than a year"],
+  ]}
+/>
+
+Sleeping 99% of the time makes the same battery last about 95 times longer.
+
+<Callout kind="note" title="For exams: average current">
+**Average current = duty cycle × awake current + (1 − duty cycle) × sleep current**
+
+For the 1% node: 0.01 × 20 + 0.99 × 0.01 = 0.2 + 0.0099 ≈ 0.21 mA.
 </Callout>
+
+Pick how often the node wakes and watch the battery life change.
+
+<DutyCycleStrip />
 
 You will try this yourself in lab L02.
 
@@ -178,21 +334,24 @@ Twenty soil-moisture nodes are placed across a sugarcane field. Each wakes every
   points={[
     "A sensor node senses, processes and sends data, usually on battery power.",
     "Its four units are sensing (sensor + ADC), processing (microcontroller), communication (transceiver) and power.",
-    "An n-bit ADC has 2ⁿ steps; step size = reference voltage ÷ 2ⁿ.",
-    "The Arduino Uno's 10-bit ADC at 5 V has steps of about 4.9 mV.",
-    "Duty cycling, sleeping most of the time, can stretch battery life from days to years.",
+    "Sensor nodes are small, cheap and low-power. Together they form a self-organising, fault-tolerant network.",
+    "The ADC samples the voltage, rounds it down to a step and writes the step as a binary number.",
+    "More bits mean smaller steps. The Arduino Uno's 10-bit ADC at 5 V has steps of about 4.9 mV.",
+    "Duty cycling means sleeping most of the time. At 1%, battery life grows from about 4 days to over a year.",
   ]}
 />
 
 <ExamTip
   question="Draw and explain the architecture of an IoT sensor node."
-  short="A sensor node has four units: a sensing unit (sensor and ADC), a processing unit (microcontroller and memory), a communication unit (radio transceiver) and a power unit (battery, possibly with energy harvesting). The sensor's voltage is converted to a number, processed and sent by radio."
+  short="A sensor node has four units. The sensing unit (sensor and ADC) measures, and the processing unit (microcontroller and memory) handles the data. The communication unit (radio transceiver) sends it, and the power unit (battery, sometimes with energy harvesting) feeds them all. The sensor's voltage is converted to a number, processed and sent by radio."
   long={[
     "Define a sensor node and a wireless sensor network.",
     "Draw the block diagram of the four units, with the power unit feeding all of them.",
     "Explain each unit with an example component.",
     "Explain the data path: physical quantity → sensor → ADC → microcontroller → transceiver.",
-    "Explain sampling, ADC resolution and duty cycling with a worked example.",
+    "List the main characteristics of a sensor node.",
+    "Explain the ADC's three steps (sample, round down to a step, write in binary) with a small worked example.",
+    "Explain duty cycling and how it stretches battery life.",
     "List two advantages and two limitations.",
   ]}
 />
